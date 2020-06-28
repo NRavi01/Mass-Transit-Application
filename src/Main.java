@@ -29,6 +29,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -38,53 +39,76 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class MTSMain extends Application{
-    private int globalWidth;
-    private int globalHeight;
+    private int globalWidth = 1500;
+    private int globalHeight = 800;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setScene(getHomeScene());
+        primaryStage.setScene(getHomeScene(primaryStage));
         primaryStage.show();
     }
 
-    public Scene getHomeScene() {
-        Label prompt = createLabel("Select the date and time.", 200, 50, 20, Color.BLACK, 500);
+    public Scene getHomeScene(Stage window) {
+        ImageView marta_background =createImage("marta_background.png", 0, 0, globalWidth, globalHeight);
 
-        Label dateChoiceDesc = createLabel("Select the date.", 50, 150, 20, Color.BLACK, 500);
+        Label prompt = createLabel("Select a start time", globalWidth / 40, globalHeight / 2 + 50, 35, Color.BLACK, 500);
+        prompt.setFont(Font.font("Verdana", FontWeight.BOLD, 35));
+
+        Label dateChoiceDesc = createLabel("Day: ", globalWidth / 50, globalHeight / 2 + 150, 35, Color.BLACK, 100);
         dateChoiceDesc.setPrefHeight(50);
         ChoiceBox<String> dateChoiceBox = new ChoiceBox<>();
         dateChoiceBox.getItems().addAll("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
         dateChoiceBox.setValue("Sunday");
-        dateChoiceBox.setLayoutX(60);
+        dateChoiceBox.setLayoutX(globalWidth / 50 + 100);
         dateChoiceBox.setPrefHeight(50);
         dateChoiceBox.setPrefWidth(110);
-        dateChoiceBox.setLayoutY(200);
+        dateChoiceBox.setLayoutY(globalHeight / 2 + 150);
 
-        Label timeChoiceDesc = createLabel("Select the time.", 150, 150, 20, Color.BLACK, 500);
+        Label timeChoiceDesc = createLabel("Hour:", globalWidth / 50, globalHeight / 2 + 250, 35, Color.BLACK, 100);
         timeChoiceDesc.setPrefHeight(50);
 
         ChoiceBox<String> hourChoiceBox = new ChoiceBox<>();
         hourChoiceBox.getItems().addAll("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
-        hourChoiceBox.setLayoutX(140);
+        hourChoiceBox.setValue("12");
+        hourChoiceBox.setLayoutX(globalWidth / 50 + 100);
         hourChoiceBox.setPrefHeight(50);
         hourChoiceBox.setPrefWidth(110);
-        hourChoiceBox.setLayoutY(200);
+        hourChoiceBox.setLayoutY(globalHeight / 2 + 250);
+
+        Label colon = createLabel(":", globalWidth / 50 + 215, globalHeight / 2 + 250, 35, Color.BLACK, 10);
+        timeChoiceDesc.setPrefHeight(50);
 
         ChoiceBox<String> minChoiceBox = new ChoiceBox<>();
         minChoiceBox.getItems().addAll("00", "30");
-        minChoiceBox.setLayoutX(140);
+        minChoiceBox.setValue("00");
+        minChoiceBox.setLayoutX(globalWidth / 50 + 230);
         minChoiceBox.setPrefHeight(50);
         minChoiceBox.setPrefWidth(110);
-        minChoiceBox.setLayoutY(200);
+        minChoiceBox.setLayoutY(globalHeight / 2 + 250);
 
+        ChoiceBox<String> ampm = new ChoiceBox<>();
+        ampm.getItems().addAll("AM", "PM");
+        ampm.setValue("AM");
+        ampm.setLayoutX(globalWidth / 50 + 350);
+        ampm.setPrefHeight(50);
+        ampm.setPrefWidth(110);
+        ampm.setLayoutY(globalHeight / 2 + 250);
+
+        Button beginSim = createButton(globalWidth * 6 / 8, globalHeight * 1/4, 350, 50, Color.ORANGE, "BEGIN", 50);
+        beginSim.setFont(Font.font("Verdana", FontWeight.BOLD, 50));
+        beginSim.setOnMouseEntered(e -> beginSim.setTextFill(Color.RED));
+        beginSim.setOnMouseExited(e -> beginSim.setTextFill(Color.ORANGE));
 
         Group dtGroup = new Group();
-        dtGroup.getChildren().addAll(prompt, dateChoiceDesc, dateChoiceBox);
-        Scene scene = new Scene(dtGroup, 600, 600);
+        dtGroup.getChildren().addAll(marta_background, prompt, dateChoiceDesc, dateChoiceBox,
+                timeChoiceDesc, hourChoiceBox, colon, minChoiceBox, ampm, beginSim);
+        Scene scene = new Scene(dtGroup, globalWidth, globalHeight);
+        window.setScene(scene);
         return scene;
     }
 
+    /*
     public Scene getMainScreen() {
 
     }
@@ -104,7 +128,7 @@ public class MTSMain extends Application{
     public Scene getStopScene(Stop stop) {
 
     }
-
+    */
 
     public static void main(String[] args) {
         launch(args);
@@ -128,6 +152,18 @@ public class MTSMain extends Application{
         newLabel.setLayoutY(y);
         newLabel.setPrefWidth(width);
         return newLabel;
+    }
+
+    private Button createButton(int x, int y, int width, int height, Color c, String name, int size) {
+        Button startButton = new Button(name);
+        startButton.setFont(new Font(size));
+        startButton.setTextFill(c);
+        startButton.setStyle("-fx-background-color: transparent;");
+        startButton.setPrefWidth(width);
+        startButton.setPrefHeight(height);
+        startButton.setLayoutX(x);
+        startButton.setLayoutY(y);
+        return startButton;
     }
 
     public Slider createSlider(int min, int max, int val, int width, boolean ticks, int majorTick,
