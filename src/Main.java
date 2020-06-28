@@ -38,7 +38,7 @@ import javafx.scene.Cursor;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class MTSMain extends Application{
+public class Main extends Application{
     private int globalWidth = 1500;
     private int globalHeight = 800;
 
