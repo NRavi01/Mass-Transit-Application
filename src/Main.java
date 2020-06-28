@@ -36,11 +36,12 @@ import javafx.util.Duration;
 import javafx.scene.Cursor;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Main extends Application{
-    private int globalWidth = 1500;
-    private int globalHeight = 800;
+    private int globalWidth = 2000;
+    private int globalHeight = 1000;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -50,7 +51,7 @@ public class Main extends Application{
     }
 
     public Scene getHomeScene(Stage window) {
-        ImageView marta_background =createImage("marta_background.png", 0, 0, globalWidth, globalHeight);
+        ImageView marta_background = createImage("marta_background.png", 0, 0, globalWidth, globalHeight);
 
         Label prompt = createLabel("Select a start time", globalWidth / 40, globalHeight / 2 + 50, 35, Color.BLACK, 500);
         prompt.setFont(Font.font("Verdana", FontWeight.BOLD, 35));
@@ -105,13 +106,104 @@ public class Main extends Application{
                 timeChoiceDesc, hourChoiceBox, colon, minChoiceBox, ampm, beginSim);
         Scene scene = new Scene(dtGroup, globalWidth, globalHeight);
         window.setScene(scene);
+
+        beginSim.setOnAction(e -> {
+            //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
+            ArrayList<Bus> buses = new ArrayList<>();
+            ArrayList<Route> routes = new ArrayList<>();
+            //For now, fill with random values
+            for (int i = 0; i < 3; i ++) {
+                Stop[] stops = new Stop[4];
+                for (int j = 0; j < 4; j++) {
+                    stops[j]  = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (globalWidth - 50)), (int)(Math.random() * (globalHeight - 50))));
+                    System.out.println("stop" + stops[j].getLocation());
+                }
+                Color routeColor;
+                if (i == 0) {
+                    routeColor = Color.BLUE;
+                }
+                else if (i == 1) {
+                    routeColor = Color.GREEN;
+                }
+                else {
+                    routeColor = Color.RED;
+                }
+                Route route = new Route("route", 1, stops, routeColor);
+                routes.add(route);
+                int x = (int) (route.getStops()[0].getLocation().getX() + route.getStops()[1].getLocation().getX()) / 2;
+                int y = (int) (route.getStops()[0].getLocation().getY() + route.getStops()[1].getLocation().getY()) / 2;
+                Point startingLoc = new Point(x - 30, y - 20);
+                Bus newBus = new Bus("Bus", (int) (Math.random() * 100) , 10, 10, route, route.getStops()[0], route.getStops()[1], startingLoc);
+                buses.add(newBus);
+                System.out.println("bus" + newBus.getLocation());
+            }
+
+            window.setScene(getMainScreen(buses, routes));
+        });
+
+
         return scene;
     }
 
-    /*
-    public Scene getMainScreen() {
+    public Scene getMainScreen(ArrayList<Bus> buses, ArrayList<Route> routes) {
+        ArrayList<ImageView> busImages = new ArrayList<>();
+        for (int i = 0; i < buses.size(); i++) {
+            Bus b = buses.get(i);
+            ImageView newBus = createImage("bus_icon.PNG", (int) b.getLocation().getX(), (int) b.getLocation().getY(), 80 ,50);
+            busImages.add(newBus);
+        }
 
+        ArrayList<Circle> stopImages = new ArrayList<>();
+        ArrayList<Line> routeLines = new ArrayList<>();
+        ArrayList<Label> stopLabels = new ArrayList<>();
+        for (int i = 0; i < routes.size(); i++) {
+            for (int j = 0; j < routes.get(i).getStops().length; j++) {
+                Stop stop = routes.get(i).getStops()[j];
+                Circle newStop = new Circle(stop.getLocation().getX(), stop.getLocation().getY(), 20);
+                newStop.setFill(routes.get(i).getColor());
+                stopImages.add(newStop);
+
+                Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getLocation().getX() - 5, (int) stop.getLocation().getY() - 10, 15, Color.BLACK, 20);
+                stopLabels.add(stopLabel);
+
+                Line stopLine = null;
+                if (j != routes.get(i).getStops().length - 1) {
+                    Point stop1 = routes.get(i).getStops()[j].getLocation();
+                    Point stop2 = routes.get(i).getStops()[j + 1].getLocation();
+                    stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
+                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStrokeWidth(10);
+                } else {
+                    Point stop1 = routes.get(i).getStops()[j].getLocation();
+                    Point stop2 = routes.get(i).getStops()[0].getLocation();
+                    stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
+                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStrokeWidth(10);
+                }
+                routeLines.add(stopLine);
+            }
+        }
+
+
+        Group msGroup = new Group();
+
+        for (int i = 0; i < stopImages.size(); i++) {
+            msGroup.getChildren().add(stopImages.get(i));
+        }
+        for (int i = 0; i < routeLines.size(); i++) {
+            msGroup.getChildren().add(routeLines.get(i));
+        }
+        for (int i = 0; i < stopLabels.size(); i++) {
+            msGroup.getChildren().add(stopLabels.get(i));
+        }
+        for (int i = 0; i < busImages.size(); i++) {
+            msGroup.getChildren().add(busImages.get(i));
+        }
+
+        Scene scene = new Scene(msGroup, globalWidth, globalHeight);
+        return scene;
     }
+    /*
 
     public Scene getMainWithSidebar() {
 
@@ -177,3 +269,5 @@ public class Main extends Application{
     }
 
 }
+
+
