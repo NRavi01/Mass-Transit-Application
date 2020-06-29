@@ -23,7 +23,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -32,6 +32,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.geometry.Insets;
 import javafx.util.Duration;
 import javafx.scene.Cursor;
 
@@ -115,7 +116,7 @@ public class Main extends Application{
             for (int i = 0; i < 3; i ++) {
                 Stop[] stops = new Stop[4];
                 for (int j = 0; j < 4; j++) {
-                    stops[j]  = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (globalWidth - 50)), (int)(Math.random() * (globalHeight - 50))));
+                    stops[j]  = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (globalWidth - 500)), (int)(Math.random() * (globalHeight - 50))));
                     System.out.println("stop" + stops[j].getLocation());
                 }
                 Color routeColor;
@@ -266,7 +267,39 @@ public class Main extends Application{
             msGroup.getChildren().add(busImages.get(i));
         }
 
-        Scene scene = new Scene(msGroup, globalWidth, globalHeight);
+        GridPane grid = new GridPane();
+        grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        VBox sideBar = new VBox(10);
+
+        Button sideBarToggle = createButton(globalWidth * 54 / 64, globalHeight * 1 / 256, 50, 50, Color.ORANGE, "", 50);
+        sideBarToggle.setGraphic(createImage("hamburger.png", (int) sideBarToggle.getLayoutX(), (int) sideBarToggle.getLayoutY(), 50, 50));
+
+        sideBarToggle.setOnAction(e -> {
+            window.setScene(getMainScreen(buses, routes, window));
+        });
+
+        Label busLab = createLabel("Buses", 100, 50, 35, Color.BLACK, 500);
+
+        sideBar.getChildren().add(sideBarToggle);
+        sideBar.getChildren().add(busLab);
+
+        sideBar.setMargin(busLab, new Insets(20, 20, 20, 20));
+
+        sideBar.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        grid.add(msGroup, 0, 0, 1, 1);
+        grid.add(sideBar, 1, 0, 1, 1);
+
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(70);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setPercentWidth(30);
+        grid.getColumnConstraints().addAll(column1, column2);
+        
+        GridPane.setVgrow(sideBar, Priority.ALWAYS);
+
+        Scene scene = new Scene(grid, globalWidth, globalHeight);
         return scene;
     }
 
