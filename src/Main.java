@@ -198,10 +198,8 @@ public class Main extends Application{
             msGroup.getChildren().add(busImages.get(i));
         }
 
-        Button sideBar = createButton(globalWidth * 6 / 8, globalHeight * 1/4, 350, 50, Color.ORANGE, "SIDEBAR", 50);
-        sideBar.setFont(Font.font("Verdana", FontWeight.BOLD, 50));
-        sideBar.setOnMouseEntered(e -> sideBar.setTextFill(Color.RED));
-        sideBar.setOnMouseExited(e -> sideBar.setTextFill(Color.ORANGE));
+        Button sideBar = createButton(globalWidth * 54 / 64, globalHeight * 1 / 256, 350, 50, Color.ORANGE, "", 50);
+        sideBar.setGraphic(createImage("hamburger.png", (int) sideBar.getLayoutX(), (int) sideBar.getLayoutY(), 50, 50));
 
         sideBar.setOnAction(e -> {
             window.setScene(getMainWithSidebar(buses, routes, window));
