@@ -273,7 +273,14 @@ public class Main extends Application{
         grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         ScrollPane scroll = new ScrollPane();
+        scroll.setContent(sideBar);
+        scroll.pannableProperty().set(true);
+        scroll.fitToHeightProperty().set(true);
+        scroll.fitToWidthProperty().set(true);
+        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
+
         VBox sideBar = new VBox(10);
+        sideBar.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Button sideBarToggle = createButton(globalWidth * 54 / 64, globalHeight * 1 / 256, 50, 50, Color.ORANGE, "", 50);
         sideBarToggle.setGraphic(createImage("hamburger.png", (int) sideBarToggle.getLayoutX(), (int) sideBarToggle.getLayoutY(), 50, 50));
@@ -286,16 +293,17 @@ public class Main extends Application{
         Label routeLab = createLabel("Routes", 100, 50, 35, Color.BLACK, 500);
         Label stopLab = createLabel("Stops", 100, 50, 35, Color.BLACK, 500);
 
+        sideBar.setMargin(busLab, new Insets(30, 20, 0, 40));
+        sideBar.setMargin(routeLab, new Insets(30, 20, 0, 40));
+        sideBar.setMargin(stopLab, new Insets(30, 20, 00, 40));
+
+        // Dummy Data
         Button bus1 = createButton(0, 0, 100, 50, Color.BLACK, "Bus 1", 20);
         Button bus2 = createButton(0, 0, 100, 50, Color.BLACK, "Bus 2", 20);
         Button route1 = createButton(0, 0, 100, 50, Color.BLACK, "Route 1", 20);
         Button route2 = createButton(0, 0, 100, 50, Color.BLACK, "Route 2", 20);
         Button stop1 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 1", 20);
         Button stop2 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 2", 20);
-
-        sideBar.setMargin(busLab, new Insets(30, 20, 0, 40));
-        sideBar.setMargin(routeLab, new Insets(30, 20, 0, 40));
-        sideBar.setMargin(stopLab, new Insets(30, 20, 00, 40));
 
         sideBar.setMargin(bus1, new Insets(0, 0, 0, 60));
         sideBar.setMargin(bus2, new Insets(0, 0, 0, 60));
@@ -304,8 +312,6 @@ public class Main extends Application{
         sideBar.setMargin(stop1, new Insets(0, 0, 0, 60));
         sideBar.setMargin(stop2, new Insets(0, 0, 0, 60));
 
-        sideBar.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
-
         sideBar.getChildren().addAll(
                 sideBarToggle,
                 busLab, bus1, bus2,
@@ -313,11 +319,6 @@ public class Main extends Application{
                 stopLab, stop1, stop2
         );
 
-        scroll.setContent(sideBar);
-        scroll.pannableProperty().set(true);
-        scroll.fitToHeightProperty().set(true);
-        scroll.fitToWidthProperty().set(true);
-        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
         grid.add(msGroup, 0, 0, 1, 1);
         grid.add(scroll, 1, 0, 1, 1);
 
@@ -330,6 +331,7 @@ public class Main extends Application{
         grid.getColumnConstraints().addAll(column1, column2);
         grid.getRowConstraints().add(row1);
 
+        // VBox inside a scroll pane for sidebar, everything inside a grid.
         Scene scene = new Scene(grid, globalWidth, globalHeight);
         return scene;
     }
