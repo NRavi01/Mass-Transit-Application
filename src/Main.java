@@ -1,3 +1,4 @@
+import com.sun.rowset.internal.Row;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -15,6 +16,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -270,6 +272,7 @@ public class Main extends Application{
         GridPane grid = new GridPane();
         grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
+        ScrollPane scroll = new ScrollPane();
         VBox sideBar = new VBox(10);
 
         Button sideBarToggle = createButton(globalWidth * 54 / 64, globalHeight * 1 / 256, 50, 50, Color.ORANGE, "", 50);
@@ -280,24 +283,52 @@ public class Main extends Application{
         });
 
         Label busLab = createLabel("Buses", 100, 50, 35, Color.BLACK, 500);
+        Label routeLab = createLabel("Routes", 100, 50, 35, Color.BLACK, 500);
+        Label stopLab = createLabel("Stops", 100, 50, 35, Color.BLACK, 500);
 
-        sideBar.getChildren().add(sideBarToggle);
-        sideBar.getChildren().add(busLab);
+        Button bus1 = createButton(0, 0, 100, 50, Color.BLACK, "Bus 1", 20);
+        Button bus2 = createButton(0, 0, 100, 50, Color.BLACK, "Bus 2", 20);
+        Button route1 = createButton(0, 0, 100, 50, Color.BLACK, "Route 1", 20);
+        Button route2 = createButton(0, 0, 100, 50, Color.BLACK, "Route 2", 20);
+        Button stop1 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 1", 20);
+        Button stop2 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 2", 20);
 
-        sideBar.setMargin(busLab, new Insets(20, 20, 20, 20));
+        sideBar.setMargin(busLab, new Insets(30, 20, 0, 40));
+        sideBar.setMargin(routeLab, new Insets(30, 20, 0, 40));
+        sideBar.setMargin(stopLab, new Insets(30, 20, 00, 40));
+
+        sideBar.setMargin(bus1, new Insets(0, 0, 0, 60));
+        sideBar.setMargin(bus2, new Insets(0, 0, 0, 60));
+        sideBar.setMargin(route1, new Insets(0, 0, 0, 60));
+        sideBar.setMargin(route2, new Insets(0, 0, 0, 60));
+        sideBar.setMargin(stop1, new Insets(0, 0, 0, 60));
+        sideBar.setMargin(stop2, new Insets(0, 0, 0, 60));
 
         sideBar.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
 
+        sideBar.getChildren().addAll(
+                sideBarToggle,
+                busLab, bus1, bus2,
+                routeLab, route1, route2,
+                stopLab, stop1, stop2
+        );
+
+        scroll.setContent(sideBar);
+        scroll.pannableProperty().set(true);
+        scroll.fitToHeightProperty().set(true);
+        scroll.fitToWidthProperty().set(true);
+        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
         grid.add(msGroup, 0, 0, 1, 1);
-        grid.add(sideBar, 1, 0, 1, 1);
+        grid.add(scroll, 1, 0, 1, 1);
 
         ColumnConstraints column1 = new ColumnConstraints();
-        column1.setPercentWidth(70);
+        column1.setPercentWidth(75);
         ColumnConstraints column2 = new ColumnConstraints();
-        column2.setPercentWidth(30);
+        column2.setPercentWidth(25);
+        RowConstraints row1 = new RowConstraints();
+        row1.setVgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(column1, column2);
-        
-        GridPane.setVgrow(sideBar, Priority.ALWAYS);
+        grid.getRowConstraints().add(row1);
 
         Scene scene = new Scene(grid, globalWidth, globalHeight);
         return scene;
