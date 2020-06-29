@@ -138,18 +138,86 @@ public class Main extends Application{
                 System.out.println("bus" + newBus.getLocation());
             }
 
-            window.setScene(getMainScreen(buses, routes));
+            window.setScene(getMainScreen(buses, routes, window));
         });
-
 
         return scene;
     }
 
-    public Scene getMainScreen(ArrayList<Bus> buses, ArrayList<Route> routes) {
+    public Scene getMainScreen(ArrayList<Bus> buses, ArrayList<Route> routes, Stage window) {
         ArrayList<ImageView> busImages = new ArrayList<>();
         for (int i = 0; i < buses.size(); i++) {
             Bus b = buses.get(i);
-            ImageView newBus = createImage("bus_icon.PNG", (int) b.getLocation().getX(), (int) b.getLocation().getY(), 80 ,50);
+            ImageView newBus = createImage("bus_icon.PNG", (int) b.getLocation().getX(), (int) b.getLocation().getY(), 80, 50);
+            busImages.add(newBus);
+        }
+
+        ArrayList<Circle> stopImages = new ArrayList<>();
+        ArrayList<Line> routeLines = new ArrayList<>();
+        ArrayList<Label> stopLabels = new ArrayList<>();
+        for (int i = 0; i < routes.size(); i++) {
+            for (int j = 0; j < routes.get(i).getStops().length; j++) {
+                Stop stop = routes.get(i).getStops()[j];
+                Circle newStop = new Circle(stop.getLocation().getX(), stop.getLocation().getY(), 20);
+                newStop.setFill(routes.get(i).getColor());
+                stopImages.add(newStop);
+
+                Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getLocation().getX() - 5, (int) stop.getLocation().getY() - 10, 15, Color.BLACK, 20);
+                stopLabels.add(stopLabel);
+
+                Line stopLine = null;
+                if (j != routes.get(i).getStops().length - 1) {
+                    Point stop1 = routes.get(i).getStops()[j].getLocation();
+                    Point stop2 = routes.get(i).getStops()[j + 1].getLocation();
+                    stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
+                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStrokeWidth(10);
+                } else {
+                    Point stop1 = routes.get(i).getStops()[j].getLocation();
+                    Point stop2 = routes.get(i).getStops()[0].getLocation();
+                    stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
+                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStrokeWidth(10);
+                }
+                routeLines.add(stopLine);
+            }
+        }
+
+        Group msGroup = new Group();
+
+        for (int i = 0; i < stopImages.size(); i++) {
+            msGroup.getChildren().add(stopImages.get(i));
+        }
+        for (int i = 0; i < routeLines.size(); i++) {
+            msGroup.getChildren().add(routeLines.get(i));
+        }
+        for (int i = 0; i < stopLabels.size(); i++) {
+            msGroup.getChildren().add(stopLabels.get(i));
+        }
+        for (int i = 0; i < busImages.size(); i++) {
+            msGroup.getChildren().add(busImages.get(i));
+        }
+
+        Button sideBar = createButton(globalWidth * 6 / 8, globalHeight * 1/4, 350, 50, Color.ORANGE, "SIDEBAR", 50);
+        sideBar.setFont(Font.font("Verdana", FontWeight.BOLD, 50));
+        sideBar.setOnMouseEntered(e -> sideBar.setTextFill(Color.RED));
+        sideBar.setOnMouseExited(e -> sideBar.setTextFill(Color.ORANGE));
+
+        sideBar.setOnAction(e -> {
+            window.setScene(getMainWithSidebar(buses, routes, window));
+        });
+
+        msGroup.getChildren().add(sideBar);
+
+        Scene scene = new Scene(msGroup, globalWidth, globalHeight);
+        return scene;
+    }
+
+    public Scene getMainWithSidebar(ArrayList<Bus> buses, ArrayList<Route> routes, Stage window) {
+        ArrayList<ImageView> busImages = new ArrayList<>();
+        for (int i = 0; i < buses.size(); i++) {
+            Bus b = buses.get(i);
+            ImageView newBus = createImage("bus_icon.PNG", (int) b.getLocation().getX(), (int) b.getLocation().getY(), 80, 50);
             busImages.add(newBus);
         }
 
@@ -203,11 +271,8 @@ public class Main extends Application{
         Scene scene = new Scene(msGroup, globalWidth, globalHeight);
         return scene;
     }
+
     /*
-
-    public Scene getMainWithSidebar() {
-
-    }
 
     public Scene getBusScene(Bus bus) {
 
