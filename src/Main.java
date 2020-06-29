@@ -272,13 +272,6 @@ public class Main extends Application{
         GridPane grid = new GridPane();
         grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        ScrollPane scroll = new ScrollPane();
-        scroll.setContent(sideBar);
-        scroll.pannableProperty().set(true);
-        scroll.fitToHeightProperty().set(true);
-        scroll.fitToWidthProperty().set(true);
-        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
-
         VBox sideBar = new VBox(10);
         sideBar.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
 
@@ -318,6 +311,13 @@ public class Main extends Application{
                 routeLab, route1, route2,
                 stopLab, stop1, stop2
         );
+
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(sideBar);
+        scroll.pannableProperty().set(true);
+        scroll.fitToHeightProperty().set(true);
+        scroll.fitToWidthProperty().set(true);
+        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
 
         grid.add(msGroup, 0, 0, 1, 1);
         grid.add(scroll, 1, 0, 1, 1);
