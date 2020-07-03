@@ -122,10 +122,11 @@ public class Main extends Application{
             routes = new ArrayList<>();
             //For now, fill with random values
             for (int i = 0; i < 6; i ++) {
-                Stop[] stops = new Stop[10];
+                Collection<Stop> stops = new ArrayList<>();
                 for (int j = 0; j < 10; j++) {
-                    stops[j]  = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
-                    System.out.println("stop" + stops[j].getLocation());
+                    Stop tempStop = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
+                    stops.add(tempStop);
+                    System.out.println("stop" + tempStop.getLocation());
                 }
                 Color routeColor;
                 if (i == 0) {
@@ -151,10 +152,13 @@ public class Main extends Application{
                 }
                 Route route = new Route("route", 1, stops, routeColor);
                 routes.add(route);
-                int x = (int) (route.getStops()[0].getLocation().getX() + route.getStops()[1].getLocation().getX()) / 2;
-                int y = (int) (route.getStops()[0].getLocation().getY() + route.getStops()[1].getLocation().getY()) / 2;
+                Iterator<Stop> iter = route.getStops().iterator();
+                Stop stop1 = iter.next();
+                Stop stop2 = iter.next();
+                int x = (int) (stop1.getLocation().getX() + stop2.getLocation().getX()) / 2;
+                int y = (int) (stop1.getLocation().getY() + stop2.getLocation().getY()) / 2;
                 Point startingLoc = new Point(x - 30, y - 20);
-                Bus newBus = new Bus("Bus", (int) (Math.random() * 100) , 10, 10, route, route.getStops()[0], route.getStops()[1], startingLoc);
+                Bus newBus = new Bus("Bus", (int) (Math.random() * 100) , 10, 10, route, stop1, stop2, startingLoc);
                 buses.add(newBus);
                 System.out.println("bus" + newBus.getLocation());
             }
@@ -183,8 +187,14 @@ public class Main extends Application{
 
         while (routeIterator.hasNext()){
             Route currRoute = routeIterator.next();
-            for (int j = 0; j < currRoute.getStops().length; j++) {
-                Stop stop = currRoute.getStops()[j];
+            for (int j = 0; j < currRoute.getStops().size(); j++) {
+                Iterator<Stop> iter = currRoute.getStops().iterator();
+                int i = 0;
+                while (iter.hasNext() && i < j) {
+                    iter.next();
+                    i++;
+                }
+                Stop stop = iter.next();
                 Circle newStop = new Circle(stop.getScreenLocation().getX(), stop.getScreenLocation().getY(), 20);
                 newStop.setFill(currRoute.getColor());
                 stopImages.add(newStop);
@@ -193,15 +203,15 @@ public class Main extends Application{
                 stopLabels.add(stopLabel);
 
                 Line stopLine = null;
-                if (j != currRoute.getStops().length - 1) {
-                    Point stop1 = currRoute.getStops()[j].getScreenLocation();
-                    Point stop2 = currRoute.getStops()[j + 1].getScreenLocation();
+                if (j != currRoute.getStops().size() - 1) {
+                    Point stop1 = stop.getScreenLocation();
+                    Point stop2 = iter.next().getScreenLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
                     stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
                 } else {
-                    Point stop1 = currRoute.getStops()[j].getScreenLocation();
-                    Point stop2 = currRoute.getStops()[0].getScreenLocation();
+                    Point stop1 = stop.getScreenLocation();
+                    Point stop2 = currRoute.getStops().iterator().next().getScreenLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
                     stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
@@ -340,13 +350,14 @@ public class Main extends Application{
         ArrayList<Route> newRouteList = new ArrayList<>();
         while(routeIterator.hasNext()){
             Route route = routeIterator.next();
-            Stop[] newStopList = new Stop[route.getStops().length];
-            for (int i = 0; i < route.getStops().length; i++) {
-                Stop stop = route.getStops()[i];
+            Collection<Stop> newStopList = new ArrayList<>();
+            Iterator<Stop> iter = route.getStops().iterator();
+            for (int i = 0; i < route.getStops().size(); i++) {
+                Stop stop = iter.next();
                 int newPointX = (int) stop.getScreenLocation().getX() + x;
                 int newPointY = (int) stop.getScreenLocation().getY() + y;
                 stop.setScreenLocation(new Point(newPointX, newPointY));
-                newStopList[i] = stop;
+                newStopList.add(stop);
             }
             route.setStops(newStopList);
             newRouteList.add(route);
