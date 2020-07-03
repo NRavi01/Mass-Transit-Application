@@ -448,6 +448,16 @@ public class Main extends Application{
         Button stop1 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 1", 20);
         Button stop2 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 2", 20);
 
+        //Dummy data for route screen
+        Stop craswell = new Stop("Craswell", 1, 5, new Point(90, 100));
+        Stop lenponHeights = new Stop("Lenpon Heights", 2, 7, new Point(100, 100));
+        Stop[] stops = {craswell, lenponHeights};
+        Route red = new Route("Red", 54, stops, Color.RED);
+
+        route1.setOnAction(e -> {
+            window.setScene(getRouteScene(red, window));
+        });
+        
         sideBar.setMargin(bus1, new Insets(0, 0, 0, 60));
         sideBar.setMargin(bus2, new Insets(0, 0, 0, 60));
         sideBar.setMargin(route1, new Insets(0, 0, 0, 60));
@@ -491,11 +501,33 @@ public class Main extends Application{
     public Scene getBusScene(Bus bus) {
 
     }
+    */
 
-    public Scene getRouteScene(Route route) {
+    public Scene getRouteScene(Route route, Stage window) {
+        Label routeInfo = createLabel(route.getName() + " Info", globalWidth / 2 - 50, globalHeight /40, 35, Color.BLACK, 500);
+        routeInfo.setFont(Font.font("Verdana", 35));
+        Label routeName = createLabel("Name: " + route.getName(), globalWidth / 40, globalHeight/2, 32, Color.BLACK, 500);
+        routeName.setFont(Font.font("Verdana", 32));
 
+        Label routeId = createLabel("ID: " + route.getID(), globalWidth / 40, globalHeight/2 + 70, 32, Color.BLACK, 500);
+        routeName.setFont(Font.font("Verdana", 32));
+
+        String stops = "";
+        for (Stop stop : route.getStops()) {
+            System.out.println(stop.getName());
+            stops = stops.concat(stop.getName() + ", ");
+        }
+        stops = stops.substring(0, stops.length() - 2);
+        System.out.println(stops);
+        Label listStops = createLabel("Stops: " + stops, globalWidth / 40, globalHeight/2 + 140, 32, Color.BLACK, 500);
+        routeName.setFont(Font.font("Verdana", 32));
+
+        Group routeGroup = new Group(routeInfo, routeName, routeId, listStops);
+
+        Scene scene = new Scene(routeGroup, globalWidth, globalHeight);
+        return scene;
     }
-
+    /*
     public Scene getStopScene(Stop stop) {
 
     }
