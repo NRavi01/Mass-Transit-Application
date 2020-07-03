@@ -37,10 +37,13 @@ import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.util.Duration;
 import javafx.scene.Cursor;
+import javafx.scene.shape.Rectangle;
 
 import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class Main extends Application{
     private int globalWidth = 2000;
@@ -112,13 +115,13 @@ public class Main extends Application{
 
         beginSim.setOnAction(e -> {
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
-            ArrayList<Bus> buses = new ArrayList<>();
-            ArrayList<Route> routes = new ArrayList<>();
+            Collection<Bus> buses = new ArrayList<>();
+            Collection<Route> routes = new ArrayList<>();
             //For now, fill with random values
-            for (int i = 0; i < 3; i ++) {
-                Stop[] stops = new Stop[4];
-                for (int j = 0; j < 4; j++) {
-                    stops[j]  = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (globalWidth - 500)), (int)(Math.random() * (globalHeight - 50))));
+            for (int i = 0; i < 6; i ++) {
+                Stop[] stops = new Stop[10];
+                for (int j = 0; j < 10; j++) {
+                    stops[j]  = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
                     System.out.println("stop" + stops[j].getLocation());
                 }
                 Color routeColor;
@@ -128,8 +131,20 @@ public class Main extends Application{
                 else if (i == 1) {
                     routeColor = Color.GREEN;
                 }
-                else {
+                else if (i == 2){
                     routeColor = Color.RED;
+                }
+                else if (i == 3){
+                    routeColor = Color.PINK;
+                }
+                else if (i == 4){
+                    routeColor = Color.ORANGE;
+                }
+                else if (i == 5){
+                    routeColor = Color.SILVER;
+                }
+                else {
+                    routeColor = Color.YELLOW;
                 }
                 Route route = new Route("route", 1, stops, routeColor);
                 routes.add(route);
@@ -147,46 +162,67 @@ public class Main extends Application{
         return scene;
     }
 
-    public Scene getMainScreen(ArrayList<Bus> buses, ArrayList<Route> routes, Stage window) {
+    public Scene getMainScreen(Collection<Bus> buses, Collection<Route> routes, Stage window) {
+        int globalTemp = globalWidth * 3/4;
+
         ArrayList<ImageView> busImages = new ArrayList<>();
-        for (int i = 0; i < buses.size(); i++) {
-            Bus b = buses.get(i);
-            ImageView newBus = createImage("bus_icon.PNG", (int) b.getLocation().getX(), (int) b.getLocation().getY(), 80, 50);
+        Iterator<Bus> iterator = buses.iterator();
+        while(iterator.hasNext()) {
+            Bus b = iterator.next();
+            ImageView newBus = createImage("bus_icon.PNG", (int) b.getScreenLocation().getX(), (int) b.getScreenLocation().getY(), 80, 50);
             busImages.add(newBus);
         }
 
         ArrayList<Circle> stopImages = new ArrayList<>();
         ArrayList<Line> routeLines = new ArrayList<>();
         ArrayList<Label> stopLabels = new ArrayList<>();
-        for (int i = 0; i < routes.size(); i++) {
-            for (int j = 0; j < routes.get(i).getStops().length; j++) {
-                Stop stop = routes.get(i).getStops()[j];
-                Circle newStop = new Circle(stop.getLocation().getX(), stop.getLocation().getY(), 20);
-                newStop.setFill(routes.get(i).getColor());
+        Iterator<Route> routeIterator = routes.iterator();
+
+        while (routeIterator.hasNext()){
+            Route currRoute = routeIterator.next();
+            for (int j = 0; j < currRoute.getStops().length; j++) {
+                Stop stop = currRoute.getStops()[j];
+                Circle newStop = new Circle(stop.getScreenLocation().getX(), stop.getScreenLocation().getY(), 20);
+                newStop.setFill(currRoute.getColor());
                 stopImages.add(newStop);
 
-                Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getLocation().getX() - 5, (int) stop.getLocation().getY() - 10, 15, Color.BLACK, 20);
+                Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getScreenLocation().getX() - 5, (int) stop.getScreenLocation().getY() - 10, 15, Color.BLACK, 20);
                 stopLabels.add(stopLabel);
 
                 Line stopLine = null;
-                if (j != routes.get(i).getStops().length - 1) {
-                    Point stop1 = routes.get(i).getStops()[j].getLocation();
-                    Point stop2 = routes.get(i).getStops()[j + 1].getLocation();
+                if (j != currRoute.getStops().length - 1) {
+                    Point stop1 = currRoute.getStops()[j].getScreenLocation();
+                    Point stop2 = currRoute.getStops()[j + 1].getScreenLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
-                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
                 } else {
-                    Point stop1 = routes.get(i).getStops()[j].getLocation();
-                    Point stop2 = routes.get(i).getStops()[0].getLocation();
+                    Point stop1 = currRoute.getStops()[j].getScreenLocation();
+                    Point stop2 = currRoute.getStops()[0].getScreenLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
-                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
                 }
                 routeLines.add(stopLine);
             }
         }
 
-        Group msGroup = new Group();
+        ArrayList<Line> mapLines = new ArrayList<>();
+        int spacing = 100;
+        int numLinesHor = globalHeight / spacing;
+        int numLinesVert = globalTemp / spacing;
+        for (int i = 0; i < numLinesHor;i ++) {
+            Line stopLine = new Line(0, i * spacing, globalTemp, i * spacing);
+            stopLine.setStrokeWidth(5);
+            mapLines.add(stopLine);
+        }
+        for (int i = 0; i < numLinesVert;i ++) {
+            Line stopLine = new Line(i * spacing, 0, i * spacing, globalHeight);
+            stopLine.setStrokeWidth(5);
+            mapLines.add(stopLine);
+        }
+
+        Pane msGroup = new Pane();
 
         for (int i = 0; i < stopImages.size(); i++) {
             msGroup.getChildren().add(stopImages.get(i));
@@ -200,6 +236,9 @@ public class Main extends Application{
         for (int i = 0; i < busImages.size(); i++) {
             msGroup.getChildren().add(busImages.get(i));
         }
+        for (int i = 0; i < mapLines.size(); i++) {
+            msGroup.getChildren().add(mapLines.get(i));
+        }
 
         Button sideBar = createButton(globalWidth * 54 / 64, globalHeight * 1 / 256, 350, 50, Color.ORANGE, "", 50);
         sideBar.setGraphic(createImage("hamburger.png", (int) sideBar.getLayoutX(), (int) sideBar.getLayoutY(), 50, 50));
@@ -208,16 +247,124 @@ public class Main extends Application{
             window.setScene(getMainWithSidebar(buses, routes, window));
         });
 
-        msGroup.getChildren().add(sideBar);
+        Circle navigationCenter = new Circle(globalWidth * 3/4 + 200, (int) globalHeight * 54/64, 20, Color.BLACK);
 
-        Scene scene = new Scene(msGroup, globalWidth, globalHeight);
+        Button navigationRight = createButton(globalWidth * 3/4 + 190, (int) globalHeight * 54/64 - 60, 50, 40, Color.BLACK, "", 50);
+        navigationRight.setGraphic(createImage("rightArrowEmpty.jpg", (int) navigationRight.getLayoutX(), (int) navigationRight.getLayoutY(), 100, 80));
+        navigationRight.setOnMouseEntered(e -> navigationRight.setGraphic(createImage("rightArrowFill.jpg", (int) navigationRight.getLayoutX(), (int) navigationRight.getLayoutY(), 100, 80)));
+        navigationRight.setOnMouseExited(e -> navigationRight.setGraphic(createImage("rightArrowEmpty.jpg", (int) navigationRight.getLayoutX(), (int) navigationRight.getLayoutY(), 100, 80)));
+
+        Button navigationLeft = createButton(globalWidth * 3/4 + 40, (int) globalHeight * 54/64 - 60, 50, 40, Color.BLACK, "", 50);
+        navigationLeft.setGraphic(createImage("leftArrowEmpty.jpg", (int) navigationLeft.getLayoutX(), (int) navigationLeft.getLayoutY(), 100, 80));
+        navigationLeft.setOnMouseEntered(e -> navigationLeft.setGraphic(createImage("leftArrowFill.jpg", (int) navigationLeft.getLayoutX(), (int) navigationRight.getLayoutY(), 100, 80)));
+        navigationLeft.setOnMouseExited(e -> navigationLeft.setGraphic(createImage("leftArrowEmpty.jpg", (int) navigationLeft.getLayoutX(), (int) navigationRight.getLayoutY(), 100, 80)));
+
+        Button navigationUp = createButton(globalWidth * 3/4 + 125, (int) globalHeight * 54/64 - 140, 50, 40, Color.BLACK, "", 50);
+        navigationUp.setGraphic(createImage("upArrowEmpty.jpg", (int) navigationUp.getLayoutX(), (int) navigationUp.getLayoutY(), 80, 100));
+        navigationUp.setOnMouseEntered(e -> navigationUp.setGraphic(createImage("upArrowFill.jpg", (int) navigationUp.getLayoutX(), (int) navigationUp.getLayoutY(), 80, 100)));
+        navigationUp.setOnMouseExited(e -> navigationUp.setGraphic(createImage("upArrowEmpty.jpg", (int) navigationUp.getLayoutX(), (int) navigationUp.getLayoutY(), 80, 100)));
+
+        Button navigationDown = createButton(globalWidth * 3/4 + 125, (int) globalHeight * 54/64 + 10, 50, 40, Color.BLACK, "", 50);
+        navigationDown.setGraphic(createImage("downArrowEmpty.jpg", (int) navigationDown.getLayoutX(), (int) navigationDown.getLayoutY(), 80, 100));
+        navigationDown.setOnMouseEntered(e -> navigationDown.setGraphic(createImage("downArrowFill.jpg", (int) navigationDown.getLayoutX(), (int) navigationDown.getLayoutY(), 80, 100)));
+        navigationDown.setOnMouseExited(e -> navigationDown.setGraphic(createImage("downArrowEmpty.jpg", (int) navigationDown.getLayoutX(), (int) navigationDown.getLayoutY(), 80, 100)));
+
+        navigationRight.setOnAction(e -> {
+            moveAll(50, 0, buses, routes);
+            window.setScene(getMainScreen(buses, routes, window));
+        });
+
+        navigationLeft.setOnAction(e -> {
+            moveAll(-50, 0, buses, routes);
+            window.setScene(getMainScreen(buses, routes, window));
+        });
+
+        navigationUp.setOnAction(e -> {
+            moveAll(0, -50, buses, routes);
+            window.setScene(getMainScreen(buses, routes, window));
+        });
+
+        navigationDown.setOnAction(e -> {
+            moveAll(0, 50, buses, routes);
+            window.setScene(getMainScreen(buses, routes, window));
+        });
+
+        Group navGroup = new Group();
+        navGroup.getChildren().addAll(sideBar, navigationCenter, navigationDown, navigationLeft, navigationRight, navigationUp);
+
+        GridPane grid = new GridPane();
+        grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        /*
+        VBox sideBox = new VBox(10);
+        sideBox.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        sideBox.getChildren().addAll(
+                sideBar, navGroup
+        );
+
+        ScrollPane scroll = new ScrollPane();
+        scroll.setContent(sideBox);
+        scroll.pannableProperty().set(true);
+        scroll.fitToHeightProperty().set(true);
+        scroll.fitToWidthProperty().set(true);
+        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
+         */
+        msGroup.setPrefSize(globalWidth * 3/4, globalHeight);
+        msGroup.setClip(new Rectangle(msGroup.getPrefWidth(), msGroup.getPrefHeight()));
+        grid.add(msGroup, 0, 0, 1, 1);
+        grid.add(navGroup, 1, 0, 1, 1);
+
+        ColumnConstraints column1 = new ColumnConstraints(globalWidth * 3 / 4);
+        ColumnConstraints column2 = new ColumnConstraints(globalWidth * 1/4);
+        column2.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(column1, column2);
+
+        Scene scene = new Scene(grid, globalWidth, globalHeight);
         return scene;
     }
 
-    public Scene getMainWithSidebar(ArrayList<Bus> buses, ArrayList<Route> routes, Stage window) {
+    public void moveAll(int x, int y, Collection<Bus> buses, Collection<Route> routes) {
+        Iterator<Bus> busIterator = buses.iterator();
+        ArrayList<Bus> newBusList = new ArrayList<>();
+        while(busIterator.hasNext()){
+            Bus b = busIterator.next();
+            int newPointX = (int) b.getScreenLocation().getX() + x;
+            int newPointY = (int) b.getScreenLocation().getY() + y;
+            b.setScreenLocation(new Point(newPointX, newPointY));
+            newBusList.add(b);
+        }
+        buses.removeAll(buses);
+        for (int i = 0; i < newBusList.size(); i++) {
+            buses.add(newBusList.get(i));
+        }
+
+        Iterator<Route> routeIterator = routes.iterator();
+        ArrayList<Route> newRouteList = new ArrayList<>();
+        while(routeIterator.hasNext()){
+            Route route = routeIterator.next();
+            Stop[] newStopList = new Stop[route.getStops().length];
+            for (int i = 0; i < route.getStops().length; i++) {
+                Stop stop = route.getStops()[i];
+                int newPointX = (int) stop.getScreenLocation().getX() + x;
+                int newPointY = (int) stop.getScreenLocation().getY() + y;
+                stop.setScreenLocation(new Point(newPointX, newPointY));
+                newStopList[i] = stop;
+            }
+            route.setStops(newStopList);
+            newRouteList.add(route);
+        }
+        routes.removeAll(routes);
+        for (int i = 0; i < newRouteList.size(); i++) {
+            routes.add(newRouteList.get(i));
+        }
+    }
+
+    public Scene getMainWithSidebar(Collection<Bus> buses, Collection<Route> routes, Stage window) {
         ArrayList<ImageView> busImages = new ArrayList<>();
-        for (int i = 0; i < buses.size(); i++) {
-            Bus b = buses.get(i);
+        Iterator<Bus> iterator = buses.iterator();
+        while(iterator.hasNext()) {
+            Bus b = iterator.next();
             ImageView newBus = createImage("bus_icon.PNG", (int) b.getLocation().getX(), (int) b.getLocation().getY(), 80, 50);
             busImages.add(newBus);
         }
@@ -225,28 +372,31 @@ public class Main extends Application{
         ArrayList<Circle> stopImages = new ArrayList<>();
         ArrayList<Line> routeLines = new ArrayList<>();
         ArrayList<Label> stopLabels = new ArrayList<>();
-        for (int i = 0; i < routes.size(); i++) {
-            for (int j = 0; j < routes.get(i).getStops().length; j++) {
-                Stop stop = routes.get(i).getStops()[j];
+        Iterator<Route> routeIterator = routes.iterator();
+
+        while (routeIterator.hasNext()){
+            Route currRoute = routeIterator.next();
+            for (int j = 0; j < currRoute.getStops().length; j++) {
+                Stop stop = currRoute.getStops()[j];
                 Circle newStop = new Circle(stop.getLocation().getX(), stop.getLocation().getY(), 20);
-                newStop.setFill(routes.get(i).getColor());
+                newStop.setFill(currRoute.getColor());
                 stopImages.add(newStop);
 
                 Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getLocation().getX() - 5, (int) stop.getLocation().getY() - 10, 15, Color.BLACK, 20);
                 stopLabels.add(stopLabel);
 
                 Line stopLine = null;
-                if (j != routes.get(i).getStops().length - 1) {
-                    Point stop1 = routes.get(i).getStops()[j].getLocation();
-                    Point stop2 = routes.get(i).getStops()[j + 1].getLocation();
+                if (j != currRoute.getStops().length - 1) {
+                    Point stop1 = currRoute.getStops()[j].getLocation();
+                    Point stop2 = currRoute.getStops()[j + 1].getLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
-                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
                 } else {
-                    Point stop1 = routes.get(i).getStops()[j].getLocation();
-                    Point stop2 = routes.get(i).getStops()[0].getLocation();
+                    Point stop1 = currRoute.getStops()[j].getLocation();
+                    Point stop2 = currRoute.getStops()[0].getLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
-                    stopLine.setStroke(routes.get(i).getColor());
+                    stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
                 }
                 routeLines.add(stopLine);
@@ -298,17 +448,6 @@ public class Main extends Application{
         Button stop1 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 1", 20);
         Button stop2 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 2", 20);
 
-        //Dummy data for route screen
-        Stop craswell = new Stop("Craswell", 1, 5, new Point(90, 100));
-        Stop lenponHeights = new Stop("Lenpon Heights", 2, 7, new Point(100, 100));
-        Stop[] stops = {craswell, lenponHeights};
-        Route red = new Route("Red", 54, stops, Color.RED);
-
-        route1.setOnAction(e -> {
-            window.setScene(getRouteScene(red, window));
-        });
-
-
         sideBar.setMargin(bus1, new Insets(0, 0, 0, 60));
         sideBar.setMargin(bus2, new Insets(0, 0, 0, 60));
         sideBar.setMargin(route1, new Insets(0, 0, 0, 60));
@@ -353,35 +492,10 @@ public class Main extends Application{
 
     }
 
-    */
+    public Scene getRouteScene(Route route) {
 
-    public Scene getRouteScene(Route route, Stage window) {
-        Label routeInfo = createLabel(route.getName() + " Info", globalWidth / 2 - 50, globalHeight /40, 35, Color.BLACK, 500);
-        routeInfo.setFont(Font.font("Verdana", 35));
-
-        Label routeName = createLabel("Name: " + route.getName(), globalWidth / 40, globalHeight/2, 32, Color.BLACK, 500);
-        routeName.setFont(Font.font("Verdana", 32));
-
-        Label routeId = createLabel("ID: " + route.getID(), globalWidth / 40, globalHeight/2 + 70, 32, Color.BLACK, 500);
-        routeName.setFont(Font.font("Verdana", 32));
-
-        String stops = "";
-        for (Stop stop : route.getStops()) {
-            System.out.println(stop.getName());
-            stops = stops.concat(stop.getName() + ", ");
-        }
-        stops = stops.substring(0, stops.length() - 2);
-        System.out.println(stops);
-        Label listStops = createLabel("Stops: " + stops, globalWidth / 40, globalHeight/2 + 140, 32, Color.BLACK, 500);
-        routeName.setFont(Font.font("Verdana", 32));
-
-        Group routeGroup = new Group(routeInfo, routeName, routeId, listStops);
-
-        Scene scene = new Scene(routeGroup, globalWidth, globalHeight);
-        return scene;
     }
 
-    /*
     public Scene getStopScene(Stop stop) {
 
     }
@@ -434,5 +548,3 @@ public class Main extends Application{
     }
 
 }
-
-
