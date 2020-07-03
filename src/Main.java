@@ -51,6 +51,7 @@ public class Main extends Application{
 
     private Collection<Bus> buses;
     private Collection<Route> routes;
+    private Collection<Stop> stops;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -122,10 +123,10 @@ public class Main extends Application{
             routes = new ArrayList<>();
             //For now, fill with random values
             for (int i = 0; i < 6; i ++) {
-                Collection<Stop> stops = new ArrayList<>();
+                Collection<Stop> tempStops = new ArrayList<>();
                 for (int j = 0; j < 10; j++) {
                     Stop tempStop = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
-                    stops.add(tempStop);
+                    tempStops.add(tempStop);
                     System.out.println("stop" + tempStop.getLocation());
                 }
                 Color routeColor;
@@ -150,7 +151,7 @@ public class Main extends Application{
                 else {
                     routeColor = Color.YELLOW;
                 }
-                Route route = new Route("route", 1, stops, routeColor);
+                Route route = new Route("route", 1, tempStops, routeColor);
                 routes.add(route);
                 Iterator<Stop> iter = route.getStops().iterator();
                 Stop stop1 = iter.next();
@@ -161,6 +162,7 @@ public class Main extends Application{
                 Bus newBus = new Bus("Bus", (int) (Math.random() * 100) , 10, 10, route, stop1, stop2, startingLoc);
                 buses.add(newBus);
                 System.out.println("bus" + newBus.getLocation());
+                stops = tempStops;
             }
 
             window.setScene(getMainScreen(window));
@@ -306,6 +308,9 @@ public class Main extends Application{
         });
 
         Button stopList = createButton(0, 0, 150, 50, Color.BLACK, "Stops", 30);
+        stopList.setOnAction(e -> {
+            window.setScene(getStopListScene(window));
+        });
 
         VBox lists = new VBox(10);
         lists.getChildren().addAll(busList, routeList, stopList);
@@ -416,6 +421,30 @@ public class Main extends Application{
         return scene;
     }
 
+    public Scene getStopListScene(Stage window) {
+        VBox vbox = new VBox(10);
+
+        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(window));
+        });
+
+        vbox.getChildren().add(exit);
+
+        Iterator<Stop> iter = stops.iterator();
+        while (iter.hasNext()) {
+            Stop currStop = iter.next();
+            Button stopButton = createButton(0, 0, globalWidth,100,Color.BLACK, currStop.getName(), 30);
+            stopButton.setOnAction(e -> {
+                window.setScene(getStopScene(currStop, window));
+            });
+            vbox.getChildren().add(stopButton);
+        }
+
+        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        return scene;
+    }
+
     public Scene getBusScene(Bus bus, Stage window) {
         VBox vbox = new VBox(50);
         vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -441,12 +470,10 @@ public class Main extends Application{
     }
 
     public Scene getRouteScene(Route route, Stage window) {
-        Label routeInfo = createLabel(route.getName() + " Info", globalWidth / 2 - 50, globalHeight /40, 35, Color.BLACK, 500);
-        routeInfo.setFont(Font.font("Verdana", 35));
-        Label routeName = createLabel("Name: " + route.getName(), globalWidth / 40, globalHeight/2, 32, Color.BLACK, 500);
+        Label routeName = createLabel("Name: " + route.getName(), 0, 0, 32, Color.BLACK, 500);
         routeName.setFont(Font.font("Verdana", 32));
 
-        Label routeId = createLabel("ID: " + route.getID(), globalWidth / 40, globalHeight/2 + 70, 32, Color.BLACK, 500);
+        Label routeId = createLabel("ID: " + route.getID(), 0, 0, 32, Color.BLACK, 500);
         routeName.setFont(Font.font("Verdana", 32));
 
         String stops = "";
@@ -456,19 +483,47 @@ public class Main extends Application{
         }
         stops = stops.substring(0, stops.length() - 2);
         System.out.println(stops);
-        Label listStops = createLabel("Stops: " + stops, globalWidth / 40, globalHeight/2 + 140, 32, Color.BLACK, 500);
+        Label listStops = createLabel("Stops: " + stops, 0, 0, 32, Color.BLACK, 500);
         routeName.setFont(Font.font("Verdana", 32));
 
-        Group routeGroup = new Group(routeInfo, routeName, routeId, listStops);
+        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(window));
+        });
 
-        Scene scene = new Scene(routeGroup, globalWidth, globalHeight);
+        VBox vbox = new VBox(50);
+        vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        vbox.getChildren().addAll(exit, routeName, routeId, listStops);
+
+        Scene scene = new Scene(vbox, globalWidth, globalHeight);
         return scene;
     }
-    /*
-    public Scene getStopScene(Stop stop) {
 
+    public Scene getStopScene(Stop stop, Stage window) {
+        VBox vbox = new VBox(50);
+        vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(window));
+        });
+
+        Label stopName = createLabel("Name: " + stop.getName(), 0, 0, 32, Color.BLACK, 500);
+        stopName.setFont(Font.font("Verdana", 32));
+
+        Label stopId = createLabel("ID: " + stop.getID(), 0, 0, 32, Color.BLACK, 500);
+        stopId.setFont(Font.font("Verdana", 32));
+
+        Label numPassengers = createLabel("Number of Passengers: " + stop.getNumPassengers(), 0, 0, 32, Color.BLACK, 500);
+        numPassengers.setFont(Font.font("Verdana", 32));
+
+        Label loc = createLabel("Location: (" + stop.getLocation().getX() + ", " + stop.getLocation().getY() + ")", 0, 0, 32, Color.BLACK, 500);
+        loc.setFont(Font.font("Verdana", 32));
+
+        vbox.getChildren().addAll(exit, stopName, stopId, numPassengers, loc);
+        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        return scene;
     }
-    */
 
     public static void main(String[] args) {
         launch(args);
