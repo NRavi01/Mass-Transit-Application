@@ -49,6 +49,9 @@ public class Main extends Application{
     private int globalWidth = 2000;
     private int globalHeight = 1000;
 
+    private Collection<Bus> buses;
+    private Collection<Route> routes;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
@@ -115,8 +118,8 @@ public class Main extends Application{
 
         beginSim.setOnAction(e -> {
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
-            Collection<Bus> buses = new ArrayList<>();
-            Collection<Route> routes = new ArrayList<>();
+            buses = new ArrayList<>();
+            routes = new ArrayList<>();
             //For now, fill with random values
             for (int i = 0; i < 6; i ++) {
                 Stop[] stops = new Stop[10];
@@ -156,13 +159,13 @@ public class Main extends Application{
                 System.out.println("bus" + newBus.getLocation());
             }
 
-            window.setScene(getMainScreen(buses, routes, window));
+            window.setScene(getMainScreen(window));
         });
 
         return scene;
     }
 
-    public Scene getMainScreen(Collection<Bus> buses, Collection<Route> routes, Stage window) {
+    public Scene getMainScreen(Stage window) {
         int globalTemp = globalWidth * 3/4;
 
         ArrayList<ImageView> busImages = new ArrayList<>();
@@ -263,33 +266,33 @@ public class Main extends Application{
         navigationDown.setOnMouseExited(e -> navigationDown.setGraphic(createImage("downArrowEmpty.jpg", (int) navigationDown.getLayoutX(), (int) navigationDown.getLayoutY(), 80, 100)));
 
         navigationRight.setOnAction(e -> {
-            moveAll(50, 0, buses, routes);
-            window.setScene(getMainScreen(buses, routes, window));
+            moveAll(50, 0);
+            window.setScene(getMainScreen(window));
         });
 
         navigationLeft.setOnAction(e -> {
-            moveAll(-50, 0, buses, routes);
-            window.setScene(getMainScreen(buses, routes, window));
+            moveAll(-50, 0);
+            window.setScene(getMainScreen(window));
         });
 
         navigationUp.setOnAction(e -> {
-            moveAll(0, -50, buses, routes);
-            window.setScene(getMainScreen(buses, routes, window));
+            moveAll(0, -50);
+            window.setScene(getMainScreen(window));
         });
 
         navigationDown.setOnAction(e -> {
-            moveAll(0, 50, buses, routes);
-            window.setScene(getMainScreen(buses, routes, window));
+            moveAll(0, 50);
+            window.setScene(getMainScreen(window));
         });
 
         Button busList = createButton(0, 0, 150, 50, Color.BLACK, "Buses", 30);
         busList.setOnAction(e -> {
-            window.setScene(getBusListScene(buses, routes, window));
+            window.setScene(getBusListScene(window));
         });
 
         Button routeList = createButton(0, 0, 150, 50, Color.BLACK, "Routes", 30);
         routeList.setOnAction(e -> {
-            window.setScene(getRouteListScene(buses, routes, window));
+            window.setScene(getRouteListScene(window));
         });
 
         Button stopList = createButton(0, 0, 150, 50, Color.BLACK, "Stops", 30);
@@ -318,7 +321,7 @@ public class Main extends Application{
         return scene;
     }
 
-    public void moveAll(int x, int y, Collection<Bus> buses, Collection<Route> routes) {
+    public void moveAll(int x, int y) {
         Iterator<Bus> busIterator = buses.iterator();
         ArrayList<Bus> newBusList = new ArrayList<>();
         while(busIterator.hasNext()){
@@ -354,12 +357,12 @@ public class Main extends Application{
         }
     }
 
-    public Scene getBusListScene(Collection<Bus> buses, Collection<Route> routes, Stage window) {
+    public Scene getBusListScene(Stage window) {
         VBox vbox = new VBox(10);
 
         Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
         exit.setOnAction(e -> {
-            window.setScene(getMainScreen(buses, routes, window));
+            window.setScene(getMainScreen(window));
         });
 
         vbox.getChildren().add(exit);
@@ -369,7 +372,7 @@ public class Main extends Application{
             Bus currBus = iter.next();
             Button busButton = createButton(0, 0, globalWidth,100,Color.BLACK, currBus.getName(), 30);
             busButton.setOnAction(e -> {
-                window.setScene(getBusScene(currBus, buses, routes, window));
+                window.setScene(getBusScene(currBus, window));
             });
             vbox.getChildren().add(busButton);
         }
@@ -378,12 +381,12 @@ public class Main extends Application{
         return scene;
     }
 
-    public Scene getRouteListScene(Collection<Bus> buses, Collection<Route> routes, Stage window) {
+    public Scene getRouteListScene(Stage window) {
         VBox vbox = new VBox(10);
 
         Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
         exit.setOnAction(e -> {
-            window.setScene(getMainScreen(buses, routes, window));
+            window.setScene(getMainScreen(window));
         });
 
         vbox.getChildren().add(exit);
@@ -393,7 +396,7 @@ public class Main extends Application{
             Route currRoute = iter.next();
             Button routeButton = createButton(0, 0, globalWidth,100,Color.BLACK, currRoute.getName(), 30);
             routeButton.setOnAction(e -> {
-                window.setScene(getRouteScene(currRoute, buses, routes, window));
+                window.setScene(getRouteScene(currRoute, window));
             });
             vbox.getChildren().add(routeButton);
         }
@@ -402,13 +405,13 @@ public class Main extends Application{
         return scene;
     }
 
-    public Scene getBusScene(Bus bus, Collection<Bus> buses, Collection<Route> routes, Stage window) {
+    public Scene getBusScene(Bus bus, Stage window) {
         VBox vbox = new VBox(50);
         vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
         exit.setOnAction(e -> {
-            window.setScene(getMainScreen(buses, routes, window));
+            window.setScene(getMainScreen(window));
         });
 
         Label name = createLabel("Name: " + bus.getName(), 0, 0, 30, Color.BLACK, globalWidth);
@@ -426,7 +429,7 @@ public class Main extends Application{
         return scene;
     }
 
-    public Scene getRouteScene(Route route, Collection<Bus> buses, Collection<Route> routes, Stage window) {
+    public Scene getRouteScene(Route route, Stage window) {
         Label routeInfo = createLabel(route.getName() + " Info", globalWidth / 2 - 50, globalHeight /40, 35, Color.BLACK, 500);
         routeInfo.setFont(Font.font("Verdana", 35));
         Label routeName = createLabel("Name: " + route.getName(), globalWidth / 40, globalHeight/2, 32, Color.BLACK, 500);
