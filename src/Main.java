@@ -240,13 +240,6 @@ public class Main extends Application{
             msGroup.getChildren().add(mapLines.get(i));
         }
 
-        Button sideBar = createButton(globalWidth * 54 / 64, globalHeight * 1 / 256, 350, 50, Color.ORANGE, "", 50);
-        sideBar.setGraphic(createImage("hamburger.png", (int) sideBar.getLayoutX(), (int) sideBar.getLayoutY(), 50, 50));
-
-        sideBar.setOnAction(e -> {
-            window.setScene(getMainWithSidebar(buses, routes, window));
-        });
-
         Circle navigationCenter = new Circle(globalWidth * 3/4 + 200, (int) globalHeight * 54/64, 20, Color.BLACK);
 
         Button navigationRight = createButton(globalWidth * 3/4 + 190, (int) globalHeight * 54/64 - 60, 50, 40, Color.BLACK, "", 50);
@@ -289,31 +282,32 @@ public class Main extends Application{
             window.setScene(getMainScreen(buses, routes, window));
         });
 
+        Button busList = createButton(0, 0, 150, 50, Color.BLACK, "Buses", 30);
+        busList.setOnAction(e -> {
+            window.setScene(getBusListScene(buses, routes, window));
+        });
+
+        Button routeList = createButton(0, 0, 150, 50, Color.BLACK, "Routes", 30);
+        routeList.setOnAction(e -> {
+            window.setScene(getRouteListScene(buses, routes, window));
+        });
+
+        Button stopList = createButton(0, 0, 150, 50, Color.BLACK, "Stops", 30);
+
+        VBox lists = new VBox(10);
+        lists.getChildren().addAll(busList, routeList, stopList);
+
         Group navGroup = new Group();
-        navGroup.getChildren().addAll(sideBar, navigationCenter, navigationDown, navigationLeft, navigationRight, navigationUp);
+        navGroup.getChildren().addAll(navigationCenter, navigationDown, navigationLeft, navigationRight, navigationUp);
 
         GridPane grid = new GridPane();
         grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        /*
-        VBox sideBox = new VBox(10);
-        sideBox.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        sideBox.getChildren().addAll(
-                sideBar, navGroup
-        );
-
-        ScrollPane scroll = new ScrollPane();
-        scroll.setContent(sideBox);
-        scroll.pannableProperty().set(true);
-        scroll.fitToHeightProperty().set(true);
-        scroll.fitToWidthProperty().set(true);
-        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
-         */
         msGroup.setPrefSize(globalWidth * 3/4, globalHeight);
         msGroup.setClip(new Rectangle(msGroup.getPrefWidth(), msGroup.getPrefHeight()));
         grid.add(msGroup, 0, 0, 1, 1);
-        grid.add(navGroup, 1, 0, 1, 1);
+        grid.add(navGroup, 1, 1, 1, 1);
+        grid.add(lists, 1, 0, 1, 1);
 
         ColumnConstraints column1 = new ColumnConstraints(globalWidth * 3 / 4);
         ColumnConstraints column2 = new ColumnConstraints(globalWidth * 1/4);
@@ -360,150 +354,79 @@ public class Main extends Application{
         }
     }
 
-    public Scene getMainWithSidebar(Collection<Bus> buses, Collection<Route> routes, Stage window) {
-        ArrayList<ImageView> busImages = new ArrayList<>();
-        Iterator<Bus> iterator = buses.iterator();
-        while(iterator.hasNext()) {
-            Bus b = iterator.next();
-            ImageView newBus = createImage("bus_icon.PNG", (int) b.getLocation().getX(), (int) b.getLocation().getY(), 80, 50);
-            busImages.add(newBus);
-        }
+    public Scene getBusListScene(Collection<Bus> buses, Collection<Route> routes, Stage window) {
+        VBox vbox = new VBox(10);
 
-        ArrayList<Circle> stopImages = new ArrayList<>();
-        ArrayList<Line> routeLines = new ArrayList<>();
-        ArrayList<Label> stopLabels = new ArrayList<>();
-        Iterator<Route> routeIterator = routes.iterator();
-
-        while (routeIterator.hasNext()){
-            Route currRoute = routeIterator.next();
-            for (int j = 0; j < currRoute.getStops().length; j++) {
-                Stop stop = currRoute.getStops()[j];
-                Circle newStop = new Circle(stop.getLocation().getX(), stop.getLocation().getY(), 20);
-                newStop.setFill(currRoute.getColor());
-                stopImages.add(newStop);
-
-                Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getLocation().getX() - 5, (int) stop.getLocation().getY() - 10, 15, Color.BLACK, 20);
-                stopLabels.add(stopLabel);
-
-                Line stopLine = null;
-                if (j != currRoute.getStops().length - 1) {
-                    Point stop1 = currRoute.getStops()[j].getLocation();
-                    Point stop2 = currRoute.getStops()[j + 1].getLocation();
-                    stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
-                    stopLine.setStroke(currRoute.getColor());
-                    stopLine.setStrokeWidth(10);
-                } else {
-                    Point stop1 = currRoute.getStops()[j].getLocation();
-                    Point stop2 = currRoute.getStops()[0].getLocation();
-                    stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
-                    stopLine.setStroke(currRoute.getColor());
-                    stopLine.setStrokeWidth(10);
-                }
-                routeLines.add(stopLine);
-            }
-        }
-
-
-        Group msGroup = new Group();
-
-        for (int i = 0; i < stopImages.size(); i++) {
-            msGroup.getChildren().add(stopImages.get(i));
-        }
-        for (int i = 0; i < routeLines.size(); i++) {
-            msGroup.getChildren().add(routeLines.get(i));
-        }
-        for (int i = 0; i < stopLabels.size(); i++) {
-            msGroup.getChildren().add(stopLabels.get(i));
-        }
-        for (int i = 0; i < busImages.size(); i++) {
-            msGroup.getChildren().add(busImages.get(i));
-        }
-
-        GridPane grid = new GridPane();
-        grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        VBox sideBar = new VBox(10);
-        sideBar.setBackground(new Background(new BackgroundFill(Color.LIGHTPINK, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        Button sideBarToggle = createButton(globalWidth * 54 / 64, globalHeight * 1 / 256, 50, 50, Color.ORANGE, "", 50);
-        sideBarToggle.setGraphic(createImage("hamburger.png", (int) sideBarToggle.getLayoutX(), (int) sideBarToggle.getLayoutY(), 50, 50));
-
-        sideBarToggle.setOnAction(e -> {
+        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
+        exit.setOnAction(e -> {
             window.setScene(getMainScreen(buses, routes, window));
         });
 
-        Label busLab = createLabel("Buses", 100, 50, 35, Color.BLACK, 500);
-        Label routeLab = createLabel("Routes", 100, 50, 35, Color.BLACK, 500);
-        Label stopLab = createLabel("Stops", 100, 50, 35, Color.BLACK, 500);
+        vbox.getChildren().add(exit);
 
-        sideBar.setMargin(busLab, new Insets(30, 20, 0, 40));
-        sideBar.setMargin(routeLab, new Insets(30, 20, 0, 40));
-        sideBar.setMargin(stopLab, new Insets(30, 20, 00, 40));
+        Iterator<Bus> iter = buses.iterator();
+        while (iter.hasNext()) {
+            Bus currBus = iter.next();
+            Button busButton = createButton(0, 0, globalWidth,100,Color.BLACK, currBus.getName(), 30);
+            busButton.setOnAction(e -> {
+                window.setScene(getBusScene(currBus, buses, routes, window));
+            });
+            vbox.getChildren().add(busButton);
+        }
 
-        // Dummy Data
-        Button bus1 = createButton(0, 0, 100, 50, Color.BLACK, "Bus 1", 20);
-        Button bus2 = createButton(0, 0, 100, 50, Color.BLACK, "Bus 2", 20);
-        Button route1 = createButton(0, 0, 100, 50, Color.BLACK, "Route 1", 20);
-        Button route2 = createButton(0, 0, 100, 50, Color.BLACK, "Route 2", 20);
-        Button stop1 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 1", 20);
-        Button stop2 = createButton(0, 0, 100, 50, Color.BLACK, "Stop 2", 20);
-
-        //Dummy data for route screen
-        Stop craswell = new Stop("Craswell", 1, 5, new Point(90, 100));
-        Stop lenponHeights = new Stop("Lenpon Heights", 2, 7, new Point(100, 100));
-        Stop[] stops = {craswell, lenponHeights};
-        Route red = new Route("Red", 54, stops, Color.RED);
-
-        route1.setOnAction(e -> {
-            window.setScene(getRouteScene(red, window));
-        });
-        
-        sideBar.setMargin(bus1, new Insets(0, 0, 0, 60));
-        sideBar.setMargin(bus2, new Insets(0, 0, 0, 60));
-        sideBar.setMargin(route1, new Insets(0, 0, 0, 60));
-        sideBar.setMargin(route2, new Insets(0, 0, 0, 60));
-        sideBar.setMargin(stop1, new Insets(0, 0, 0, 60));
-        sideBar.setMargin(stop2, new Insets(0, 0, 0, 60));
-
-        sideBar.getChildren().addAll(
-                sideBarToggle,
-                busLab, bus1, bus2,
-                routeLab, route1, route2,
-                stopLab, stop1, stop2
-        );
-
-        ScrollPane scroll = new ScrollPane();
-        scroll.setContent(sideBar);
-        scroll.pannableProperty().set(true);
-        scroll.fitToHeightProperty().set(true);
-        scroll.fitToWidthProperty().set(true);
-        scroll.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.ALWAYS);
-
-        grid.add(msGroup, 0, 0, 1, 1);
-        grid.add(scroll, 1, 0, 1, 1);
-
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setPercentWidth(75);
-        ColumnConstraints column2 = new ColumnConstraints();
-        column2.setPercentWidth(25);
-        RowConstraints row1 = new RowConstraints();
-        row1.setVgrow(Priority.ALWAYS);
-        grid.getColumnConstraints().addAll(column1, column2);
-        grid.getRowConstraints().add(row1);
-
-        // VBox inside a scroll pane for sidebar, everything inside a grid.
-        Scene scene = new Scene(grid, globalWidth, globalHeight);
+        Scene scene = new Scene(vbox, globalWidth, globalHeight);
         return scene;
     }
 
-    /*
+    public Scene getRouteListScene(Collection<Bus> buses, Collection<Route> routes, Stage window) {
+        VBox vbox = new VBox(10);
 
-    public Scene getBusScene(Bus bus) {
+        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(buses, routes, window));
+        });
 
+        vbox.getChildren().add(exit);
+
+        Iterator<Route> iter = routes.iterator();
+        while (iter.hasNext()) {
+            Route currRoute = iter.next();
+            Button routeButton = createButton(0, 0, globalWidth,100,Color.BLACK, currRoute.getName(), 30);
+            routeButton.setOnAction(e -> {
+                window.setScene(getRouteScene(currRoute, buses, routes, window));
+            });
+            vbox.getChildren().add(routeButton);
+        }
+
+        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        return scene;
     }
-    */
 
-    public Scene getRouteScene(Route route, Stage window) {
+    public Scene getBusScene(Bus bus, Collection<Bus> buses, Collection<Route> routes, Stage window) {
+        VBox vbox = new VBox(50);
+        vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(buses, routes, window));
+        });
+
+        Label name = createLabel("Name: " + bus.getName(), 0, 0, 30, Color.BLACK, globalWidth);
+        Label id = createLabel("ID: " + bus.getID(), 0, 0, 30, Color.BLACK, globalWidth);
+        Label numPassengers = createLabel("# of Passengers: " + bus.getNumPassengers(), 0, 0, 30, Color.BLACK, globalWidth);
+        Label avgSpeed = createLabel("Average Speed: " + bus.getAvgSpeed(), 0, 0, 30, Color.BLACK, globalWidth);
+        Label route = createLabel("Route: " + bus.getRoute().getName(), 0, 0, 30, Color.BLACK, globalWidth);
+        Label currStop = createLabel("Current Stop: " + bus.getCurrStop().getName(), 0, 0, 30, Color.BLACK, globalWidth);
+        Label nextStop = createLabel("Next Stop: " + bus.getNextStop().getName(), 0, 0, 30, Color.BLACK, globalWidth);
+        Label location = createLabel("Location: " + bus.getLocation().x + ", " + bus.getLocation().y, 0, 0, 30, Color.BLACK, globalWidth);
+
+        vbox.getChildren().addAll(exit, name, id, numPassengers, avgSpeed, route, currStop, nextStop, location);
+
+        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        return scene;
+    }
+
+    public Scene getRouteScene(Route route, Collection<Bus> buses, Collection<Route> routes, Stage window) {
         Label routeInfo = createLabel(route.getName() + " Info", globalWidth / 2 - 50, globalHeight /40, 35, Color.BLACK, 500);
         routeInfo.setFont(Font.font("Verdana", 35));
         Label routeName = createLabel("Name: " + route.getName(), globalWidth / 40, globalHeight/2, 32, Color.BLACK, 500);

@@ -37,4 +37,44 @@ public class Bus extends SimulationObject {
     public Point getScreenLocation() {
         return screenLocation;
     }
+
+    public int getNumPassengers() {
+        return numPassengers;
+    }
+
+    public void setNumPassengers(int numPassengers) {
+        this.numPassengers = numPassengers;
+    }
+
+    public double getAvgSpeed() {
+        return avgSpeed;
+    }
+
+    public void setAvgSpeed(double avgSpeed) {
+        this.avgSpeed = avgSpeed;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
+    public Stop getCurrStop() {
+        return currStop;
+    }
+
+    public void setCurrStop(Stop currStop) {
+        this.currStop = currStop;
+    }
+
+    public Stop getNextStop() {
+        return nextStop;
+    }
+
+    public void setNextStop(Stop nextStop) {
+        this.nextStop = nextStop;
+    }
 }

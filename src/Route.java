@@ -11,6 +11,8 @@ public class Route extends SimulationObject {
         this.c = c;
     }
 
+    public void setStops(Stop[] stops) { this.stops = stops; }
+
     public Stop[] getStops() {
         return stops;
     }
