@@ -231,7 +231,7 @@ public class Main extends Application{
             stopLine.setStrokeWidth(5);
             mapLines.add(stopLine);
         }
-        for (int i = 0; i < numLinesVert;i ++) {
+        for (int i = 0; i < numLinesVert + 1;i ++) {
             Line stopLine = new Line(i * spacing, 0, i * spacing, globalHeight);
             stopLine.setStrokeWidth(5);
             mapLines.add(stopLine);
@@ -297,20 +297,63 @@ public class Main extends Application{
             window.setScene(getMainScreen(window));
         });
 
-        Button busList = createButton(0, 0, 150, 50, Color.BLACK, "Buses", 30);
+        //listGroup with lines and buttons
+        Line placeHolder = new Line(0, 0, 500, 0);
+        placeHolder.setStrokeWidth(8);
+        Line listLine1 = new Line(0, 0, 500, 0);
+        listLine1.setStrokeWidth(8);
+        Line listLine2 = new Line(0, 0, 500, 0);
+        listLine2.setStrokeWidth(8);
+        Line listLine3 = new Line(0, 0, 500, 0);
+        listLine3.setStrokeWidth(8);
+        //Line listLine4 = new Line(0,    0, 500, -220);
+
+        Line busHolder = new Line(0, 0, 0, 0);
+        placeHolder.setStrokeWidth(0);
+
+        Button busList = createButton(50, 0, 150, 50, Color.BLACK, "Bus List", 30  );
+        busList.setAlignment(Pos.CENTER);
+        busList.setOnMouseEntered(e -> busList.setTextFill(Color.RED));
+        busList.setOnMouseExited(e -> busList.setTextFill(Color.BLACK));
         busList.setOnAction(e -> {
             window.setScene(getBusListScene(window));
         });
 
-        Button routeList = createButton(0, 0, 150, 50, Color.BLACK, "Routes", 30);
+        ImageView modelBus = createImage("bus_icon.PNG", 220, 10, 125, 50);
+
+        Group modelBusGroup = new Group();
+        modelBusGroup.getChildren().addAll(busHolder, busList, modelBus);
+
+        Line routeHolder = new Line(0, 0, 0, 0);
+        placeHolder.setStrokeWidth(0);
+
+        Button routeList = createButton(25, 0, 220, 50, Color.BLACK, "Route List", 30);
+        routeList.setOnMouseEntered(e -> routeList.setTextFill(Color.RED));
+        routeList.setOnMouseExited(e -> routeList.setTextFill(Color.BLACK));
         routeList.setOnAction(e -> {
             window.setScene(getRouteListScene(window));
         });
 
-        Button stopList = createButton(0, 0, 150, 50, Color.BLACK, "Stops", 30);
+        ImageView modelRoute = createImage("modelRoute.PNG", 220, 10, 150, 60);
+
+        Group modelRouteGroup = new Group();
+        modelRouteGroup.getChildren().addAll(routeHolder, routeList, modelRoute);
+
+        Button stopList = createButton(30, 0, 200, 50, Color.BLACK, "Stop List", 30);
+        stopList.setOnMouseEntered(e -> stopList.setTextFill(Color.RED));
+        stopList.setOnMouseExited(e -> stopList.setTextFill(Color.BLACK));
         stopList.setOnAction(e -> {
             window.setScene(getStopListScene(window));
         });
+
+        Line stopHolder = new Line(0, 0, 0, 0);
+        stopHolder.setStrokeWidth(0);
+
+        Circle modelStop = new Circle(290, 30, 20);
+        modelStop.setFill(Color.BLUE);
+
+        Group modelStopGroup = new Group();
+        modelStopGroup.getChildren().addAll(stopHolder, stopList, modelStop);
 
         Label placeholder = createLabel("", globalWidth * 3/4, 30, 30, Color.BLACK, 20);
         Label zoom = createLabel("Zoom: ", globalWidth * 3/4 + 40, 30, 30, Color.BLACK, 100);
@@ -334,9 +377,40 @@ public class Main extends Application{
             window.setScene(getMainScreen(window));
         });
 
-        VBox lists = new VBox(10);
-        lists.getChildren().addAll(busList, routeList, stopList);
 
+        Label placeholder1 = createLabel("", globalWidth * 3/4, 30, 30, Color.BLACK, 20);
+        Label simStep = createLabel("Step: ", globalWidth * 3/4 + 40, 30, 30, Color.BLACK, 100);
+        Button stepBackward = createButton(globalWidth * 3/4 + 120, 0, 100, 100, Color.BLACK, "", 30);
+        stepBackward.setGraphic(createImage("stepBackwardEmpty.png", globalWidth * 3/4 + 120, 0, 60, 60));
+        stepBackward.setOnMouseEntered(e -> stepBackward.setGraphic(createImage("stepBackwardFill.png", (int) stepBackward.getLayoutX(), (int) stepBackward.getLayoutY(), 60, 60)));
+        stepBackward.setOnMouseExited(e -> stepBackward.setGraphic(createImage("stepBackwardEmpty.png", (int) stepBackward.getLayoutX(), (int) stepBackward.getLayoutY(), 60, 60)));
+
+        Button stepForward = createButton(globalWidth * 3/4 + 200, 0, 100, 100, Color.BLACK, "", 30);
+        stepForward.setGraphic(createImage("stepForwardEmpty.png", globalWidth * 3/4 + 250, 0, 60, 60));
+        stepForward.setOnMouseEntered(e -> stepForward.setGraphic(createImage("stepForwardFill.png", (int) stepForward.getLayoutX(), (int) stepForward.getLayoutY(), 60, 60)));
+        stepForward.setOnMouseExited(e -> stepForward.setGraphic(createImage("stepForwardEmpty.png", (int) stepForward.getLayoutX(), (int) stepForward.getLayoutY(), 60, 60)));
+
+        stepForward.setOnAction(e -> {
+            //Code to change simulation states here
+            window.setScene(getMainScreen(window));
+        });
+
+        stepBackward.setOnAction(e -> {
+
+            window.setScene(getMainScreen(window));
+        });
+
+        VBox lists = new VBox(15);
+        lists.getChildren().addAll(placeHolder, modelBusGroup, listLine1,
+                modelRouteGroup, listLine2, modelStopGroup, listLine3);
+        lists.setPrefSize(globalWidth * 1/4, 500);
+        lists.setPadding(new Insets(0, 0, 0, 0));
+
+        ImageView martaLogo = createImage("martaLogo.gif", 0, 0, globalWidth * 1/4 - 50, 200);
+
+        Pane logoGroup = new Pane();
+        logoGroup.getChildren().add(martaLogo);
+        logoGroup.setPrefSize(globalWidth * 1/4, 200);
 
         Group navGroup = new Group();
         navGroup.getChildren().addAll(navigationCenter, navigationDown, navigationLeft, navigationRight, navigationUp);
@@ -344,15 +418,20 @@ public class Main extends Application{
         Group zoomGroup = new Group();
         zoomGroup.getChildren().addAll(placeholder, zoom, zoomIn, zoomOut);
 
+        Group stepGroup = new Group();
+        stepGroup.getChildren().addAll(placeholder1, simStep, stepForward, stepBackward);
+
         GridPane grid = new GridPane();
         grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         msGroup.setPrefSize(globalWidth * 3/4, globalHeight);
         msGroup.setClip(new Rectangle(msGroup.getPrefWidth(), msGroup.getPrefHeight()));
         grid.add(msGroup, 0, 0, 1, 1);
-        grid.add(lists, 1, 0, 1, 1);
-        grid.add(zoomGroup, 1, 1, 1, 1);
-        grid.add(navGroup, 1, 2, 1, 1);
+        grid.add(logoGroup, 1, 0, 1, 1);
+        grid.add(lists, 1, 1, 1, 1);
+        grid.add(stepGroup, 1, 2, 1, 1);
+        grid.add(zoomGroup, 1, 3, 1, 1);
+        grid.add(navGroup, 1, 4, 1, 1);
 
 
         ColumnConstraints column1 = new ColumnConstraints(globalWidth * 3 / 4);
