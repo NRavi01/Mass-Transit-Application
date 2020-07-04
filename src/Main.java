@@ -312,11 +312,37 @@ public class Main extends Application{
             window.setScene(getStopListScene(window));
         });
 
+        Label placeholder = createLabel("", globalWidth * 3/4, 30, 30, Color.BLACK, 20);
+        Label zoom = createLabel("Zoom: ", globalWidth * 3/4 + 40, 30, 30, Color.BLACK, 100);
+        Button zoomIn = createButton(globalWidth * 3/4 + 120, 0, 100, 100, Color.BLACK, "", 30);
+        zoomIn.setGraphic(createImage("plusEmpty.jpg", globalWidth * 3/4 + 120, 0, 60, 60));
+        zoomIn.setOnMouseEntered(e -> zoomIn.setGraphic(createImage("plusFill.jpg", (int) zoomIn.getLayoutX(), (int) zoomIn.getLayoutY(), 60, 60)));
+        zoomIn.setOnMouseExited(e -> zoomIn.setGraphic(createImage("plusEmpty.jpg", (int) zoomIn.getLayoutX(), (int) zoomIn.getLayoutY(), 60, 60)));
+
+        Button zoomOut = createButton(globalWidth * 3/4 + 200, 0, 100, 100, Color.BLACK, "", 30);
+        zoomOut.setGraphic(createImage("minusEmpty.jpg", globalWidth * 3/4 + 250, 0, 60, 60));
+        zoomOut.setOnMouseEntered(e -> zoomOut.setGraphic(createImage("minusFill.jpg", (int) zoomOut.getLayoutX(), (int) zoomOut.getLayoutY(), 60, 60)));
+        zoomOut.setOnMouseExited(e -> zoomOut.setGraphic(createImage("minusEmpty.jpg", (int) zoomOut.getLayoutX(), (int) zoomOut.getLayoutY(), 60, 60)));
+
+        zoomIn.setOnAction(e -> {
+            scaleAll(1);
+            window.setScene(getMainScreen(window));
+        });
+
+        zoomOut.setOnAction(e -> {
+            scaleAll(-1);
+            window.setScene(getMainScreen(window));
+        });
+
         VBox lists = new VBox(10);
         lists.getChildren().addAll(busList, routeList, stopList);
 
+
         Group navGroup = new Group();
         navGroup.getChildren().addAll(navigationCenter, navigationDown, navigationLeft, navigationRight, navigationUp);
+
+        Group zoomGroup = new Group();
+        zoomGroup.getChildren().addAll(placeholder, zoom, zoomIn, zoomOut);
 
         GridPane grid = new GridPane();
         grid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -324,8 +350,10 @@ public class Main extends Application{
         msGroup.setPrefSize(globalWidth * 3/4, globalHeight);
         msGroup.setClip(new Rectangle(msGroup.getPrefWidth(), msGroup.getPrefHeight()));
         grid.add(msGroup, 0, 0, 1, 1);
-        grid.add(navGroup, 1, 1, 1, 1);
         grid.add(lists, 1, 0, 1, 1);
+        grid.add(zoomGroup, 1, 1, 1, 1);
+        grid.add(navGroup, 1, 2, 1, 1);
+
 
         ColumnConstraints column1 = new ColumnConstraints(globalWidth * 3 / 4);
         ColumnConstraints column2 = new ColumnConstraints(globalWidth * 1/4);
@@ -334,6 +362,58 @@ public class Main extends Application{
 
         Scene scene = new Scene(grid, globalWidth, globalHeight);
         return scene;
+    }
+
+    public void scaleAll(int direction) {
+        double scalingFactor = 1.1;
+        Iterator<Bus> busIterator = buses.iterator();
+        ArrayList<Bus> newBusList = new ArrayList<>();
+        while(busIterator.hasNext()){
+            Bus b = busIterator.next();
+            double newPointX;
+            double newPointY;
+            if (direction > 0) {
+                newPointX = (b.getScreenLocation().getX() * scalingFactor);
+                newPointY = b.getScreenLocation().getY() * scalingFactor;
+            } else {
+                newPointX = (b.getScreenLocation().getX() / scalingFactor);
+                newPointY = b.getScreenLocation().getY() / scalingFactor;
+            }
+            b.setScreenLocation(new Point((int) newPointX, (int) newPointY));
+            newBusList.add(b);
+        }
+        buses.removeAll(buses);
+        for (int i = 0; i < newBusList.size(); i++) {
+            buses.add(newBusList.get(i));
+        }
+
+        Iterator<Route> routeIterator = routes.iterator();
+        ArrayList<Route> newRouteList = new ArrayList<>();
+        while(routeIterator.hasNext()){
+            Route route = routeIterator.next();
+            Collection<Stop> newStopList = new ArrayList<>();
+            Iterator<Stop> iter = route.getStops().iterator();
+            for (int i = 0; i < route.getStops().size(); i++) {
+                Stop stop = iter.next();
+                double newPointX;
+                double newPointY;
+                if (direction > 0) {
+                    newPointX = (stop.getScreenLocation().getX() * scalingFactor);
+                    newPointY = stop.getScreenLocation().getY() * scalingFactor;
+                } else {
+                    newPointX = (stop.getScreenLocation().getX() / scalingFactor);
+                    newPointY = stop.getScreenLocation().getY() / scalingFactor;
+                }
+                stop.setScreenLocation(new Point((int) newPointX, (int) newPointY));
+                newStopList.add(stop);
+            }
+            route.setStops(newStopList);
+            newRouteList.add(route);
+        }
+        routes.removeAll(routes);
+        for (int i = 0; i < newRouteList.size(); i++) {
+            routes.add(newRouteList.get(i));
+        }
     }
 
     public void moveAll(int x, int y) {
