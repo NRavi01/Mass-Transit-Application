@@ -278,22 +278,22 @@ public class Main extends Application{
         navigationDown.setOnMouseExited(e -> navigationDown.setGraphic(createImage("downArrowEmpty.jpg", (int) navigationDown.getLayoutX(), (int) navigationDown.getLayoutY(), 80, 100)));
 
         navigationRight.setOnAction(e -> {
-            moveAll(50, 0);
-            window.setScene(getMainScreen(window));
-        });
-
-        navigationLeft.setOnAction(e -> {
             moveAll(-50, 0);
             window.setScene(getMainScreen(window));
         });
 
+        navigationLeft.setOnAction(e -> {
+            moveAll(50, 0);
+            window.setScene(getMainScreen(window));
+        });
+
         navigationUp.setOnAction(e -> {
-            moveAll(0, -50);
+            moveAll(0, 50);
             window.setScene(getMainScreen(window));
         });
 
         navigationDown.setOnAction(e -> {
-            moveAll(0, 50);
+            moveAll(0, -50);
             window.setScene(getMainScreen(window));
         });
 
