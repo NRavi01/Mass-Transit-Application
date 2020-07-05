@@ -535,7 +535,9 @@ public class Main extends Application{
     public Scene getBusListScene(Stage window) {
         VBox vbox = new VBox(10);
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
+        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 50);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
@@ -546,6 +548,8 @@ public class Main extends Application{
         while (iter.hasNext()) {
             Bus currBus = iter.next();
             Button busButton = createButton(0, 0, globalWidth,100,Color.BLACK, currBus.getName(), 30);
+            busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.RED));
+            busButton.setOnMouseExited(e -> busButton.setTextFill(Color.BLACK));
             busButton.setOnAction(e -> {
                 window.setScene(getBusScene(currBus, window));
             });
@@ -559,7 +563,9 @@ public class Main extends Application{
     public Scene getRouteListScene(Stage window) {
         VBox vbox = new VBox(10);
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
+        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 50);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
@@ -570,6 +576,8 @@ public class Main extends Application{
         while (iter.hasNext()) {
             Route currRoute = iter.next();
             Button routeButton = createButton(0, 0, globalWidth,100,Color.BLACK, currRoute.getName(), 30);
+            routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.RED));
+            routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.BLACK));
             routeButton.setOnAction(e -> {
                 window.setScene(getRouteScene(currRoute, window));
             });
@@ -583,7 +591,9 @@ public class Main extends Application{
     public Scene getStopListScene(Stage window) {
         VBox vbox = new VBox(10);
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 50);
+        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 50);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
@@ -594,6 +604,8 @@ public class Main extends Application{
         while (iter.hasNext()) {
             Stop currStop = iter.next();
             Button stopButton = createButton(0, 0, globalWidth,100,Color.BLACK, currStop.getName(), 30);
+            stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.RED));
+            stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.BLACK));
             stopButton.setOnAction(e -> {
                 window.setScene(getStopScene(currStop, window));
             });
@@ -608,7 +620,9 @@ public class Main extends Application{
         VBox vbox = new VBox(50);
         vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
+        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 30);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
@@ -646,6 +660,8 @@ public class Main extends Application{
         routeName.setFont(Font.font("Verdana", 32));
 
         Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.DARKRED));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
@@ -663,6 +679,8 @@ public class Main extends Application{
         vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.DARKRED));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
