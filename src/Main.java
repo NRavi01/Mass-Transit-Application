@@ -16,6 +16,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -617,8 +618,8 @@ public class Main extends Application{
     }
 
     public Scene getBusScene(Bus bus, Stage window) {
-        VBox vbox = new VBox(50);
-        vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        GridPane gridPane = new GridPane();
+        gridPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 30);
         exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
@@ -627,18 +628,96 @@ public class Main extends Application{
             window.setScene(getMainScreen(window));
         });
 
-        Label name = createLabel("Name: " + bus.getName(), 0, 0, 30, Color.BLACK, globalWidth);
-        Label id = createLabel("ID: " + bus.getID(), 0, 0, 30, Color.BLACK, globalWidth);
-        Label numPassengers = createLabel("# of Passengers: " + bus.getNumPassengers(), 0, 0, 30, Color.BLACK, globalWidth);
-        Label avgSpeed = createLabel("Average Speed: " + bus.getAvgSpeed(), 0, 0, 30, Color.BLACK, globalWidth);
-        Label route = createLabel("Route: " + bus.getRoute().getName(), 0, 0, 30, Color.BLACK, globalWidth);
-        Label currStop = createLabel("Current Stop: " + bus.getCurrStop().getName(), 0, 0, 30, Color.BLACK, globalWidth);
-        Label nextStop = createLabel("Next Stop: " + bus.getNextStop().getName(), 0, 0, 30, Color.BLACK, globalWidth);
-        Label location = createLabel("Location: " + bus.getLocation().x + ", " + bus.getLocation().y, 0, 0, 30, Color.BLACK, globalWidth);
+        Label name = createLabel("Name: " + bus.getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Button editName = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        editName.setOnMouseEntered(e -> editName.setTextFill(Color.RED));
+        editName.setOnMouseExited(e -> editName.setTextFill(Color.BLACK));
+        editName.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New Name for the Bus");
+            td.showAndWait();
+            String newName = td.getEditor().getText();
+            bus.setName(newName);
+            name.setText("Name: " + bus.getName());
+        });
 
-        vbox.getChildren().addAll(exit, name, id, numPassengers, avgSpeed, route, currStop, nextStop, location);
+        Label id = createLabel("ID: " + bus.getID(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Button editId = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        editId.setOnMouseEntered(e -> editId.setTextFill(Color.RED));
+        editId.setOnMouseExited(e -> editId.setTextFill(Color.BLACK));
+        editId.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New ID for the Bus");
+            td.showAndWait();
+            String newIdString = td.getEditor().getText();
+            int newId = Integer.parseInt(newIdString);
+            bus.setID(newId);
+            id.setText("ID: " + bus.getID());
+        });
 
-        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        Label numPassengers = createLabel("Number of Passengers: " + bus.getNumPassengers(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Button editNumPassengers = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        editNumPassengers.setOnMouseEntered(e -> editNumPassengers.setTextFill(Color.RED));
+        editNumPassengers.setOnMouseExited(e -> editNumPassengers.setTextFill(Color.BLACK));
+        editNumPassengers.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New Number of Passengers for the Bus");
+            td.showAndWait();
+            String newNPString = td.getEditor().getText();
+            int newNP = Integer.parseInt(newNPString);
+            bus.setNumPassengers(newNP);
+            numPassengers.setText("Number of Passengers: " + bus.getNumPassengers());
+        });
+
+        Label avgSpeed = createLabel("Average Speed: " + bus.getAvgSpeed(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Button editAvgSpeed = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        editAvgSpeed.setOnMouseEntered(e -> editAvgSpeed.setTextFill(Color.RED));
+        editAvgSpeed.setOnMouseExited(e -> editAvgSpeed.setTextFill(Color.BLACK));
+        editAvgSpeed.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New Average Speed for the Bus");
+            td.showAndWait();
+            String newAVGString = td.getEditor().getText();
+            double newNP = Double.parseDouble(newAVGString);
+            bus.setAvgSpeed(newNP);
+            numPassengers.setText("Average Speed: " + bus.getAvgSpeed());
+        });
+
+        Label route = createLabel("Route: " + bus.getRoute().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
+
+        ContextMenu routeMenu = new ContextMenu();
+        Iterator<Route> routeIterator = routes.iterator();
+        while (routeIterator.hasNext()) {
+            Route tempRoute = routeIterator.next();
+            MenuItem item = new MenuItem(tempRoute.getName());
+            item.setOnAction(e -> {
+                bus.setRoute(tempRoute);
+                route.setText("Route: " + bus.getRoute().getName());
+            });
+            routeMenu.getItems().add(item);
+        }
+
+        Label routeEdit = createLabel("Edit" + bus.getRoute().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        routeEdit.setContextMenu(routeMenu);
+
+        Label currStop = createLabel("Current Stop: " + bus.getCurrStop().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Label nextStop = createLabel("Next Stop: " + bus.getNextStop().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Label location = createLabel("Location: " + bus.getLocation().x + ", " + bus.getLocation().y, 0, 0, 30, Color.BLACK, globalWidth/2);
+
+        gridPane.add(exit,1,0,1,1 );
+        gridPane.add(name, 0, 1, 1, 1);
+        gridPane.add(editName, 1, 1, 1, 1 );
+        gridPane.add(id, 0, 2, 1,1);
+        gridPane.add(editId, 1, 2, 1,1 );
+        gridPane.add(numPassengers,0, 3, 1, 1 );
+        gridPane.add(editNumPassengers,1,3,1, 1 );
+        gridPane.add(route, 0, 4, 1, 1);
+        gridPane.add(routeEdit, 1, 4, 1, 1);
+        gridPane.add(currStop, 0, 5, 1, 1);
+        gridPane.add(nextStop, 0, 6, 1, 1);
+        gridPane.add(location,0,7,1,1 );
+
+        Scene scene = new Scene(gridPane, globalWidth, globalHeight);
         return scene;
     }
 
