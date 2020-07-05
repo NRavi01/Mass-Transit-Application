@@ -697,7 +697,7 @@ public class Main extends Application{
             routeMenu.getItems().add(item);
         }
 
-        Label routeEdit = createLabel("Edit" + bus.getRoute().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Label routeEdit = createLabel("Edit", 0, 0, 30, Color.BLACK, globalWidth/2);
         routeEdit.setContextMenu(routeMenu);
 
         Label currStop = createLabel("Current Stop: " + bus.getCurrStop().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
@@ -711,31 +711,62 @@ public class Main extends Application{
         gridPane.add(editId, 1, 2, 1,1 );
         gridPane.add(numPassengers,0, 3, 1, 1 );
         gridPane.add(editNumPassengers,1,3,1, 1 );
-        gridPane.add(route, 0, 4, 1, 1);
-        gridPane.add(routeEdit, 1, 4, 1, 1);
-        gridPane.add(currStop, 0, 5, 1, 1);
-        gridPane.add(nextStop, 0, 6, 1, 1);
-        gridPane.add(location,0,7,1,1 );
+        gridPane.add(avgSpeed,0, 4, 1, 1 );
+        gridPane.add(editAvgSpeed,1,4,1, 1 );
+        gridPane.add(route, 0, 5, 1, 1);
+        gridPane.add(routeEdit, 1, 5, 1, 1);
+        gridPane.add(currStop, 0, 6, 1, 1);
+        gridPane.add(nextStop, 0, 7, 1, 1);
+        gridPane.add(location,0,8,1,1 );
 
         Scene scene = new Scene(gridPane, globalWidth, globalHeight);
         return scene;
     }
 
     public Scene getRouteScene(Route route, Stage window) {
+        GridPane gridPane = new GridPane();
+        gridPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
         Label routeName = createLabel("Name: " + route.getName(), 0, 0, 32, Color.BLACK, 500);
         routeName.setFont(Font.font("Verdana", 32));
 
+        Button editName = createButton(0,0, globalWidth/2, 200, Color.BLACK, "Edit", 30);
+        editName.setOnMouseEntered(e -> editName.setTextFill(Color.RED));
+        editName.setOnMouseExited(e -> editName.setTextFill(Color.BLACK));
+        editName.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New Name for the Route");
+            td.showAndWait();
+            String newName = td.getEditor().getText();
+            route.setName(newName);
+            routeName.setText("Name: " + route.getName());
+        });
+
         Label routeId = createLabel("ID: " + route.getID(), 0, 0, 32, Color.BLACK, 500);
         routeName.setFont(Font.font("Verdana", 32));
+
+        Button editId = createButton(0,0, globalWidth/2, 200, Color.BLACK, "Edit", 30);
+        editId.setOnMouseEntered(e -> editId.setTextFill(Color.RED));
+        editId.setOnMouseExited(e -> editId.setTextFill(Color.BLACK));
+        editId.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New ID for the Route");
+            td.showAndWait();
+            String newIdString = td.getEditor().getText();
+            int newId = Integer.parseInt(newIdString);
+            route.setID(newId);
+            routeId.setText("ID: " + route.getID());
+        });
 
         String stops = "";
         for (Stop stop : route.getStops()) {
             System.out.println(stop.getName());
             stops = stops.concat(stop.getName() + ", ");
         }
+
         stops = stops.substring(0, stops.length() - 2);
         System.out.println(stops);
-        Label listStops = createLabel("Stops: " + stops, 0, 0, 32, Color.BLACK, 500);
+        Label listStops = createLabel("Stops: " + stops, 0, 0, 32, Color.BLACK, globalWidth/2);
         routeName.setFont(Font.font("Verdana", 32));
 
         Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 30);
@@ -745,11 +776,14 @@ public class Main extends Application{
             window.setScene(getMainScreen(window));
         });
 
-        VBox vbox = new VBox(50);
-        vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-        vbox.getChildren().addAll(exit, routeName, routeId, listStops);
+        gridPane.add(exit,1,0,1,1 );
+        gridPane.add(routeName, 0, 1, 1, 1);
+        gridPane.add(editName, 1, 1, 1, 1 );
+        gridPane.add(routeId, 0, 2, 1,1);
+        gridPane.add(editId, 1, 2, 1,1 );
+        gridPane.add(listStops, 0, 3, 1, 1);
 
-        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        Scene scene = new Scene(gridPane, globalWidth, globalHeight);
         return scene;
     }
 
