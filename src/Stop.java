@@ -32,4 +32,8 @@ public class Stop extends SimulationObject {
     public int getNumPassengers() {
         return numPassengers;
     }
+
+    public void setNumPassengers(int numPassengers) {
+        this.numPassengers = numPassengers;
+    }
 }

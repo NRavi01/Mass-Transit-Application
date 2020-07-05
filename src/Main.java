@@ -659,9 +659,9 @@ public class Main extends Application{
         Label listStops = createLabel("Stops: " + stops, 0, 0, 32, Color.BLACK, 500);
         routeName.setFont(Font.font("Verdana", 32));
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.DARKRED));
+        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 30);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
@@ -675,12 +675,12 @@ public class Main extends Application{
     }
 
     public Scene getStopScene(Stop stop, Stage window) {
-        VBox vbox = new VBox(50);
-        vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        GridPane gridPane = new GridPane();
+        gridPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.DARKRED, "Exit", 30);
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.DARKRED));
+        Button exit = createButton(0, 0, globalWidth/2, 200, Color.BLACK, "Exit", 30);
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
@@ -688,17 +688,63 @@ public class Main extends Application{
         Label stopName = createLabel("Name: " + stop.getName(), 0, 0, 32, Color.BLACK, 500);
         stopName.setFont(Font.font("Verdana", 32));
 
-        Label stopId = createLabel("ID: " + stop.getID(), 0, 0, 32, Color.BLACK, 500);
+        Button editName = createButton(0,0, globalWidth/2, 200, Color.BLACK, "Edit", 30);
+        editName.setOnMouseEntered(e -> editName.setTextFill(Color.RED));
+        editName.setOnMouseExited(e -> editName.setTextFill(Color.BLACK));
+        editName.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New Name for the Stop");
+            td.showAndWait();
+            String newName = td.getEditor().getText();
+            stop.setName(newName);
+            stopName.setText("Name: " + stop.getName());
+        });
+
+        Label stopId = createLabel("ID: " + stop.getID(), 0, 0, 32, Color.BLACK, globalWidth/2);
         stopId.setFont(Font.font("Verdana", 32));
 
-        Label numPassengers = createLabel("Number of Passengers: " + stop.getNumPassengers(), 0, 0, 32, Color.BLACK, 500);
+        Button editId = createButton(0,0, globalWidth/2, 200, Color.BLACK, "Edit", 30);
+        editId.setOnMouseEntered(e -> editId.setTextFill(Color.RED));
+        editId.setOnMouseExited(e -> editId.setTextFill(Color.BLACK));
+        editId.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New ID for the Stop");
+            td.showAndWait();
+            String newIdString = td.getEditor().getText();
+            int newId = Integer.parseInt(newIdString);
+            stop.setID(newId);
+            stopId.setText("ID: " + stop.getID());
+        });
+
+        Label numPassengers = createLabel("Number of Passengers: " + stop.getNumPassengers(), 0, 0, 32, Color.BLACK, globalWidth/2);
         numPassengers.setFont(Font.font("Verdana", 32));
 
-        Label loc = createLabel("Location: (" + stop.getLocation().getX() + ", " + stop.getLocation().getY() + ")", 0, 0, 32, Color.BLACK, 500);
+        Button editNumPassengers = createButton(0,0, globalWidth/2, 200, Color.BLACK, "Edit", 30);
+        editNumPassengers.setOnMouseEntered(e -> editNumPassengers.setTextFill(Color.RED));
+        editNumPassengers.setOnMouseExited(e -> editNumPassengers.setTextFill(Color.BLACK));
+        editNumPassengers.setOnAction(e -> {
+            TextInputDialog td = new TextInputDialog();
+            td.setHeaderText("Enter the New Number of Passengers for the Stop");
+            td.showAndWait();
+            String newNPString = td.getEditor().getText();
+            int newNP = Integer.parseInt(newNPString);
+            stop.setNumPassengers(newNP);
+            numPassengers.setText("Number of Passengers: " + stop.getNumPassengers());
+        });
+
+        Label loc = createLabel("Location: (" + stop.getLocation().getX() + ", " + stop.getLocation().getY() + ")", 0, 0, 32, Color.BLACK, globalWidth/2);
         loc.setFont(Font.font("Verdana", 32));
 
-        vbox.getChildren().addAll(exit, stopName, stopId, numPassengers, loc);
-        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        gridPane.add(exit,1,0,1,1 );
+        gridPane.add(stopName, 0, 1, 1, 1);
+        gridPane.add(editName, 1, 1, 1, 1 );
+        gridPane.add(stopId, 0, 2, 1,1);
+        gridPane.add(editId, 1, 2, 1,1 );
+        gridPane.add(numPassengers,0, 3, 1, 1 );
+        gridPane.add(editNumPassengers,1,3,1, 1 );
+        gridPane.add(loc,0,4,1,1 );
+
+        Scene scene = new Scene(gridPane, globalWidth, globalHeight);
         return scene;
     }
 
