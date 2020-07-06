@@ -58,6 +58,7 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setScene(getHomeScene(primaryStage));
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
@@ -546,10 +547,10 @@ public class Main extends Application{
             Iterator<Bus> iter = buses.iterator();
             while (iter.hasNext()) {
                 Bus currBus = iter.next();
-                Button busButton = createButton(0, 0, 500,100,Color.WHITE, currBus.getName(), 30);
+                Button busButton = createButton(0, 0, 400,100,Color.BLACK, currBus.getName(), 30);
                 busButton.getStyleClass().add("listButton");
-                busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.BLACK));
-                busButton.setOnMouseExited(e -> busButton.setTextFill(Color.WHITE));
+                busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.WHITE));
+                busButton.setOnMouseExited(e -> busButton.setTextFill(Color.BLACK));
                 busButton.setOnAction(e -> {
                     window.setScene(getBusScene(currBus, window));
                 });
@@ -559,10 +560,10 @@ public class Main extends Application{
             Iterator<Route> iter = routes.iterator();
             while (iter.hasNext()) {
                 Route currRoute = iter.next();
-                Button routeButton = createButton(0, 0, 500,100,Color.WHITE, currRoute.getName(), 30);
+                Button routeButton = createButton(0, 0, 400,100,Color.BLACK, currRoute.getName(), 30);
                 routeButton.getStyleClass().add("listButton");
-                routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.BLACK));
-                routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.WHITE));
+                routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.WHITE));
+                routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.BLACK));
                 routeButton.setOnAction(e -> {
                     window.setScene(getRouteScene(currRoute, window));
                 });
@@ -572,10 +573,10 @@ public class Main extends Application{
             Iterator<Stop> iter = stops.iterator();
             while (iter.hasNext()) {
                 Stop currStop = iter.next();
-                Button stopButton = createButton(0, 0, 500,100,Color.WHITE, currStop.getName(), 30);
+                Button stopButton = createButton(0, 0, 400,100,Color.BLACK, currStop.getName(), 30);
                 stopButton.getStyleClass().add("listButton");
-                stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.BLACK));
-                stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.WHITE));
+                stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.WHITE));
+                stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.BLACK));
                 stopButton.setOnAction(e -> {
                     window.setScene(getStopScene(currStop, window));
                 });
@@ -690,7 +691,7 @@ public class Main extends Application{
             routeMenu.getItems().add(item);
         }
 
-        Button routeEdit = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
+        Button routeEdit = createButton(0,0, 300, 30, Color.BLACK, "Edit (Right Click)", 30);
         routeEdit.getStyleClass().add("editButton");
         routeEdit.setContextMenu(routeMenu);
 

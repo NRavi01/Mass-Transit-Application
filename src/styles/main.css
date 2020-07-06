@@ -18,5 +18,10 @@
 
 .listButton {
     -fx-alignment: CENTER-LEFT;
+    -fx-background-color: transparent;
+}
+
+.listButton:hover {
+    -fx-alignment: CENTER-LEFT;
     -fx-background-color: green;
 }
