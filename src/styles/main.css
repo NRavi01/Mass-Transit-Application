@@ -1,0 +1,13 @@
+.buttons {
+    -fx-background-color: transparent;
+}
+
+.editButton {
+    -fx-background-color: pink;
+    -fx-background-radius: 50px;
+}
+
+.exitButton {
+    -fx-background-color: red;
+    -fx-background-radius: 50px;
+}

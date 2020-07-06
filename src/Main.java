@@ -34,6 +34,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.util.Duration;
@@ -47,8 +48,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class Main extends Application{
-    private int globalWidth = 2000;
-    private int globalHeight = 1000;
+    private int globalWidth = 1920;
+    private int globalHeight = 1080;
 
     private Collection<Bus> buses;
     private Collection<Route> routes;
@@ -56,7 +57,6 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setScene(getHomeScene(primaryStage));
         primaryStage.show();
     }
@@ -116,6 +116,7 @@ public class Main extends Application{
         dtGroup.getChildren().addAll(marta_background, prompt, dateChoiceDesc, dateChoiceBox,
                 timeChoiceDesc, hourChoiceBox, colon, minChoiceBox, ampm, beginSim);
         Scene scene = new Scene(dtGroup, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
         window.setScene(scene);
 
         beginSim.setOnAction(e -> {
@@ -441,6 +442,7 @@ public class Main extends Application{
         grid.getColumnConstraints().addAll(column1, column2);
 
         Scene scene = new Scene(grid, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
         return scene;
     }
 
@@ -536,19 +538,18 @@ public class Main extends Application{
     public Scene getBusListScene(Stage window) {
         VBox vbox = new VBox(10);
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 50);
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
 
-        vbox.getChildren().add(exit);
-
         Iterator<Bus> iter = buses.iterator();
         while (iter.hasNext()) {
             Bus currBus = iter.next();
-            Button busButton = createButton(0, 0, globalWidth,100,Color.BLACK, currBus.getName(), 30);
+            Button busButton = createButton(0, 0, 500,100,Color.BLACK, currBus.getName(), 30);
             busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.RED));
             busButton.setOnMouseExited(e -> busButton.setTextFill(Color.BLACK));
             busButton.setOnAction(e -> {
@@ -557,27 +558,30 @@ public class Main extends Application{
             vbox.getChildren().add(busButton);
         }
 
+        vbox.getChildren().add(exit);
+        vbox.setPadding(new Insets(50, 50, 50, 50));
+
         ScrollPane scroll = new ScrollPane(vbox);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
         return scene;
     }
 
     public Scene getRouteListScene(Stage window) {
         VBox vbox = new VBox(10);
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 50);
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
 
-        vbox.getChildren().add(exit);
-
         Iterator<Route> iter = routes.iterator();
         while (iter.hasNext()) {
             Route currRoute = iter.next();
-            Button routeButton = createButton(0, 0, globalWidth,100,Color.BLACK, currRoute.getName(), 30);
+            Button routeButton = createButton(0, 0, 500,100,Color.BLACK, currRoute.getName(), 30);
             routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.RED));
             routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.BLACK));
             routeButton.setOnAction(e -> {
@@ -586,8 +590,12 @@ public class Main extends Application{
             vbox.getChildren().add(routeButton);
         }
 
+        vbox.getChildren().add(exit);
+        vbox.setPadding(new Insets(50, 50, 50, 50));
+
         ScrollPane scroll = new ScrollPane(vbox);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
         return scene;
     }
 
@@ -595,7 +603,7 @@ public class Main extends Application{
         VBox vbox = new VBox(10);
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
-        exit.setStyle("-fx-background-color: red; -fx-background-radius: 50px;");
+        exit.getStyleClass().add("exitButton");
         exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
         exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
         exit.setOnAction(e -> {
@@ -606,6 +614,7 @@ public class Main extends Application{
         while (iter.hasNext()) {
             Stop currStop = iter.next();
             Button stopButton = createButton(0, 0, 500,100,Color.BLACK, currStop.getName(), 30);
+            stopButton.setStyle("-fx-alignment: CENTER-LEFT;");
             stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.RED));
             stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.BLACK));
             stopButton.setOnAction(e -> {
@@ -619,6 +628,7 @@ public class Main extends Application{
 
         ScrollPane scroll = new ScrollPane(vbox);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
         return scene;
     }
 
@@ -627,7 +637,7 @@ public class Main extends Application{
         gridPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
-        exit.setStyle("-fx-background-color: red; -fx-background-radius: 50px;");
+        exit.getStyleClass().add("exitButton");
         exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
         exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
         exit.setOnAction(e -> {
@@ -636,7 +646,7 @@ public class Main extends Application{
 
         Label name = createLabel("Name: " + bus.getName(), 0, 0, 30, Color.BLACK, 400);
         Button editName = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
-        editName.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
+        editName.getStyleClass().add("editButton");
         editName.setOnMouseEntered(e -> editName.setTextFill(Color.RED));
         editName.setOnMouseExited(e -> editName.setTextFill(Color.BLACK));
         editName.setOnAction(e -> {
@@ -650,7 +660,7 @@ public class Main extends Application{
 
         Label id = createLabel("ID: " + bus.getID(), 0, 0, 30, Color.BLACK, 400);
         Button editId = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
-        editId.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
+        editId.getStyleClass().add("editButton");
         editId.setOnMouseEntered(e -> editId.setTextFill(Color.RED));
         editId.setOnMouseExited(e -> editId.setTextFill(Color.BLACK));
         editId.setOnAction(e -> {
@@ -665,7 +675,7 @@ public class Main extends Application{
 
         Label numPassengers = createLabel("Number of Passengers: " + bus.getNumPassengers(), 0, 0, 30, Color.BLACK, 400);
         Button editNumPassengers = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
-        editNumPassengers.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
+        editNumPassengers.getStyleClass().add("editButton");
         editNumPassengers.setOnMouseEntered(e -> editNumPassengers.setTextFill(Color.RED));
         editNumPassengers.setOnMouseExited(e -> editNumPassengers.setTextFill(Color.BLACK));
         editNumPassengers.setOnAction(e -> {
@@ -680,7 +690,7 @@ public class Main extends Application{
 
         Label avgSpeed = createLabel("Average Speed: " + bus.getAvgSpeed(), 0, 0, 30, Color.BLACK, 400);
         Button editAvgSpeed = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
-        editAvgSpeed.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
+        editAvgSpeed.getStyleClass().add("editButton");
         editAvgSpeed.setOnMouseEntered(e -> editAvgSpeed.setTextFill(Color.RED));
         editAvgSpeed.setOnMouseExited(e -> editAvgSpeed.setTextFill(Color.BLACK));
         editAvgSpeed.setOnAction(e -> {
@@ -708,7 +718,7 @@ public class Main extends Application{
         }
 
         Button routeEdit = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
-        routeEdit.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
+        routeEdit.getStyleClass().add("editButton");
         routeEdit.setContextMenu(routeMenu);
 
         Label currStop = createLabel("Current Stop: " + bus.getCurrStop().getName(), 0, 0, 30, Color.BLACK, 300);
@@ -734,6 +744,7 @@ public class Main extends Application{
         gridPane.setVgap(30);
 
         Scene scene = new Scene(gridPane, globalWidth, globalHeight);
+        scene.getStylesheets().add(getClass().getResource("styles/main.css").toExternalForm());
         return scene;
     }
 
@@ -903,7 +914,7 @@ public class Main extends Application{
         Button startButton = new Button(name);
         startButton.setFont(new Font(size));
         startButton.setTextFill(c);
-        startButton.setStyle("-fx-background-color: transparent;");
+        startButton.getStyleClass().add("buttons");
         startButton.setPrefWidth(width);
         startButton.setPrefHeight(height);
         startButton.setLayoutX(x);
