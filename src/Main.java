@@ -318,7 +318,7 @@ public class Main extends Application{
         busList.setOnMouseEntered(e -> busList.setTextFill(Color.RED));
         busList.setOnMouseExited(e -> busList.setTextFill(Color.BLACK));
         busList.setOnAction(e -> {
-            window.setScene(getBusListScene(window));
+            window.setScene(getListScene(window, "Bus"));
         });
 
         ImageView modelBus = createImage("bus_icon.PNG", 220, 10, 125, 50);
@@ -333,7 +333,7 @@ public class Main extends Application{
         routeList.setOnMouseEntered(e -> routeList.setTextFill(Color.RED));
         routeList.setOnMouseExited(e -> routeList.setTextFill(Color.BLACK));
         routeList.setOnAction(e -> {
-            window.setScene(getRouteListScene(window));
+            window.setScene(getListScene(window, "Route"));
         });
 
         ImageView modelRoute = createImage("modelRoute.PNG", 220, 10, 150, 60);
@@ -345,7 +345,7 @@ public class Main extends Application{
         stopList.setOnMouseEntered(e -> stopList.setTextFill(Color.RED));
         stopList.setOnMouseExited(e -> stopList.setTextFill(Color.BLACK));
         stopList.setOnAction(e -> {
-            window.setScene(getStopListScene(window));
+            window.setScene(getListScene(window, "Stop"));
         });
 
         Line stopHolder = new Line(0, 0, 0, 0);
@@ -535,7 +535,7 @@ public class Main extends Application{
         }
     }
 
-    public Scene getBusListScene(Stage window) {
+    public Scene getListScene(Stage window, String type) {
         VBox vbox = new VBox(10);
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
@@ -546,85 +546,49 @@ public class Main extends Application{
             window.setScene(getMainScreen(window));
         });
 
-        Iterator<Bus> iter = buses.iterator();
-        while (iter.hasNext()) {
-            Bus currBus = iter.next();
-            Button busButton = createButton(0, 0, 500,100,Color.BLACK, currBus.getName(), 30);
-            busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.RED));
-            busButton.setOnMouseExited(e -> busButton.setTextFill(Color.BLACK));
-            busButton.setOnAction(e -> {
-                window.setScene(getBusScene(currBus, window));
-            });
-            vbox.getChildren().add(busButton);
+        if (type.equals("Bus")) {
+            Iterator<Bus> iter = buses.iterator();
+            while (iter.hasNext()) {
+                Bus currBus = iter.next();
+                Button busButton = createButton(0, 0, 500,100,Color.BLACK, currBus.getName(), 30);
+                busButton.getStyleClass().add("listButton");
+                busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.RED));
+                busButton.setOnMouseExited(e -> busButton.setTextFill(Color.BLACK));
+                busButton.setOnAction(e -> {
+                    window.setScene(getBusScene(currBus, window));
+                });
+                vbox.getChildren().add(busButton);
+            }
+        } else if (type.equals("Route")) {
+            Iterator<Route> iter = routes.iterator();
+            while (iter.hasNext()) {
+                Route currRoute = iter.next();
+                Button routeButton = createButton(0, 0, 500,100,Color.BLACK, currRoute.getName(), 30);
+                routeButton.getStyleClass().add("listButton");
+                routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.RED));
+                routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.BLACK));
+                routeButton.setOnAction(e -> {
+                    window.setScene(getRouteScene(currRoute, window));
+                });
+                vbox.getChildren().add(routeButton);
+            }
+        } else {
+            Iterator<Stop> iter = stops.iterator();
+            while (iter.hasNext()) {
+                Stop currStop = iter.next();
+                Button stopButton = createButton(0, 0, 500,100,Color.BLACK, currStop.getName(), 30);
+                stopButton.getStyleClass().add("listButton");
+                stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.RED));
+                stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.BLACK));
+                stopButton.setOnAction(e -> {
+                    window.setScene(getStopScene(currStop, window));
+                });
+                vbox.getChildren().add(stopButton);
+            }
         }
 
         vbox.getChildren().add(exit);
-        vbox.setPadding(new Insets(50, 50, 50, 50));
-
-        ScrollPane scroll = new ScrollPane(vbox);
-        Scene scene = new Scene(scroll, globalWidth, globalHeight);
-        scene.getStylesheets().add("styles/main.css");
-        return scene;
-    }
-
-    public Scene getRouteListScene(Stage window) {
-        VBox vbox = new VBox(10);
-
-        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
-        exit.getStyleClass().add("exitButton");
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
-        exit.setOnAction(e -> {
-            window.setScene(getMainScreen(window));
-        });
-
-        Iterator<Route> iter = routes.iterator();
-        while (iter.hasNext()) {
-            Route currRoute = iter.next();
-            Button routeButton = createButton(0, 0, 500,100,Color.BLACK, currRoute.getName(), 30);
-            routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.RED));
-            routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.BLACK));
-            routeButton.setOnAction(e -> {
-                window.setScene(getRouteScene(currRoute, window));
-            });
-            vbox.getChildren().add(routeButton);
-        }
-
-        vbox.getChildren().add(exit);
-        vbox.setPadding(new Insets(50, 50, 50, 50));
-
-        ScrollPane scroll = new ScrollPane(vbox);
-        Scene scene = new Scene(scroll, globalWidth, globalHeight);
-        scene.getStylesheets().add("styles/main.css");
-        return scene;
-    }
-
-    public Scene getStopListScene(Stage window) {
-        VBox vbox = new VBox(10);
-
-        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
-        exit.getStyleClass().add("exitButton");
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
-        exit.setOnAction(e -> {
-            window.setScene(getMainScreen(window));
-        });
-
-        Iterator<Stop> iter = stops.iterator();
-        while (iter.hasNext()) {
-            Stop currStop = iter.next();
-            Button stopButton = createButton(0, 0, 500,100,Color.BLACK, currStop.getName(), 30);
-            stopButton.setStyle("-fx-alignment: CENTER-LEFT;");
-            stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.RED));
-            stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.BLACK));
-            stopButton.setOnAction(e -> {
-                window.setScene(getStopScene(currStop, window));
-            });
-            vbox.getChildren().add(stopButton);
-        }
-
-        vbox.getChildren().add(exit);
-        vbox.setPadding(new Insets(50, 50, 50, 50));
+        vbox.setPadding(new Insets(50, 50, 50, 100));
 
         ScrollPane scroll = new ScrollPane(vbox);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);

@@ -11,3 +11,7 @@
     -fx-background-color: red;
     -fx-background-radius: 50px;
 }
+
+.listButton {
+    -fx-alignment: CENTER-LEFT;
+}
