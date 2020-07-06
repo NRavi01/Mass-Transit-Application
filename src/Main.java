@@ -71,6 +71,7 @@ public class Main extends Application{
         Label dateChoiceDesc = createLabel("Day: ", globalWidth / 50, globalHeight / 2 + 150, 35, Color.BLACK, 100);
         dateChoiceDesc.setPrefHeight(50);
         ChoiceBox<String> dateChoiceBox = new ChoiceBox<>();
+        dateChoiceBox.getStyleClass().add("choiceBox");
         dateChoiceBox.getItems().addAll("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
         dateChoiceBox.setValue("Sunday");
         dateChoiceBox.setLayoutX(globalWidth / 50 + 100);
@@ -82,6 +83,7 @@ public class Main extends Application{
         timeChoiceDesc.setPrefHeight(50);
 
         ChoiceBox<String> hourChoiceBox = new ChoiceBox<>();
+        hourChoiceBox.getStyleClass().add("choiceBox");
         hourChoiceBox.getItems().addAll("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
         hourChoiceBox.setValue("12");
         hourChoiceBox.setLayoutX(globalWidth / 50 + 100);
@@ -93,6 +95,7 @@ public class Main extends Application{
         timeChoiceDesc.setPrefHeight(50);
 
         ChoiceBox<String> minChoiceBox = new ChoiceBox<>();
+        minChoiceBox.getStyleClass().add("choiceBox");
         minChoiceBox.getItems().addAll("00", "30");
         minChoiceBox.setValue("00");
         minChoiceBox.setLayoutX(globalWidth / 50 + 230);
@@ -101,6 +104,7 @@ public class Main extends Application{
         minChoiceBox.setLayoutY(globalHeight / 2 + 250);
 
         ChoiceBox<String> ampm = new ChoiceBox<>();
+        ampm.getStyleClass().add("choiceBox");
         ampm.getItems().addAll("AM", "PM");
         ampm.setValue("AM");
         ampm.setLayoutX(globalWidth / 50 + 350);

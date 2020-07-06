@@ -57,3 +57,7 @@
 .scroll-pane {
     -fx-background-color: WHITE;
 }
+
+.choiceBox {
+    -fx-background-radius: 50px;
+}
