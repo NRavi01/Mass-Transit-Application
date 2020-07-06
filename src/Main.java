@@ -537,11 +537,13 @@ public class Main extends Application{
     }
 
     public Scene getListScene(Stage window, String type) {
-        VBox vbox = new VBox(10);
+        GridPane gridPane = new GridPane();
 
         Label title = createLabel(type + " List", 0, 0, 50, Color.BLACK, 400);
         title.getStyleClass().add("title");
-        vbox.getChildren().add(title);
+        gridPane.add(title, 0, 0, 1, 1);
+
+        int i = 0;
 
         if (type.equals("Bus")) {
             Iterator<Bus> iter = buses.iterator();
@@ -552,7 +554,8 @@ public class Main extends Application{
                 busButton.setOnAction(e -> {
                     window.setScene(getBusScene(currBus, window));
                 });
-                vbox.getChildren().add(busButton);
+                i++;
+                gridPane.add(busButton, 0, i, 1, 1);
             }
         } else if (type.equals("Route")) {
             Iterator<Route> iter = routes.iterator();
@@ -563,7 +566,8 @@ public class Main extends Application{
                 routeButton.setOnAction(e -> {
                     window.setScene(getRouteScene(currRoute, window));
                 });
-                vbox.getChildren().add(routeButton);
+                i++;
+                gridPane.add(routeButton, 0, i, 1, 1);
             }
         } else {
             Iterator<Stop> iter = stops.iterator();
@@ -574,7 +578,8 @@ public class Main extends Application{
                 stopButton.setOnAction(e -> {
                     window.setScene(getStopScene(currStop, window));
                 });
-                vbox.getChildren().add(stopButton);
+                i++;
+                gridPane.add(stopButton, 0, i, 1, 1);
             }
         }
 
@@ -584,12 +589,11 @@ public class Main extends Application{
             window.setScene(getMainScreen(window));
         });
 
-        vbox.getChildren().add(exit);
-        vbox.setPadding(new Insets(50, 50, 50, 100));
-        vbox.setMargin(title, new Insets(0, 0, 30, 0));
-        vbox.setMargin(exit, new Insets(30, 0, 0, 0));
-
-        ScrollPane scroll = new ScrollPane(vbox);
+        i++;
+        gridPane.add(exit, 0, i, 1, 1);
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setVgap(30);
+        ScrollPane scroll = new ScrollPane(gridPane);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
         scene.getStylesheets().add("styles/main.css");
         return scene;
