@@ -554,8 +554,14 @@ public class Main extends Application{
                 busButton.setOnAction(e -> {
                     window.setScene(getBusScene(currBus, window));
                 });
+                Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
+                delete.setOnAction(e -> {
+                    buses.remove(currBus);
+                    window.setScene(getListScene(window, "Bus"));
+                });
                 i++;
                 gridPane.add(busButton, 0, i, 1, 1);
+                gridPane.add(delete, 1, i, 1, 1);
             }
         } else if (type.equals("Route")) {
             Iterator<Route> iter = routes.iterator();
@@ -566,8 +572,14 @@ public class Main extends Application{
                 routeButton.setOnAction(e -> {
                     window.setScene(getRouteScene(currRoute, window));
                 });
+                Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
+                delete.setOnAction(e -> {
+                    routes.remove(currRoute);
+                    window.setScene(getListScene(window, "Route"));
+                });
                 i++;
                 gridPane.add(routeButton, 0, i, 1, 1);
+                gridPane.add(delete, 1, i, 1, 1);
             }
         } else {
             Iterator<Stop> iter = stops.iterator();
@@ -578,8 +590,14 @@ public class Main extends Application{
                 stopButton.setOnAction(e -> {
                     window.setScene(getStopScene(currStop, window));
                 });
+                Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
+                delete.setOnAction(e -> {
+                    stops.remove(currStop);
+                    window.setScene(getListScene(window, "Stop"));
+                });
                 i++;
                 gridPane.add(stopButton, 0, i, 1, 1);
+                gridPane.add(delete, 1, i, 1, 1);
             }
         }
 
@@ -591,7 +609,7 @@ public class Main extends Application{
 
         i++;
         gridPane.add(exit, 0, i, 1, 1);
-        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setPadding(new Insets(100, 100, 100, 100));
         gridPane.setVgap(30);
         ScrollPane scroll = new ScrollPane(gridPane);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
