@@ -557,7 +557,8 @@ public class Main extends Application{
             vbox.getChildren().add(busButton);
         }
 
-        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        ScrollPane scroll = new ScrollPane(vbox);
+        Scene scene = new Scene(scroll, globalWidth, globalHeight);
         return scene;
     }
 
@@ -585,26 +586,26 @@ public class Main extends Application{
             vbox.getChildren().add(routeButton);
         }
 
-        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        ScrollPane scroll = new ScrollPane(vbox);
+        Scene scene = new Scene(scroll, globalWidth, globalHeight);
         return scene;
     }
 
     public Scene getStopListScene(Stage window) {
         VBox vbox = new VBox(10);
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 50);
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.setStyle("-fx-background-color: red; -fx-background-radius: 50px;");
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
 
-        vbox.getChildren().add(exit);
-
         Iterator<Stop> iter = stops.iterator();
         while (iter.hasNext()) {
             Stop currStop = iter.next();
-            Button stopButton = createButton(0, 0, globalWidth,100,Color.BLACK, currStop.getName(), 30);
+            Button stopButton = createButton(0, 0, 500,100,Color.BLACK, currStop.getName(), 30);
             stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.RED));
             stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.BLACK));
             stopButton.setOnAction(e -> {
@@ -613,7 +614,11 @@ public class Main extends Application{
             vbox.getChildren().add(stopButton);
         }
 
-        Scene scene = new Scene(vbox, globalWidth, globalHeight);
+        vbox.getChildren().add(exit);
+        vbox.setPadding(new Insets(50, 50, 50, 50));
+
+        ScrollPane scroll = new ScrollPane(vbox);
+        Scene scene = new Scene(scroll, globalWidth, globalHeight);
         return scene;
     }
 
@@ -621,15 +626,17 @@ public class Main extends Application{
         GridPane gridPane = new GridPane();
         gridPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        Button exit = createButton(0, 0, globalWidth, 200, Color.BLACK, "Exit", 30);
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.DARKRED));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.BLACK));
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.setStyle("-fx-background-color: red; -fx-background-radius: 50px;");
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
 
-        Label name = createLabel("Name: " + bus.getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
-        Button editName = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        Label name = createLabel("Name: " + bus.getName(), 0, 0, 30, Color.BLACK, 400);
+        Button editName = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
+        editName.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
         editName.setOnMouseEntered(e -> editName.setTextFill(Color.RED));
         editName.setOnMouseExited(e -> editName.setTextFill(Color.BLACK));
         editName.setOnAction(e -> {
@@ -641,8 +648,9 @@ public class Main extends Application{
             name.setText("Name: " + bus.getName());
         });
 
-        Label id = createLabel("ID: " + bus.getID(), 0, 0, 30, Color.BLACK, globalWidth/2);
-        Button editId = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        Label id = createLabel("ID: " + bus.getID(), 0, 0, 30, Color.BLACK, 400);
+        Button editId = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
+        editId.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
         editId.setOnMouseEntered(e -> editId.setTextFill(Color.RED));
         editId.setOnMouseExited(e -> editId.setTextFill(Color.BLACK));
         editId.setOnAction(e -> {
@@ -655,8 +663,9 @@ public class Main extends Application{
             id.setText("ID: " + bus.getID());
         });
 
-        Label numPassengers = createLabel("Number of Passengers: " + bus.getNumPassengers(), 0, 0, 30, Color.BLACK, globalWidth/2);
-        Button editNumPassengers = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        Label numPassengers = createLabel("Number of Passengers: " + bus.getNumPassengers(), 0, 0, 30, Color.BLACK, 400);
+        Button editNumPassengers = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
+        editNumPassengers.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
         editNumPassengers.setOnMouseEntered(e -> editNumPassengers.setTextFill(Color.RED));
         editNumPassengers.setOnMouseExited(e -> editNumPassengers.setTextFill(Color.BLACK));
         editNumPassengers.setOnAction(e -> {
@@ -669,8 +678,9 @@ public class Main extends Application{
             numPassengers.setText("Number of Passengers: " + bus.getNumPassengers());
         });
 
-        Label avgSpeed = createLabel("Average Speed: " + bus.getAvgSpeed(), 0, 0, 30, Color.BLACK, globalWidth/2);
-        Button editAvgSpeed = createButton(0,0, globalWidth/3, 50, Color.BLACK, "Edit", 30);
+        Label avgSpeed = createLabel("Average Speed: " + bus.getAvgSpeed(), 0, 0, 30, Color.BLACK, 400);
+        Button editAvgSpeed = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
+        editAvgSpeed.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
         editAvgSpeed.setOnMouseEntered(e -> editAvgSpeed.setTextFill(Color.RED));
         editAvgSpeed.setOnMouseExited(e -> editAvgSpeed.setTextFill(Color.BLACK));
         editAvgSpeed.setOnAction(e -> {
@@ -680,10 +690,10 @@ public class Main extends Application{
             String newAVGString = td.getEditor().getText();
             double newNP = Double.parseDouble(newAVGString);
             bus.setAvgSpeed(newNP);
-            numPassengers.setText("Average Speed: " + bus.getAvgSpeed());
+            avgSpeed.setText("Average Speed: " + bus.getAvgSpeed());
         });
 
-        Label route = createLabel("Route: " + bus.getRoute().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
+        Label route = createLabel("Route: " + bus.getRoute().getName(), 0, 0, 30, Color.BLACK, 400);
 
         ContextMenu routeMenu = new ContextMenu();
         Iterator<Route> routeIterator = routes.iterator();
@@ -697,27 +707,31 @@ public class Main extends Application{
             routeMenu.getItems().add(item);
         }
 
-        Label routeEdit = createLabel("Edit", 0, 0, 30, Color.BLACK, globalWidth/2);
+        Button routeEdit = createButton(0,0, 100, 30, Color.BLACK, "Edit", 30);
+        routeEdit.setStyle("-fx-background-color: pink; -fx-background-radius: 50px;");
         routeEdit.setContextMenu(routeMenu);
 
-        Label currStop = createLabel("Current Stop: " + bus.getCurrStop().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
-        Label nextStop = createLabel("Next Stop: " + bus.getNextStop().getName(), 0, 0, 30, Color.BLACK, globalWidth/2);
-        Label location = createLabel("Location: " + bus.getLocation().x + ", " + bus.getLocation().y, 0, 0, 30, Color.BLACK, globalWidth/2);
+        Label currStop = createLabel("Current Stop: " + bus.getCurrStop().getName(), 0, 0, 30, Color.BLACK, 300);
+        Label nextStop = createLabel("Next Stop: " + bus.getNextStop().getName(), 0, 0, 30, Color.BLACK, 300);
+        Label location = createLabel("Location: " + bus.getLocation().x + ", " + bus.getLocation().y, 0, 0, 30, Color.BLACK, 300);
 
-        gridPane.add(exit,1,0,1,1 );
-        gridPane.add(name, 0, 1, 1, 1);
-        gridPane.add(editName, 1, 1, 1, 1 );
-        gridPane.add(id, 0, 2, 1,1);
-        gridPane.add(editId, 1, 2, 1,1 );
-        gridPane.add(numPassengers,0, 3, 1, 1 );
-        gridPane.add(editNumPassengers,1,3,1, 1 );
-        gridPane.add(avgSpeed,0, 4, 1, 1 );
-        gridPane.add(editAvgSpeed,1,4,1, 1 );
-        gridPane.add(route, 0, 5, 1, 1);
-        gridPane.add(routeEdit, 1, 5, 1, 1);
-        gridPane.add(currStop, 0, 6, 1, 1);
-        gridPane.add(nextStop, 0, 7, 1, 1);
-        gridPane.add(location,0,8,1,1 );
+        gridPane.add(name, 0, 0, 1, 1);
+        gridPane.add(editName, 1, 0, 1, 1);
+        gridPane.add(id, 0, 1, 1,1);
+        gridPane.add(editId, 1, 1, 1,1);
+        gridPane.add(numPassengers,0, 2, 1, 1);
+        gridPane.add(editNumPassengers,1,2,1, 1);
+        gridPane.add(avgSpeed,0, 3, 1, 1);
+        gridPane.add(editAvgSpeed,1,3,1, 1);
+        gridPane.add(route, 0, 4, 1, 1);
+        gridPane.add(routeEdit, 1, 4, 1, 1);
+        gridPane.add(currStop, 0, 5, 1, 1);
+        gridPane.add(nextStop, 0, 6, 1, 1);
+        gridPane.add(location,0,7,1,1);
+        gridPane.add(exit,0,8,1,1);
+
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setVgap(30);
 
         Scene scene = new Scene(gridPane, globalWidth, globalHeight);
         return scene;
