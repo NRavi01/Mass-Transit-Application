@@ -2,6 +2,10 @@
     -fx-background-color: transparent;
 }
 
+.title {
+    -fx-font-weight: bold;
+}
+
 .editButton {
     -fx-background-color: pink;
     -fx-background-radius: 50px;
@@ -14,4 +18,5 @@
 
 .listButton {
     -fx-alignment: CENTER-LEFT;
+    -fx-background-color: green;
 }

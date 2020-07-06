@@ -127,7 +127,7 @@ public class Main extends Application{
             for (int i = 0; i < 6; i ++) {
                 Collection<Stop> tempStops = new ArrayList<>();
                 for (int j = 0; j < 10; j++) {
-                    Stop tempStop = new Stop("stop", (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
+                    Stop tempStop = new Stop("Stop " + ((int) (Math.random() * 100)), (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
                     tempStops.add(tempStop);
                     System.out.println("stop" + tempStop.getLocation());
                 }
@@ -153,7 +153,7 @@ public class Main extends Application{
                 else {
                     routeColor = Color.YELLOW;
                 }
-                Route route = new Route("route", 1, tempStops, routeColor);
+                Route route = new Route("Route " + ((int) (Math.random() * 100)), 1, tempStops, routeColor);
                 routes.add(route);
                 Iterator<Stop> iter = route.getStops().iterator();
                 Stop stop1 = iter.next();
@@ -161,7 +161,7 @@ public class Main extends Application{
                 int x = (int) (stop1.getLocation().getX() + stop2.getLocation().getX()) / 2;
                 int y = (int) (stop1.getLocation().getY() + stop2.getLocation().getY()) / 2;
                 Point startingLoc = new Point(x - 30, y - 20);
-                Bus newBus = new Bus("Bus", (int) (Math.random() * 100) , 10, 10, route, stop1, stop2, startingLoc);
+                Bus newBus = new Bus("Bus " + ((int) (Math.random() * 100)), (int) (Math.random() * 100) , 10, 10, route, stop1, stop2, startingLoc);
                 buses.add(newBus);
                 System.out.println("bus" + newBus.getLocation());
                 stops = tempStops;
@@ -538,22 +538,18 @@ public class Main extends Application{
     public Scene getListScene(Stage window, String type) {
         VBox vbox = new VBox(10);
 
-        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
-        exit.getStyleClass().add("exitButton");
-        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
-        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
-        exit.setOnAction(e -> {
-            window.setScene(getMainScreen(window));
-        });
+        Label title = createLabel(type + " List", 0, 0, 50, Color.BLACK, 400);
+        title.getStyleClass().add("title");
+        vbox.getChildren().add(title);
 
         if (type.equals("Bus")) {
             Iterator<Bus> iter = buses.iterator();
             while (iter.hasNext()) {
                 Bus currBus = iter.next();
-                Button busButton = createButton(0, 0, 500,100,Color.BLACK, currBus.getName(), 30);
+                Button busButton = createButton(0, 0, 500,100,Color.WHITE, currBus.getName(), 30);
                 busButton.getStyleClass().add("listButton");
-                busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.RED));
-                busButton.setOnMouseExited(e -> busButton.setTextFill(Color.BLACK));
+                busButton.setOnMouseEntered(e -> busButton.setTextFill(Color.BLACK));
+                busButton.setOnMouseExited(e -> busButton.setTextFill(Color.WHITE));
                 busButton.setOnAction(e -> {
                     window.setScene(getBusScene(currBus, window));
                 });
@@ -563,10 +559,10 @@ public class Main extends Application{
             Iterator<Route> iter = routes.iterator();
             while (iter.hasNext()) {
                 Route currRoute = iter.next();
-                Button routeButton = createButton(0, 0, 500,100,Color.BLACK, currRoute.getName(), 30);
+                Button routeButton = createButton(0, 0, 500,100,Color.WHITE, currRoute.getName(), 30);
                 routeButton.getStyleClass().add("listButton");
-                routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.RED));
-                routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.BLACK));
+                routeButton.setOnMouseEntered(e -> routeButton.setTextFill(Color.BLACK));
+                routeButton.setOnMouseExited(e -> routeButton.setTextFill(Color.WHITE));
                 routeButton.setOnAction(e -> {
                     window.setScene(getRouteScene(currRoute, window));
                 });
@@ -576,10 +572,10 @@ public class Main extends Application{
             Iterator<Stop> iter = stops.iterator();
             while (iter.hasNext()) {
                 Stop currStop = iter.next();
-                Button stopButton = createButton(0, 0, 500,100,Color.BLACK, currStop.getName(), 30);
+                Button stopButton = createButton(0, 0, 500,100,Color.WHITE, currStop.getName(), 30);
                 stopButton.getStyleClass().add("listButton");
-                stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.RED));
-                stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.BLACK));
+                stopButton.setOnMouseEntered(e -> stopButton.setTextFill(Color.BLACK));
+                stopButton.setOnMouseExited(e -> stopButton.setTextFill(Color.WHITE));
                 stopButton.setOnAction(e -> {
                     window.setScene(getStopScene(currStop, window));
                 });
@@ -587,8 +583,18 @@ public class Main extends Application{
             }
         }
 
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnMouseEntered(e -> exit.setTextFill(Color.BLACK));
+        exit.setOnMouseExited(e -> exit.setTextFill(Color.WHITE));
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(window));
+        });
+
         vbox.getChildren().add(exit);
         vbox.setPadding(new Insets(50, 50, 50, 100));
+        vbox.setMargin(title, new Insets(0, 0, 30, 0));
+        vbox.setMargin(exit, new Insets(30, 0, 0, 0));
 
         ScrollPane scroll = new ScrollPane(vbox);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
