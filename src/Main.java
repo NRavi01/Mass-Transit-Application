@@ -619,6 +619,20 @@ public class Main extends Application{
         return scene;
     }
 
+    /*
+    public Scene addBusScene(Bus bus, Stage window) {
+
+    }
+
+    public Scene addRouteScene(Route route, Stage window) {
+
+    }
+
+    public Scene addStopScene(Stop stop, Stage window) {
+
+    }
+    */
+
     public Scene getBusScene(Bus bus, Stage window) {
         GridPane gridPane = new GridPane();
         gridPane.getStyleClass().add("grid");
