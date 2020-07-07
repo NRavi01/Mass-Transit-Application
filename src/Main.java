@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -611,11 +612,9 @@ public class Main extends Application{
         add.setOnAction(e -> {
             if (type.equals("Bus")) {
                 window.setScene(addBusScene(window));
-            }
-//            else if (type.equals("Route")) {
-//                window.setScene(addRouteScene(window));
-//            }
-            else {
+            } else if (type.equals("Route")) {
+                window.setScene(addRouteScene(window));
+            } else {
                 window.setScene(addStopScene(window));
             }
 
@@ -762,91 +761,85 @@ public class Main extends Application{
     }
 
 
-//    public Scene addRouteScene(Route route, Stage window) {
-//        GridPane gridPane = new GridPane();
-//
-//        Label title = createLabel("Add a New Route", 0, 0, 50, Color.BLACK, 400);
-//        title.getStyleClass().add("title");
-//
-//        Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
-//        exit.getStyleClass().add("exitButton");
-//        exit.setOnAction(e -> {
-//            window.setScene(getListScene(window, "Route"));
-//        });
-//
-//        Label name = createLabel("Name:", 0, 0, 30, Color.BLACK, 400);
-//        TextField nameTF = new TextField();
-//
-//        Label id = createLabel("ID:", 0, 0, 30, Color.BLACK, 400);
-//        TextField idTF = new TextField();
-//
-//        Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
-//
-//        submit.setOnAction(e -> {
-//            try {
-//                String busName = nameTF.getText();
-//                int busID = Integer.parseInt(idTF.getText());
-//                Route busCurrRoute = routeChoiceBox.getValue();
-//                Stop busCurrStop = stopChoiceBox.getValue();
-//                Collection<Stop> stops = busCurrRoute.getStops();
-//                Iterator<Stop> iter = stops.iterator();
-//                Stop busNextStop = iter.next();
-//                Stop curr = busNextStop;
-//                boolean found = false;
-//                while (!found && iter.hasNext()) {
-//                    if (curr.getName().equals(busCurrRoute.getName())) {
-//                        found = true;
-//                    } else {
-//                        curr = iter.next();
-//                    }
-//                }
-//                if (iter.hasNext()) {
-//                    busNextStop = iter.next();
-//                } else {
-//
-//                }
-//                int busNumPassengers = Integer.parseInt(passengerTF.getText());
-//                int busInitFuel = Integer.parseInt(initFuelTF.getText());
-//                int busFuelCap = Integer.parseInt(fuelCapTF.getText());
-//                double busSpeed = Double.parseDouble(speedTF.getText());
-//
-//
-//                buses.add(new Bus(busName, busID, busNumPassengers, busSpeed, busCurrRoute, busCurrStop, busNextStop, busCurrStop.getLocation(),
-//                        busInitFuel, busFuelCap));
-//                window.setScene(getListScene(window, "Bus"));
-//            } catch (Exception exception) {
-//                JOptionPane.showMessageDialog(new JFrame(), "Invalid Value(s)" , "Bad Arguments",
-//                        JOptionPane.ERROR_MESSAGE);
-//            }
-//        });
-//
-//        gridPane.add(title, 0, 0, 1, 1);
-//        gridPane.add(name, 0, 1, 1, 1);
-//        gridPane.add(nameTF, 1, 1, 1, 1);
-//        gridPane.add(id, 0, 2, 1,1);
-//        gridPane.add(idTF, 1, 2, 1,1);
-//        gridPane.add(numPassengers,0, 3, 1, 1);
-//        gridPane.add(passengerTF,1,3,1, 1);
-//        gridPane.add(speed,0, 4, 1, 1);
-//        gridPane.add(speedTF,1,4,1, 1);
-//        gridPane.add(route, 0, 5, 1, 1);
-//        gridPane.add(routeChoiceBox, 1, 5, 1, 1);
-//        gridPane.add(currStop, 0, 6, 1, 1);
-//        gridPane.add(stopChoiceBox, 1, 6, 1, 1);
-//        gridPane.add(initalFuel,0,8,1,1);
-//        gridPane.add(initFuelTF,1,8,1,1);
-//        gridPane.add(fuelCapacity,0,9,1,1);
-//        gridPane.add(fuelCapTF,1,9,1,1);
-//        gridPane.add(exit,0,10,1,1);
-//        gridPane.add(submit,1,10,1,1);
-//
-//        gridPane.setPadding(new Insets(50, 50, 50, 50));
-//        gridPane.setVgap(30);
-//
-//        Scene scene = new Scene(gridPane, globalWidth, globalHeight);
-//        scene.getStylesheets().add("styles/main.css");
-//        return scene;
-//    }
+    public Scene addRouteScene(Stage window) {
+        GridPane gridPane = new GridPane();
+
+        Label title = createLabel("Add a New Route", 0, 0, 50, Color.BLACK, 400);
+        title.getStyleClass().add("title");
+
+        Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnAction(e -> {
+            window.setScene(getListScene(window, "Route"));
+        });
+
+        Label name = createLabel("Name:", 0, 0, 30, Color.BLACK, 400);
+        TextField nameTF = new TextField();
+
+        Label id = createLabel("ID:", 0, 0, 30, Color.BLACK, 400);
+        TextField idTF = new TextField();
+
+        Label stopLab = createLabel("Stops:", 0, 0, 30, Color.BLACK, 400);
+        ListView stopChoices = new ListView();
+        stopChoices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        Iterator<Stop> iter = stops.iterator();
+        while (iter.hasNext()) {
+            stopChoices.getItems().add(iter.next().getName());
+        }
+
+        Label colorLab = createLabel("Color:", 0, 0, 30, Color.BLACK, 400);
+        ColorPicker pickColor = new ColorPicker();
+
+        Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
+
+        submit.setOnAction(e -> {
+            try {
+                String routeName = nameTF.getText();
+                int routeID = Integer.parseInt(idTF.getText());
+
+                Collection<Stop> routeStops = new ArrayList<>();
+                ObservableList<Integer> selectedIndices = stopChoices.getSelectionModel().getSelectedIndices();
+
+                int i = 0;
+                Iterator<Stop> stopIter = stops.iterator();
+                while (stopIter.hasNext()) {
+                    Stop currStop = stopIter.next();
+                    if (selectedIndices.contains(i)) {
+                        routeStops.add(currStop);
+                    }
+                    i++;
+                }
+
+                Color color = pickColor.getValue();
+
+                routes.add(new Route(routeName, routeID, routeStops, color));
+                window.setScene(getListScene(window, "Route"));
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(new JFrame(), "Invalid Value(s)" , "Bad Arguments",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        gridPane.add(title, 0, 0, 1, 1);
+        gridPane.add(name, 0, 1, 1, 1);
+        gridPane.add(nameTF, 1, 1, 1, 1);
+        gridPane.add(id, 0, 2, 1,1);
+        gridPane.add(idTF, 1, 2, 1,1);
+        gridPane.add(stopLab,0, 3, 1, 1);
+        gridPane.add(stopChoices,1,3,1, 1);
+        gridPane.add(colorLab,0, 4, 1, 1);
+        gridPane.add(pickColor,1,4,1, 1);
+        gridPane.add(exit, 0, 5, 1, 1);
+        gridPane.add(submit, 1, 5, 1, 1);
+
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setVgap(30);
+
+        Scene scene = new Scene(gridPane, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
+        return scene;
+    }
 
     public Scene addStopScene(Stage window) {
         GridPane gridPane = new GridPane();
