@@ -23,4 +23,8 @@ public abstract class SimulationObject {
     public void setID(int id) {
         this.id = id;
     }
+
+    public String toString() {
+        return this.getName();
+    }
 }

@@ -9,9 +9,11 @@ public class Bus extends SimulationObject {
     private Stop nextStop;
     private Point location;
     private Point screenLocation;
+    private int currFuel;
+    private int fuelCapacity;
 
     public Bus(String name, int id, int numPassengers, double avgSpeed,
-               Route route, Stop currStop, Stop nextStop, Point location) {
+               Route route, Stop currStop, Stop nextStop, Point location, int currFuel, int fuelCapacity) {
         super(name, id);
         this.numPassengers = numPassengers;
         this.avgSpeed = avgSpeed;
@@ -20,6 +22,8 @@ public class Bus extends SimulationObject {
         this.nextStop = nextStop;
         this.location = location;
         this.screenLocation = location;
+        this.currFuel = currFuel;
+        this.fuelCapacity = fuelCapacity;
     }
 
     public void setLocation(Point p) {
@@ -76,5 +80,21 @@ public class Bus extends SimulationObject {
 
     public void setNextStop(Stop nextStop) {
         this.nextStop = nextStop;
+    }
+
+    public int getCurrFuel() {
+        return currFuel;
+    }
+
+    public void setCurrFuel(int currFuel) {
+        this.currFuel = currFuel;
+    }
+
+    public int getFuelCapacity() {
+        return fuelCapacity;
+    }
+
+    public void setFuelCapacity(int fuelCapacity) {
+        this.fuelCapacity = fuelCapacity;
     }
 }
