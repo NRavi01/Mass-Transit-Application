@@ -606,10 +606,12 @@ public class Main extends Application{
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
+        Button add = createButton(0,0,200,50,Color.BLACK, "Add " + type, 25);
 
         i++;
         gridPane.add(exit, 0, i, 1, 1);
-        gridPane.setPadding(new Insets(100, 100, 100, 100));
+        gridPane.add(add, 1,i,1,1);
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
         gridPane.setVgap(30);
         ScrollPane scroll = new ScrollPane(gridPane);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
