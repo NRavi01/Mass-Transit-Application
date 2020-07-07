@@ -1,9 +1,9 @@
-.buttons {
-    -fx-background-color: transparent;
+.root {
+    -fx-background-color: white;
 }
 
-.title {
-    -fx-font-weight: bold;
+.buttons {
+    -fx-background-color: transparent;
 }
 
 .editButton {
@@ -23,6 +23,36 @@
 }
 
 .exitButton:hover {
+    -fx-text-fill: BLACK;
+}
+
+.addButton {
+    -fx-background-color: aqua;
+    -fx-background-radius: 50px;
+    -fx-text-fill: WHITE;
+}
+
+.addButton:hover {
+    -fx-text-fill: BLACK;
+}
+
+.deleteButton {
+    -fx-background-color: darkred;
+    -fx-text-fill: WHITE;
+    -fx-background-radius: 5px;
+}
+
+.deletButton:hover {
+    -fx-text-fill: BLACK;
+}
+
+.submitButton {
+    -fx-background-color: limegreen;
+    -fx-background-radius: 50px;
+    -fx-text-fill: WHITE;
+}
+
+.submitButton:hover {
     -fx-text-fill: BLACK;
 }
 

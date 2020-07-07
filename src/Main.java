@@ -542,8 +542,8 @@ public class Main extends Application{
         GridPane gridPane = new GridPane();
 
         Label title = createLabel(type + " List", 0, 0, 50, Color.BLACK, 400);
-        title.getStyleClass().add("title");
-        gridPane.add(title, 0, 0, 1, 1);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
+        gridPane.add(title, 0, 0, 2, 1);
 
         int i = 0;
 
@@ -551,12 +551,14 @@ public class Main extends Application{
             Iterator<Bus> iter = buses.iterator();
             while (iter.hasNext()) {
                 Bus currBus = iter.next();
-                Button busButton = createButton(0, 0, 400,100,Color.BLACK, currBus.getName(), 30);
+                Button busButton = createButton(0, 0, 300,100,Color.BLACK, currBus.getName(), 30);
                 busButton.getStyleClass().add("listButton");
                 busButton.setOnAction(e -> {
                     window.setScene(getBusScene(currBus, window));
                 });
                 Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
+                delete.getStyleClass().add("deleteButton");
+                delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
                 delete.setOnAction(e -> {
                     buses.remove(currBus);
                     window.setScene(getListScene(window, "Bus"));
@@ -569,12 +571,14 @@ public class Main extends Application{
             Iterator<Route> iter = routes.iterator();
             while (iter.hasNext()) {
                 Route currRoute = iter.next();
-                Button routeButton = createButton(0, 0, 400,100,Color.BLACK, currRoute.getName(), 30);
+                Button routeButton = createButton(0, 0, 300,100,Color.BLACK, currRoute.getName(), 30);
                 routeButton.getStyleClass().add("listButton");
                 routeButton.setOnAction(e -> {
                     window.setScene(getRouteScene(currRoute, window));
                 });
                 Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
+                delete.getStyleClass().add("deleteButton");
+                delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
                 delete.setOnAction(e -> {
                     routes.remove(currRoute);
                     window.setScene(getListScene(window, "Route"));
@@ -587,12 +591,14 @@ public class Main extends Application{
             Iterator<Stop> iter = stops.iterator();
             while (iter.hasNext()) {
                 Stop currStop = iter.next();
-                Button stopButton = createButton(0, 0, 400,100,Color.BLACK, currStop.getName(), 30);
+                Button stopButton = createButton(0, 0, 300,100,Color.BLACK, currStop.getName(), 30);
                 stopButton.getStyleClass().add("listButton");
                 stopButton.setOnAction(e -> {
                     window.setScene(getStopScene(currStop, window));
                 });
                 Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
+                delete.getStyleClass().add("deleteButton");
+                delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
                 delete.setOnAction(e -> {
                     stops.remove(currStop);
                     window.setScene(getListScene(window, "Stop"));
@@ -608,7 +614,8 @@ public class Main extends Application{
         exit.setOnAction(e -> {
             window.setScene(getMainScreen(window));
         });
-        Button add = createButton(0,0,200,50,Color.BLACK, "Add " + type, 25);
+        Button add = createButton(0,0,175,50,Color.BLACK, "Add " + type, 25);
+        add.getStyleClass().add("addButton");
         add.setOnAction(e -> {
             if (type.equals("Bus")) {
                 window.setScene(addBusScene(window));
@@ -621,10 +628,14 @@ public class Main extends Application{
         });
 
         i++;
-        gridPane.add(exit, 0, i, 1, 1);
-        gridPane.add(add, 1,i,1,1);
+
+        HBox hbox = new HBox(10);
+        hbox.getChildren().addAll(exit, add);
+        gridPane.add(hbox, 0, i, 2, 1);
+
         gridPane.setPadding(new Insets(50, 50, 50, 50));
         gridPane.setVgap(30);
+        gridPane.setHgap(10);
         ScrollPane scroll = new ScrollPane(gridPane);
         Scene scene = new Scene(scroll, globalWidth, globalHeight);
         scene.getStylesheets().add("styles/main.css");
@@ -634,8 +645,8 @@ public class Main extends Application{
     public Scene addBusScene(Stage window) {
         GridPane gridPane = new GridPane();
 
-        Label title = createLabel("Add a New Bus", 0, 0, 50, Color.BLACK, 400);
-        title.getStyleClass().add("title");
+        Label title = createLabel("Add a New Bus", 0, 0, 50, Color.BLACK, 500);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
         Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
         exit.getStyleClass().add("exitButton");
@@ -693,6 +704,7 @@ public class Main extends Application{
         TextField speedTF = new TextField();
 
         Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
+        submit.getStyleClass().add("submitButton");
 
         submit.setOnAction(e -> {
            try {
@@ -732,7 +744,7 @@ public class Main extends Application{
            }
         });
 
-        gridPane.add(title, 0, 0, 1, 1);
+        gridPane.add(title, 0, 0, 2, 1);
         gridPane.add(name, 0, 1, 1, 1);
         gridPane.add(nameTF, 1, 1, 1, 1);
         gridPane.add(id, 0, 2, 1,1);
@@ -749,8 +761,10 @@ public class Main extends Application{
         gridPane.add(initFuelTF,1,8,1,1);
         gridPane.add(fuelCapacity,0,9,1,1);
         gridPane.add(fuelCapTF,1,9,1,1);
-        gridPane.add(exit,0,10,1,1);
-        gridPane.add(submit,1,10,1,1);
+
+        HBox hbox = new HBox(10);
+        hbox.getChildren().addAll(exit, submit);
+        gridPane.add(hbox,0,10,1,1);
 
         gridPane.setPadding(new Insets(50, 50, 50, 50));
         gridPane.setVgap(30);
@@ -764,8 +778,8 @@ public class Main extends Application{
     public Scene addRouteScene(Stage window) {
         GridPane gridPane = new GridPane();
 
-        Label title = createLabel("Add a New Route", 0, 0, 50, Color.BLACK, 400);
-        title.getStyleClass().add("title");
+        Label title = createLabel("Add a New Route", 0, 0, 50, Color.BLACK, 500);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
         Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
         exit.getStyleClass().add("exitButton");
@@ -773,13 +787,13 @@ public class Main extends Application{
             window.setScene(getListScene(window, "Route"));
         });
 
-        Label name = createLabel("Name:", 0, 0, 30, Color.BLACK, 400);
+        Label name = createLabel("Name:", 0, 0, 30, Color.BLACK, 200);
         TextField nameTF = new TextField();
 
-        Label id = createLabel("ID:", 0, 0, 30, Color.BLACK, 400);
+        Label id = createLabel("ID:", 0, 0, 30, Color.BLACK, 200);
         TextField idTF = new TextField();
 
-        Label stopLab = createLabel("Stops:", 0, 0, 30, Color.BLACK, 400);
+        Label stopLab = createLabel("Stops:", 0, 0, 30, Color.BLACK, 200);
         ListView stopChoices = new ListView();
         stopChoices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -788,10 +802,11 @@ public class Main extends Application{
             stopChoices.getItems().add(iter.next().getName());
         }
 
-        Label colorLab = createLabel("Color:", 0, 0, 30, Color.BLACK, 400);
+        Label colorLab = createLabel("Color:", 0, 0, 30, Color.BLACK, 200);
         ColorPicker pickColor = new ColorPicker();
 
         Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
+        submit.getStyleClass().add("submitButton");
 
         submit.setOnAction(e -> {
             try {
@@ -821,7 +836,7 @@ public class Main extends Application{
             }
         });
 
-        gridPane.add(title, 0, 0, 1, 1);
+        gridPane.add(title, 0, 0, 2, 1);
         gridPane.add(name, 0, 1, 1, 1);
         gridPane.add(nameTF, 1, 1, 1, 1);
         gridPane.add(id, 0, 2, 1,1);
@@ -830,8 +845,10 @@ public class Main extends Application{
         gridPane.add(stopChoices,1,3,1, 1);
         gridPane.add(colorLab,0, 4, 1, 1);
         gridPane.add(pickColor,1,4,1, 1);
-        gridPane.add(exit, 0, 5, 1, 1);
-        gridPane.add(submit, 1, 5, 1, 1);
+
+        HBox hbox = new HBox(10);
+        hbox.getChildren().addAll(exit, submit);
+        gridPane.add(hbox,0,5,1,1);
 
         gridPane.setPadding(new Insets(50, 50, 50, 50));
         gridPane.setVgap(30);
@@ -844,8 +861,8 @@ public class Main extends Application{
     public Scene addStopScene(Stage window) {
         GridPane gridPane = new GridPane();
 
-        Label title = createLabel("Add a New Route", 0, 0, 50, Color.BLACK, 400);
-        title.getStyleClass().add("title");
+        Label title = createLabel("Add a Stop", 0, 0, 50, Color.BLACK, 500);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
         Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
         exit.getStyleClass().add("exitButton");
@@ -869,6 +886,7 @@ public class Main extends Application{
         TextField ycoordTF = new TextField();
 
         Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
+        submit.getStyleClass().add("submitButton");
 
         submit.setOnAction(e -> {
             try {
@@ -886,7 +904,7 @@ public class Main extends Application{
             }
         });
 
-        gridPane.add(title, 0, 0, 1, 1);
+        gridPane.add(title, 0, 0, 2, 1);
         gridPane.add(name, 0, 1, 1, 1);
         gridPane.add(nameTF, 1, 1, 1, 1);
         gridPane.add(id, 0, 2, 1,1);
@@ -897,8 +915,10 @@ public class Main extends Application{
         gridPane.add(xcoordTF,1,4,1, 1);
         gridPane.add(ycoord, 0, 5, 1, 1);
         gridPane.add(ycoordTF, 1, 5, 1, 1);
-        gridPane.add(exit, 0, 6, 1, 1);
-        gridPane.add(submit, 1, 6, 1, 1);
+
+        HBox hbox = new HBox(10);
+        hbox.getChildren().addAll(exit, submit);
+        gridPane.add(hbox,0,6,1,1);
 
         gridPane.setPadding(new Insets(50, 50, 50, 50));
         gridPane.setVgap(30);
@@ -913,7 +933,7 @@ public class Main extends Application{
         gridPane.getStyleClass().add("grid");
 
         Label title = createLabel("Bus Info", 0, 0, 50, Color.BLACK, 400);
-        title.getStyleClass().add("title");
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
         exit.getStyleClass().add("exitButton");
@@ -1028,7 +1048,7 @@ public class Main extends Application{
         gridPane.getStyleClass().add("grid");
 
         Label title = createLabel("Route Info", 0, 0, 50, Color.BLACK, 400);
-        title.getStyleClass().add("title");
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
         exit.getStyleClass().add("exitButton");
@@ -1061,6 +1081,8 @@ public class Main extends Application{
             id.setText("ID: " + route.getID());
         });
 
+        Label color = createLabel("Color: " + toHexString(route.getColor()), 0, 0, 30, Color.BLACK, 400);
+
         String stops = "";
         for (Stop stop : route.getStops()) {
             System.out.println(stop.getName());
@@ -1077,8 +1099,9 @@ public class Main extends Application{
         gridPane.add(editName, 1, 1, 1, 1 );
         gridPane.add(id, 0, 2, 1,1);
         gridPane.add(editId, 1, 2, 1,1 );
-        gridPane.add(listStops, 0, 3, 1, 1);
-        gridPane.add(exit,0,4,1,1 );
+        gridPane.add(color, 0, 3, 1, 1);
+        gridPane.add(listStops, 0, 4, 1, 1);
+        gridPane.add(exit,0,5,1,1 );
 
         gridPane.setPadding(new Insets(50, 50, 50, 50));
         gridPane.setVgap(30);
@@ -1093,7 +1116,7 @@ public class Main extends Application{
         gridPane.getStyleClass().add("grid");
 
         Label title = createLabel("Stop Info", 0, 0, 50, Color.BLACK, 400);
-        title.getStyleClass().add("title");
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
         exit.getStyleClass().add("exitButton");
@@ -1205,4 +1228,13 @@ public class Main extends Application{
         return slider;
     }
 
+    private String format(double val) {
+        String in = Integer.toHexString((int) Math.round(val * 255));
+        return in.length() == 1 ? "0" + in : in;
+    }
+
+    public String toHexString(Color value) {
+        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()))
+                .toUpperCase();
+    }
 }
