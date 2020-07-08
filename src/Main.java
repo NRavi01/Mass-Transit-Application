@@ -55,7 +55,9 @@ public class Main extends Application{
 
     private Collection<Bus> buses;
     private Collection<Route> routes;
-    private Collection<Stop> stops;
+    private ArrayList<Stop> stops;
+
+    private int zoomLevel = 1;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -132,11 +134,11 @@ public class Main extends Application{
             routes = new ArrayList<>();
             //For now, fill with random values
             for (int i = 0; i < 6; i ++) {
-                Collection<Stop> tempStops = new ArrayList<>();
-                for (int j = 0; j < 10; j++) {
-                    Stop tempStop = new Stop("Stop " + ((int) (Math.random() * 100)), (int) (Math.random() * 20), 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
+                ArrayList<Stop> tempStops = new ArrayList<>();
+                for (int j = 0; j < 5; j++) {
+                    int stopId = (int) (Math.random() * 20);
+                    Stop tempStop = new Stop("Stop " + stopId, stopId, 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
                     tempStops.add(tempStop);
-                    System.out.println("stop" + tempStop.getLocation());
                 }
                 Color routeColor;
                 if (i == 0) {
@@ -170,7 +172,6 @@ public class Main extends Application{
                 Point startingLoc = new Point(x - 30, y - 20);
                 Bus newBus = new Bus("Bus " + ((int) (Math.random() * 100)), (int) (Math.random() * 100) , 10, 10, route, stop1, stop2, startingLoc, 100, 100);
                 buses.add(newBus);
-                System.out.println("bus" + newBus.getLocation());
                 stops = tempStops;
             }
 
@@ -260,9 +261,11 @@ public class Main extends Application{
         for (int i = 0; i < busImages.size(); i++) {
             msGroup.getChildren().add(busImages.get(i));
         }
+        /*
         for (int i = 0; i < mapLines.size(); i++) {
             msGroup.getChildren().add(mapLines.get(i));
         }
+         */
 
         Circle navigationCenter = new Circle(globalWidth * 3/4 + 200, (int) globalHeight * 54/64, 20, Color.BLACK);
 
@@ -375,11 +378,13 @@ public class Main extends Application{
 
         zoomIn.setOnAction(e -> {
             scaleAll(1);
+            zoomLevel++;
             window.setScene(getMainScreen(window));
         });
 
         zoomOut.setOnAction(e -> {
             scaleAll(-1);
+            zoomLevel--;
             window.setScene(getMainScreen(window));
         });
 
@@ -397,12 +402,20 @@ public class Main extends Application{
         stepForward.setOnMouseExited(e -> stepForward.setGraphic(createImage("stepForwardEmpty.png", (int) stepForward.getLayoutX(), (int) stepForward.getLayoutY(), 60, 60)));
 
         stepForward.setOnAction(e -> {
-            //Code to change simulation states here
+            Iterator<Bus> busIterator = buses.iterator();
+            while(busIterator.hasNext()) {
+                Bus b = busIterator.next();
+                moveBus(b, 50);
+            }
             window.setScene(getMainScreen(window));
         });
 
         stepBackward.setOnAction(e -> {
-
+            Iterator<Bus> busIterator = buses.iterator();
+            while(busIterator.hasNext()) {
+                Bus b = busIterator.next();
+                moveBusBack(b, 50);
+            }
             window.setScene(getMainScreen(window));
         });
 
@@ -449,6 +462,103 @@ public class Main extends Application{
         return scene;
     }
 
+    public void moveBus(Bus b, int distance) {
+        double currentX = b.getLocation().getX();
+        double currentY = b.getLocation().getY();
+        double stopX = b.getNextStop().getLocation().getX();
+        double stopY = b.getNextStop().getLocation().getY();
+        double diffx = stopX - currentX;
+        double diffy = stopY - currentY;
+        double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
+        double angle = Math.atan(diffy / diffx);
+        if (distanceTillStop < Math.abs(distance)) {
+            System.out.println("hi");
+            double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
+            double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
+            double currScreenX = b.getScreenLocation().getX();
+            double currScreenY = b.getScreenLocation().getY();
+            double newScreenX = currScreenX + changeScreenX;
+            double newScreenY = currScreenY + changeScreenY;
+            b.setScreenLocation(b.getNextStop().getScreenLocation());
+            b.setLocation(b.getNextStop().getLocation());
+            b.setCurrStop(b.getNextStop());
+            b.setNextStop(b.getRoute().getNextStop(b.getNextStop()));
+            System.out.println(b.getCurrStop().getScreenLocation());
+            System.out.println(b.getNextStop().getScreenLocation());
+            System.out.println(b.getCurrStop());
+            System.out.println(b.getNextStop());
+        }
+        else {
+            double changeY = Math.abs(Math.sin(angle)) * distance;
+            double changeX = Math.abs(Math.cos(angle)) * distance;
+            if (diffx < 0) {
+                changeX = -changeX;
+            }
+            if (diffy < 0) {
+                changeY = -changeY;
+            }
+            double newX = currentX + changeX;
+            double newY = currentY + changeY;
+            b.setLocation(new Point((int) newX, (int) newY));
+            double changeScreenY = changeY * Math.pow(1.1, zoomLevel);
+            double changeScreenX = changeX * Math.pow(1.1, zoomLevel);
+            double currScreenX = b.getScreenLocation().getX();
+            double currScreenY = b.getScreenLocation().getY();
+            double newScreenX = currScreenX + changeScreenX;
+            double newScreenY = currScreenY + changeScreenY;
+            b.setScreenLocation(new Point((int) newScreenX, (int) newScreenY));
+            System.out.println(diffx + " " + diffy + " " + changeScreenX + " " + changeScreenY);
+        }
+    }
+    public void moveBusBack(Bus b, int distance) {
+        double currentX = b.getLocation().getX();
+        double currentY = b.getLocation().getY();
+        double stopX = b.getCurrStop().getLocation().getX();
+        double stopY = b.getCurrStop().getLocation().getY();
+        double diffx = stopX - currentX;
+        double diffy = stopY - currentY;
+        double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
+        double angle = Math.atan(diffy / diffx);
+        if (distanceTillStop < Math.abs(distance)) {
+            System.out.println("hi");
+            double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
+            double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
+            double currScreenX = b.getScreenLocation().getX();
+            double currScreenY = b.getScreenLocation().getY();
+            double newScreenX = currScreenX + changeScreenX;
+            double newScreenY = currScreenY + changeScreenY;
+            b.setScreenLocation(b.getCurrStop().getScreenLocation());
+            b.setLocation(b.getCurrStop().getLocation());
+            b.setNextStop(b.getCurrStop());
+            b.setCurrStop(b.getRoute().getPrevStop(b.getCurrStop()));
+            System.out.println(b.getCurrStop().getScreenLocation());
+            System.out.println(b.getNextStop().getScreenLocation());
+            System.out.println(b.getCurrStop());
+            System.out.println(b.getNextStop());
+        }
+        else {
+            double changeY = Math.abs(Math.sin(angle)) * distance;
+            double changeX = Math.abs(Math.cos(angle)) * distance;
+            if (diffx < 0) {
+                changeX = -changeX;
+            }
+            if (diffy < 0) {
+                changeY = -changeY;
+            }
+            double newX = currentX + changeX;
+            double newY = currentY + changeY;
+            b.setLocation(new Point((int) newX, (int) newY));
+            double changeScreenY = changeY * Math.pow(1.1, zoomLevel);
+            double changeScreenX = changeX * Math.pow(1.1, zoomLevel);
+            double currScreenX = b.getScreenLocation().getX();
+            double currScreenY = b.getScreenLocation().getY();
+            double newScreenX = currScreenX + changeScreenX;
+            double newScreenY = currScreenY + changeScreenY;
+            b.setScreenLocation(new Point((int) newScreenX, (int) newScreenY));
+            System.out.println(diffx + " " + diffy + " " + changeScreenX + " " + changeScreenY);
+        }
+    }
+
     public void scaleAll(int direction) {
         double scalingFactor = 1.1;
         Iterator<Bus> busIterator = buses.iterator();
@@ -476,7 +586,7 @@ public class Main extends Application{
         ArrayList<Route> newRouteList = new ArrayList<>();
         while(routeIterator.hasNext()){
             Route route = routeIterator.next();
-            Collection<Stop> newStopList = new ArrayList<>();
+            ArrayList<Stop> newStopList = new ArrayList<>();
             Iterator<Stop> iter = route.getStops().iterator();
             for (int i = 0; i < route.getStops().size(); i++) {
                 Stop stop = iter.next();
@@ -520,7 +630,7 @@ public class Main extends Application{
         ArrayList<Route> newRouteList = new ArrayList<>();
         while(routeIterator.hasNext()){
             Route route = routeIterator.next();
-            Collection<Stop> newStopList = new ArrayList<>();
+            ArrayList<Stop> newStopList = new ArrayList<>();
             Iterator<Stop> iter = route.getStops().iterator();
             for (int i = 0; i < route.getStops().size(); i++) {
                 Stop stop = iter.next();
@@ -651,7 +761,7 @@ public class Main extends Application{
         Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
         exit.getStyleClass().add("exitButton");
         exit.setOnAction(e -> {
-           window.setScene(getListScene(window, "Bus"));
+            window.setScene(getListScene(window, "Bus"));
         });
 
         Label name = createLabel("Name:", 0, 0, 30, Color.BLACK, 400);
@@ -668,25 +778,25 @@ public class Main extends Application{
 
         Iterator<Route> rIter = routes.iterator();
         while (rIter.hasNext()) {
-           routeChoiceBox.getItems().add(rIter.next());
+            routeChoiceBox.getItems().add(rIter.next());
         }
 
         routeChoiceBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-           // if the item of the list is changed
-           public void changed(ObservableValue ov, Number value, Number newValue) {
-               stopChoiceBox.getItems().clear();
-               Iterator<Route> rIter = routes.iterator();
-               Route currRoute = rIter.next();
-               int i = 0;
-               while (rIter.hasNext() && i < newValue.intValue()) {
-                   currRoute = rIter.next();
-               }
-               Collection<Stop> listStops = currRoute.getStops();
-               Iterator<Stop> sIter = listStops.iterator();
-               while (sIter.hasNext()) {
-                   stopChoiceBox.getItems().add(sIter.next());
-               }
-           }
+            // if the item of the list is changed
+            public void changed(ObservableValue ov, Number value, Number newValue) {
+                stopChoiceBox.getItems().clear();
+                Iterator<Route> rIter = routes.iterator();
+                Route currRoute = rIter.next();
+                int i = 0;
+                while (rIter.hasNext() && i < newValue.intValue()) {
+                    currRoute = rIter.next();
+                }
+                Collection<Stop> listStops = currRoute.getStops();
+                Iterator<Stop> sIter = listStops.iterator();
+                while (sIter.hasNext()) {
+                    stopChoiceBox.getItems().add(sIter.next());
+                }
+            }
         });
 
         Label currStop = createLabel("Starting Stop:", 0, 0, 30, Color.BLACK, 300);
@@ -707,41 +817,41 @@ public class Main extends Application{
         submit.getStyleClass().add("submitButton");
 
         submit.setOnAction(e -> {
-           try {
-               String busName = nameTF.getText();
-               int busID = Integer.parseInt(idTF.getText());
-               Route busCurrRoute = routeChoiceBox.getValue();
-               Stop busCurrStop = stopChoiceBox.getValue();
-               Collection<Stop> stops = busCurrRoute.getStops();
-               Iterator<Stop> iter = stops.iterator();
-               Stop busNextStop = iter.next();
-               Stop curr = busNextStop;
-               boolean found = false;
-               while (!found && iter.hasNext()) {
-                   if (curr.getName().equals(busCurrRoute.getName())) {
-                       found = true;
-                   } else {
-                       curr = iter.next();
-                   }
-               }
-               if (iter.hasNext()) {
-                   busNextStop = iter.next();
-               } else {
+            try {
+                String busName = nameTF.getText();
+                int busID = Integer.parseInt(idTF.getText());
+                Route busCurrRoute = routeChoiceBox.getValue();
+                Stop busCurrStop = stopChoiceBox.getValue();
+                Collection<Stop> stops = busCurrRoute.getStops();
+                Iterator<Stop> iter = stops.iterator();
+                Stop busNextStop = iter.next();
+                Stop curr = busNextStop;
+                boolean found = false;
+                while (!found && iter.hasNext()) {
+                    if (curr.getName().equals(busCurrRoute.getName())) {
+                        found = true;
+                    } else {
+                        curr = iter.next();
+                    }
+                }
+                if (iter.hasNext()) {
+                    busNextStop = iter.next();
+                } else {
 
-               }
-               int busNumPassengers = Integer.parseInt(passengerTF.getText());
-               int busInitFuel = Integer.parseInt(initFuelTF.getText());
-               int busFuelCap = Integer.parseInt(fuelCapTF.getText());
-               double busSpeed = Double.parseDouble(speedTF.getText());
+                }
+                int busNumPassengers = Integer.parseInt(passengerTF.getText());
+                int busInitFuel = Integer.parseInt(initFuelTF.getText());
+                int busFuelCap = Integer.parseInt(fuelCapTF.getText());
+                double busSpeed = Double.parseDouble(speedTF.getText());
 
 
-               buses.add(new Bus(busName, busID, busNumPassengers, busSpeed, busCurrRoute, busCurrStop, busNextStop, busCurrStop.getLocation(),
-                       busInitFuel, busFuelCap));
-               window.setScene(getListScene(window, "Bus"));
-           } catch (Exception exception) {
-               JOptionPane.showMessageDialog(new JFrame(), "Invalid Value(s)" , "Bad Arguments",
-                       JOptionPane.ERROR_MESSAGE);
-           }
+                buses.add(new Bus(busName, busID, busNumPassengers, busSpeed, busCurrRoute, busCurrStop, busNextStop, busCurrStop.getLocation(),
+                        busInitFuel, busFuelCap));
+                window.setScene(getListScene(window, "Bus"));
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(new JFrame(), "Invalid Value(s)" , "Bad Arguments",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         gridPane.add(title, 0, 0, 2, 1);
@@ -813,7 +923,7 @@ public class Main extends Application{
                 String routeName = nameTF.getText();
                 int routeID = Integer.parseInt(idTF.getText());
 
-                Collection<Stop> routeStops = new ArrayList<>();
+                ArrayList<Stop> routeStops = new ArrayList<>();
                 ObservableList<Integer> selectedIndices = stopChoices.getSelectionModel().getSelectedIndices();
 
                 int i = 0;
@@ -1085,12 +1195,10 @@ public class Main extends Application{
 
         String stops = "";
         for (Stop stop : route.getStops()) {
-            System.out.println(stop.getName());
             stops = stops.concat(stop.getName() + ", ");
         }
 
         stops = stops.substring(0, stops.length() - 2);
-        System.out.println(stops);
         Label listStops = createLabel("Stops: " + stops, 0, 0, 30, Color.BLACK, 400);
         listStops.setWrapText(true);
 
