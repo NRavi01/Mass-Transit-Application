@@ -28,4 +28,12 @@ public class Stop extends SimulationObject {
     public Point getScreenLocation() {
         return screenLocation;
     }
+
+    public int getNumPassengers() {
+        return numPassengers;
+    }
+
+    public void setNumPassengers(int numPassengers) {
+        this.numPassengers = numPassengers;
+    }
 }

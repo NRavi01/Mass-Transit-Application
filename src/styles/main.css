@@ -1,0 +1,93 @@
+.root {
+    -fx-background-color: white;
+}
+
+.buttons {
+    -fx-background-color: transparent;
+}
+
+.editButton {
+    -fx-background-color: pink;
+    -fx-background-radius: 50px;
+    -fx-text-fill: BLACK;
+}
+
+.editButton:hover {
+    -fx-text-fill: RED;
+}
+
+.exitButton {
+    -fx-background-color: red;
+    -fx-background-radius: 50px;
+    -fx-text-fill: WHITE;
+}
+
+.exitButton:hover {
+    -fx-text-fill: BLACK;
+}
+
+.addButton {
+    -fx-background-color: aqua;
+    -fx-background-radius: 50px;
+    -fx-text-fill: WHITE;
+}
+
+.addButton:hover {
+    -fx-text-fill: BLACK;
+}
+
+.deleteButton {
+    -fx-background-color: darkred;
+    -fx-text-fill: WHITE;
+    -fx-background-radius: 5px;
+}
+
+.deletButton:hover {
+    -fx-text-fill: BLACK;
+}
+
+.submitButton {
+    -fx-background-color: limegreen;
+    -fx-background-radius: 50px;
+    -fx-text-fill: WHITE;
+}
+
+.submitButton:hover {
+    -fx-text-fill: BLACK;
+}
+
+.listButton {
+    -fx-alignment: CENTER-LEFT;
+    -fx-background-color: transparent;
+    -fx-text-fill: BLACK;
+}
+
+.listButton:hover {
+    -fx-alignment: CENTER-LEFT;
+    -fx-background-color: green;
+    -fx-text-fill: WHITE;
+}
+
+.simObjListButton {
+    -fx-text-fill: BLACK;
+}
+
+.simObjListButton:hover {
+    -fx-text-fill: RED;
+}
+
+.grid {
+    -fx-background-color: WHITE;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: WHITE;
+}
+
+.choiceBox {
+    -fx-background-radius: 50px;
+}
