@@ -344,7 +344,7 @@ public class Main extends Application{
             window.setScene(getListScene(window, "Route"));
         });
 
-        ImageView modelRoute = createImage("modelRoute.PNG", 220, 10, 150, 60);
+        ImageView modelRoute = createImage("modelRoute.png", 220, 10, 150, 60);
 
         Group modelRouteGroup = new Group();
         modelRouteGroup.getChildren().addAll(routeHolder, routeList, modelRoute);
@@ -1295,7 +1295,7 @@ public class Main extends Application{
     }
 
     public ImageView createImage(String path, int x, int y, int width, int height) {
-        Image newImage = new Image("\\resources\\" + path);
+        Image newImage = new Image(Main.class.getResource("/resources/" + path).toString());
         ImageView image = new ImageView(newImage);
         image.setFitHeight(height);
         image.setFitWidth(width);

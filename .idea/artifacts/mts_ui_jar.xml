@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="mts-ui:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/mts_ui_jar</output-path>
+    <root id="archive" name="mts-ui.jar">
+      <element id="module-output" name="mts-ui" />
+    </root>
+  </artifact>
+</component>
