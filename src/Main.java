@@ -175,8 +175,8 @@ public class Main extends Application{
                     routeColor = Color.YELLOW;
                 }
                 int randomRoute = ((int) (Math.random() * 100));
-                Route route = new Route("Route " + randomRoute, 1, tempStops, routeColor);
-                Route initialRoute = new Route("Route " + randomRoute, 1, tempStops, routeColor);
+                Route route = new Route("Route " + randomRoute, randomRoute, tempStops, routeColor);
+                Route initialRoute = new Route("Route " + randomRoute, randomRoute, tempStops, routeColor);
                 for (int j = 0; j < 5; j++) {
                     int stopId = (int) (Math.random() * 100);
                     int passengerNum = (int) (Math.random() * 20);
@@ -205,7 +205,7 @@ public class Main extends Application{
                 buses.add(newBus);
             }
             //Fuel Station
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 1; i++) {
                 Point newFuel = new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000)));
                 FuelStation newFuelStation = new FuelStation(newFuel);
                 fuelStations.add(newFuelStation);
@@ -842,6 +842,7 @@ public class Main extends Application{
                 });
                 Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
                 delete.getStyleClass().add("deleteButton");
+                delete.getStyleClass().add("deleteButton");
                 delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
                 delete.setOnAction(e -> {
                     currStop.getRoute().getStops().remove(currStop);
@@ -1141,6 +1142,7 @@ public class Main extends Application{
 
         submit.setOnAction(e -> {
             try {
+                System.out.println("hi");
                 String stopName = nameTF.getText();
                 int stopID = Integer.parseInt(idTF.getText());
                 int stopNumPass = Integer.parseInt(numpsTF.getText());
@@ -1150,6 +1152,9 @@ public class Main extends Application{
                 int indexOfRoute = 0;
                 for (int i = 0; i < routes.size(); i++) {
                     Route tempRoute = routes.get(i);
+                    System.out.println("hi");
+                    System.out.println(tempRoute.getID());
+                    System.out.println(tempRoute.getName());
                     if (Integer.toString(tempRoute.getID()).equals(routeName)) {
                         currRoute = tempRoute;
                         indexOfRoute = i;
