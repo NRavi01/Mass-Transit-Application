@@ -57,6 +57,10 @@ public class Main extends Application{
     private ArrayList<Route> routes;
     private ArrayList<Stop> stops;
 
+    private ArrayList<Bus> initialBuses = new ArrayList<>();
+    private ArrayList<Route> initialRoutes = new ArrayList<>();
+    private ArrayList<Stop> initialStops = new ArrayList<>();
+
     private int zoomLevel = 1;
 
     @Override
@@ -136,6 +140,7 @@ public class Main extends Application{
             //For now, fill with random values
             for (int i = 0; i < 6; i ++) {
                 ArrayList<Stop> tempStops = new ArrayList<>();
+                ArrayList<Stop> tempStopsInitial = new ArrayList<>();
                 Color routeColor;
                 if (i == 0) {
                     routeColor = Color.BLUE;
@@ -158,25 +163,36 @@ public class Main extends Application{
                 else {
                     routeColor = Color.YELLOW;
                 }
-                Route route = new Route("Route " + ((int) (Math.random() * 100)), 1, tempStops, routeColor);
+                int randomRoute = ((int) (Math.random() * 100));
+                Route route = new Route("Route " + randomRoute, 1, tempStops, routeColor);
+                Route initialRoute = new Route("Route " + randomRoute, 1, tempStops, routeColor);
                 for (int j = 0; j < 5; j++) {
                     int stopId = (int) (Math.random() * 100);
                     int passengerNum = (int) (Math.random() * 20);
-                    Stop tempStop = new Stop("Stop " + stopId, stopId, passengerNum, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))), route);
+                    Point stopPoint = new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000)));
+                    Stop tempStop = new Stop("Stop " + stopId, stopId, passengerNum, stopPoint, route);
+                    Stop tempStopInitial = new Stop("Stop " + stopId, stopId, passengerNum, stopPoint, route);
                     tempStops.add(tempStop);
+                    tempStopsInitial.add(tempStopInitial);
                     stops.add(tempStop);
+                    initialStops.add(tempStopInitial);
                 }
                 route.setStops(tempStops);
+                initialRoute.setStops(tempStopsInitial);
                 routes.add(route);
+                initialRoutes.add(initialRoute);
                 Stop stop1 = tempStops.get(0);
                 Stop stop2 = tempStops.get(1);
                 int x = (int) (stop1.getLocation().getX() + stop2.getLocation().getX()) / 2;
                 int y = (int) (stop1.getLocation().getY() + stop2.getLocation().getY()) / 2;
                 Point startingLoc = new Point(x - 30, y - 20);
-                Bus newBus = new Bus("Bus " + ((int) (Math.random() * 100)), (int) (Math.random() * 100) , 10, 10, route, stop1, stop2, startingLoc, 100, 100);
+                int rand1 = ((int) (Math.random() * 100));
+                int rand2 = (int) (Math.random() * 100);
+                Bus newBus = new Bus("Bus " + rand1,  rand2, 10, 10, route, stop1, stop2, startingLoc, 100, 100);
+                Bus newBusInitial = new Bus("Bus " + rand1,  rand2, 10, 10, route, stop1, stop2, startingLoc, 100, 100);
+                initialBuses.add(newBusInitial);
                 buses.add(newBus);
             }
-
             window.setScene(getMainScreen(window));
         });
 
@@ -385,6 +401,7 @@ public class Main extends Application{
 
         Label placeholder1 = createLabel("", globalWidth * 3/4, 30, 30, Color.BLACK, 20);
         Label simStep = createLabel("Step: ", globalWidth * 3/4 + 40, 30, 30, Color.BLACK, 100);
+
         Button stepBackward = createButton(globalWidth * 3/4 + 120, 0, 100, 100, Color.BLACK, "", 30);
         stepBackward.setGraphic(createImage("stepBackwardEmpty.png", globalWidth * 3/4 + 120, 0, 60, 60));
         stepBackward.setOnMouseEntered(e -> stepBackward.setGraphic(createImage("stepBackwardFill.png", (int) stepBackward.getLayoutX(), (int) stepBackward.getLayoutY(), 60, 60)));
@@ -394,6 +411,12 @@ public class Main extends Application{
         stepForward.setGraphic(createImage("stepForwardEmpty.png", globalWidth * 3/4 + 250, 0, 60, 60));
         stepForward.setOnMouseEntered(e -> stepForward.setGraphic(createImage("stepForwardFill.png", (int) stepForward.getLayoutX(), (int) stepForward.getLayoutY(), 60, 60)));
         stepForward.setOnMouseExited(e -> stepForward.setGraphic(createImage("stepForwardEmpty.png", (int) stepForward.getLayoutX(), (int) stepForward.getLayoutY(), 60, 60)));
+
+        Button reset = createButton(globalWidth * 3/4 + 280, 0, 100, 100, Color.BLACK, "", 30);
+        reset.setGraphic(createImage("resetEmpty.png", globalWidth * 3/4 + 250, 0, 70, 70));
+        reset.setOnMouseEntered(e -> reset.setGraphic(createImage("resetFill.png", (int) reset.getLayoutX(), (int) reset.getLayoutY(), 70, 70)));
+        reset.setOnMouseExited(e -> reset.setGraphic(createImage("resetEmpty.png", (int) reset.getLayoutX(), (int) reset.getLayoutY(), 70, 70)));
+
 
         stepForward.setOnAction(e -> {
             for (int i = 0; i < buses.size(); i++) {
@@ -408,6 +431,13 @@ public class Main extends Application{
                 Bus b = buses.get(i);
                 moveBusBack(b, 50);
             }
+            window.setScene(getMainScreen(window));
+        });
+
+        reset.setOnAction(e -> {
+            buses = initialBuses;
+            routes = initialRoutes;
+            stops = initialStops;
             window.setScene(getMainScreen(window));
         });
 
@@ -430,7 +460,7 @@ public class Main extends Application{
         zoomGroup.getChildren().addAll(placeholder, zoom, zoomIn, zoomOut);
 
         Group stepGroup = new Group();
-        stepGroup.getChildren().addAll(placeholder1, simStep, stepForward, stepBackward);
+        stepGroup.getChildren().addAll(placeholder1, simStep, stepForward, stepBackward, reset);
 
         GridPane grid = new GridPane();
         grid.getStyleClass().add("grid");
