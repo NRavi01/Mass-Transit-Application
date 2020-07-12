@@ -784,6 +784,7 @@ public class Main extends Application{
                 int i = 0;
                 while (rIter.hasNext() && i < newValue.intValue()) {
                     currRoute = rIter.next();
+                    i++;
                 }
                 Collection<Stop> listStops = currRoute.getStops();
                 Iterator<Stop> sIter = listStops.iterator();
