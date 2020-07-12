@@ -61,7 +61,18 @@ public class Main extends Application{
     private ArrayList<Route> initialRoutes = new ArrayList<>();
     private ArrayList<Stop> initialStops = new ArrayList<>();
 
+    private ArrayList<FuelStation> fuelStations = new ArrayList<>();
+
     private int zoomLevel = 1;
+
+    private final int ridersArriveHigh = 8;
+    private final int ridersArriveLow = 2;
+    private final int ridersOffHigh = 8;
+    private final int ridersOffLow = 2;
+    private final int ridersOnHigh = 8;
+    private final int ridersOnLow = 2;
+    private final int ridersDepartHigh = 8;
+    private final int ridersDepartLow = 2;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -193,6 +204,13 @@ public class Main extends Application{
                 initialBuses.add(newBusInitial);
                 buses.add(newBus);
             }
+            //Fuel Station
+            for (int i = 0; i < 5; i++) {
+                Point newFuel = new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000)));
+                FuelStation newFuelStation = new FuelStation(newFuel);
+                fuelStations.add(newFuelStation);
+            }
+
             window.setScene(getMainScreen(window));
         });
 
@@ -242,6 +260,13 @@ public class Main extends Application{
             }
         }
 
+        ArrayList<ImageView> fuelImages = new ArrayList<>();
+        for (int i = 0; i < fuelStations.size(); i++) {
+            FuelStation station = fuelStations.get(i);
+            ImageView newFuel = createImage("fuelStation.PNG", (int) station.getScreenLocation().getX() - 15, (int) station.getScreenLocation().getY() - 30, 30, 60);
+            fuelImages.add(newFuel);
+        }
+
         ArrayList<Line> mapLines = new ArrayList<>();
         int spacing = 100;
         int numLinesHor = globalHeight / spacing;
@@ -270,6 +295,9 @@ public class Main extends Application{
         }
         for (int i = 0; i < busImages.size(); i++) {
             msGroup.getChildren().add(busImages.get(i));
+        }
+        for (int i = 0; i < fuelImages.size(); i++) {
+            msGroup.getChildren().add(fuelImages.get(i));
         }
         /*
         for (int i = 0; i < mapLines.size(); i++) {
@@ -485,15 +513,26 @@ public class Main extends Application{
     }
 
     public void moveBus(Bus b, int distance) {
-        double currentX = b.getLocation().getX();
-        double currentY = b.getLocation().getY();
-        double stopX = b.getNextStop().getLocation().getX();
-        double stopY = b.getNextStop().getLocation().getY();
-        double diffx = stopX - currentX;
-        double diffy = stopY - currentY;
+        double currentX = b.getScreenLocation().getX();
+        double currentY = b.getScreenLocation().getY();
+        double stopX = b.getNextStop().getScreenLocation().getX();
+        double stopY = b.getNextStop().getScreenLocation().getY();
+        double backStopX = b.getCurrStop().getScreenLocation().getX();
+        double backStopY = b.getCurrStop().getScreenLocation().getY();
+        double diffx, diffy = 0;
+        if (distance > 0) { 
+            diffx = stopX - currentX;
+            diffy = stopY - currentY;
+        } else {
+            diffx = backStopX - currentX;
+            diffy = backStopY - currentY;
+        }
         double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
         double angle = Math.atan(diffy / diffx);
-        if (distanceTillStop < Math.abs(distance)) {
+        int distancePerStep = (int) (distance * b.getAvgSpeed() / 10);
+        System.out.println(distanceTillStop);
+        if (distanceTillStop < Math.abs(distancePerStep)) {
+            System.out.println("hi");
             double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
             double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
             double currScreenX = b.getScreenLocation().getX();
@@ -503,6 +542,36 @@ public class Main extends Application{
 
             //Algorithm to exchange passengers at stops
             Stop currStop = b.getNextStop();
+
+            //Step1
+            int waitingGroup = currStop.getNumPassengers();
+            int step1Arrive = ridersArriveLow + (int) (Math.random() * (ridersArriveHigh + 1));
+            waitingGroup = waitingGroup + step1Arrive;
+
+            //Step2
+            int ridersOffBus = ridersOffLow + (int) (Math.random() * (ridersOffHigh + 1));
+            b.changeNumPassengers(-ridersOffBus);
+            int transferGroup = ridersOffBus;
+
+            //Step3
+            int ridersOnBus = ridersOnLow + (int) (Math.random() * (ridersOnHigh + 1));
+            b.changeNumPassengers(ridersOnBus);
+            waitingGroup = waitingGroup - ridersOnBus;
+
+            //Step4
+            int ridersDepart = ridersDepartLow + (int) (Math.random() * (ridersDepartHigh + 1));
+            if (ridersDepart <= transferGroup) {
+                transferGroup = transferGroup - ridersDepart;
+                waitingGroup = waitingGroup + transferGroup;
+            } else {
+                int unhappyPass = ridersDepart - transferGroup;
+                transferGroup = 0;
+                waitingGroup = waitingGroup - unhappyPass;
+
+            }
+            currStop.setNumPassengers(waitingGroup);
+
+            /*
             int randomPercentageBus = (int) (Math.random() * 50);
             int randomPercentageStop = (int) (Math.random() * 50);
             int amountOffBus = (int) (b.getNumPassengers() * (randomPercentageBus * .01));
@@ -513,11 +582,19 @@ public class Main extends Application{
             b.changeNumPassengers(amountOffStop);
             currStop.changeNumPassengers(-amountOffStop);
             currStop.changeNumPassengers(amountOffBus);
+             */
 
-            b.setScreenLocation(b.getNextStop().getScreenLocation());
-            b.setLocation(b.getNextStop().getLocation());
-            b.setCurrStop(b.getNextStop());
-            b.setNextStop(b.getRoute().getNextStop(b.getNextStop()));
+            if (distance > 0) {
+                b.setScreenLocation(b.getNextStop().getScreenLocation());
+                b.setLocation(b.getNextStop().getLocation());
+                b.setCurrStop(b.getNextStop());
+                b.setNextStop(b.getRoute().getNextStop(b.getNextStop()));
+            } else {
+                b.setScreenLocation(b.getCurrStop().getScreenLocation());
+                b.setLocation(b.getCurrStop().getLocation());
+                b.setNextStop(b.getCurrStop());
+                b.setCurrStop(b.getRoute().getPrevStop(b.getCurrStop()));
+            }
             /*
             System.out.println(b.getCurrStop().getScreenLocation());
             System.out.println(b.getNextStop().getScreenLocation());
@@ -526,8 +603,8 @@ public class Main extends Application{
              */
         }
         else {
-            double changeY = Math.abs(Math.sin(angle)) * distance;
-            double changeX = Math.abs(Math.cos(angle)) * distance;
+            double changeY = Math.abs(Math.sin(angle)) * distance * b.getAvgSpeed() / 10;
+            double changeX = Math.abs(Math.cos(angle)) * distance * b.getAvgSpeed() / 10;
             if (diffx < 0) {
                 changeX = -changeX;
             }
@@ -545,17 +622,19 @@ public class Main extends Application{
             double newScreenY = currScreenY + changeScreenY;
             b.setScreenLocation(new Point((int) newScreenX, (int) newScreenY));
         }
+        b.setCurrFuel(b.getCurrFuel() - distancePerStep / 20);
     }
     public void moveBusBack(Bus b, int distance) {
-        double currentX = b.getLocation().getX();
-        double currentY = b.getLocation().getY();
-        double stopX = b.getCurrStop().getLocation().getX();
-        double stopY = b.getCurrStop().getLocation().getY();
+        double currentX = b.getScreenLocation().getX();
+        double currentY = b.getScreenLocation().getY();
+        double stopX = b.getCurrStop().getScreenLocation().getX();
+        double stopY = b.getCurrStop().getScreenLocation().getY();
         double diffx = stopX - currentX;
         double diffy = stopY - currentY;
         double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
         double angle = Math.atan(diffy / diffx);
-        if (distanceTillStop < Math.abs(distance)) {
+        int distancePerStep = (int) (distance * b.getAvgSpeed() / 10);
+        if (distanceTillStop < Math.abs(distancePerStep)) {
             double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
             double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
             double currScreenX = b.getScreenLocation().getX();
@@ -568,8 +647,8 @@ public class Main extends Application{
             b.setCurrStop(b.getRoute().getPrevStop(b.getCurrStop()));
         }
         else {
-            double changeY = Math.abs(Math.sin(angle)) * distance;
-            double changeX = Math.abs(Math.cos(angle)) * distance;
+            double changeY = Math.abs(Math.sin(angle)) * distance * b.getAvgSpeed() / 10;
+            double changeX = Math.abs(Math.cos(angle)) * distance * b.getAvgSpeed() / 10;
             if (diffx < 0) {
                 changeX = -changeX;
             }
@@ -588,6 +667,7 @@ public class Main extends Application{
             b.setScreenLocation(new Point((int) newScreenX, (int) newScreenY));
             System.out.println(diffx + " " + diffy + " " + changeScreenX + " " + changeScreenY);
         }
+
     }
 
     public void scaleAll(int direction) {
@@ -610,6 +690,26 @@ public class Main extends Application{
         buses.removeAll(buses);
         for (int i = 0; i < newBusList.size(); i++) {
             buses.add(newBusList.get(i));
+        }
+
+        ArrayList<FuelStation> newFuelList = new ArrayList<>();
+        for (int i = 0; i < fuelStations.size(); i++) {
+            FuelStation station = fuelStations.get(i);
+            double newPointX;
+            double newPointY;
+            if (direction > 0) {
+                newPointX = (station.getScreenLocation().getX() * scalingFactor);
+                newPointY = station.getScreenLocation().getY() * scalingFactor;
+            } else {
+                newPointX = (station.getScreenLocation().getX() / scalingFactor);
+                newPointY = station.getScreenLocation().getY() / scalingFactor;
+            }
+            station.setScreenLocation(new Point((int) newPointX, (int) newPointY));
+            newFuelList.add(station);
+        }
+        fuelStations.removeAll(fuelStations);
+        for (int i = 0; i < newFuelList.size(); i++) {
+            fuelStations.add(newFuelList.get(i));
         }
 
         ArrayList<Route> newRouteList = new ArrayList<>();
@@ -651,6 +751,19 @@ public class Main extends Application{
         buses.removeAll(buses);
         for (int i = 0; i < newBusList.size(); i++) {
             buses.add(newBusList.get(i));
+        }
+
+        ArrayList<FuelStation> newFuelList = new ArrayList<>();
+        for (int i = 0; i < fuelStations.size(); i++) {
+            FuelStation station = fuelStations.get(i);
+            int newPointX = (int) station.getScreenLocation().getX() + x;
+            int newPointY = (int) station.getScreenLocation().getY() + y;
+            station.setScreenLocation(new Point(newPointX, newPointY));
+            newFuelList.add(station);
+        }
+        fuelStations.removeAll(fuelStations);
+        for (int i = 0; i < newFuelList.size(); i++) {
+            fuelStations.add(newFuelList.get(i));
         }
 
         ArrayList<Route> newRouteList = new ArrayList<>();
