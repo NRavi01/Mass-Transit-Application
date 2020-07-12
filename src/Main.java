@@ -263,7 +263,7 @@ public class Main extends Application{
         ArrayList<ImageView> fuelImages = new ArrayList<>();
         for (int i = 0; i < fuelStations.size(); i++) {
             FuelStation station = fuelStations.get(i);
-            ImageView newFuel = createImage("fuelStation.PNG", (int) station.getScreenLocation().getX() - 15, (int) station.getScreenLocation().getY() - 30, 30, 60);
+            ImageView newFuel = createImage("fuelStation.PNG", (int) station.getScreenLocation().getX() - 10, (int) station.getScreenLocation().getY() - 20, 20, 40);
             fuelImages.add(newFuel);
         }
 
@@ -520,7 +520,7 @@ public class Main extends Application{
         double backStopX = b.getCurrStop().getScreenLocation().getX();
         double backStopY = b.getCurrStop().getScreenLocation().getY();
         double diffx, diffy = 0;
-        if (distance > 0) { 
+        if (distance > 0) {
             diffx = stopX - currentX;
             diffy = stopY - currentY;
         } else {
@@ -530,9 +530,7 @@ public class Main extends Application{
         double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
         double angle = Math.atan(diffy / diffx);
         int distancePerStep = (int) (distance * b.getAvgSpeed() / 10);
-        System.out.println(distanceTillStop);
         if (distanceTillStop < Math.abs(distancePerStep)) {
-            System.out.println("hi");
             double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
             double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
             double currScreenX = b.getScreenLocation().getX();
@@ -665,7 +663,6 @@ public class Main extends Application{
             double newScreenX = currScreenX + changeScreenX;
             double newScreenY = currScreenY + changeScreenY;
             b.setScreenLocation(new Point((int) newScreenX, (int) newScreenY));
-            System.out.println(diffx + " " + diffy + " " + changeScreenX + " " + changeScreenY);
         }
 
     }
