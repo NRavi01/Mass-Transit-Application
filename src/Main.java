@@ -53,8 +53,8 @@ public class Main extends Application{
     private int globalWidth = 1920;
     private int globalHeight = 1080;
 
-    private Collection<Bus> buses;
-    private Collection<Route> routes;
+    private ArrayList<Bus> buses;
+    private ArrayList<Route> routes;
     private ArrayList<Stop> stops;
 
     private int zoomLevel = 1;
@@ -132,14 +132,10 @@ public class Main extends Application{
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
             buses = new ArrayList<>();
             routes = new ArrayList<>();
+            stops = new ArrayList<>();
             //For now, fill with random values
             for (int i = 0; i < 6; i ++) {
                 ArrayList<Stop> tempStops = new ArrayList<>();
-                for (int j = 0; j < 5; j++) {
-                    int stopId = (int) (Math.random() * 20);
-                    Stop tempStop = new Stop("Stop " + stopId, stopId, 1, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))));
-                    tempStops.add(tempStop);
-                }
                 Color routeColor;
                 if (i == 0) {
                     routeColor = Color.BLUE;
@@ -163,16 +159,22 @@ public class Main extends Application{
                     routeColor = Color.YELLOW;
                 }
                 Route route = new Route("Route " + ((int) (Math.random() * 100)), 1, tempStops, routeColor);
+                for (int j = 0; j < 5; j++) {
+                    int stopId = (int) (Math.random() * 100);
+                    int passengerNum = (int) (Math.random() * 20);
+                    Stop tempStop = new Stop("Stop " + stopId, stopId, passengerNum, new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000))), route);
+                    tempStops.add(tempStop);
+                    stops.add(tempStop);
+                }
+                route.setStops(tempStops);
                 routes.add(route);
-                Iterator<Stop> iter = route.getStops().iterator();
-                Stop stop1 = iter.next();
-                Stop stop2 = iter.next();
+                Stop stop1 = tempStops.get(0);
+                Stop stop2 = tempStops.get(1);
                 int x = (int) (stop1.getLocation().getX() + stop2.getLocation().getX()) / 2;
                 int y = (int) (stop1.getLocation().getY() + stop2.getLocation().getY()) / 2;
                 Point startingLoc = new Point(x - 30, y - 20);
                 Bus newBus = new Bus("Bus " + ((int) (Math.random() * 100)), (int) (Math.random() * 100) , 10, 10, route, stop1, stop2, startingLoc, 100, 100);
                 buses.add(newBus);
-                stops = tempStops;
             }
 
             window.setScene(getMainScreen(window));
@@ -185,28 +187,20 @@ public class Main extends Application{
         int globalTemp = globalWidth * 3/4;
 
         ArrayList<ImageView> busImages = new ArrayList<>();
-        Iterator<Bus> iterator = buses.iterator();
-        while(iterator.hasNext()) {
-            Bus b = iterator.next();
-            ImageView newBus = createImage("bus_icon.PNG", (int) b.getScreenLocation().getX(), (int) b.getScreenLocation().getY(), 80, 50);
+        for (int i = 0; i < buses.size(); i++) {
+            Bus b = buses.get(i);
+            ImageView newBus = createImage("bus_icon.PNG", (int) b.getScreenLocation().getX() - 40, (int) b.getScreenLocation().getY() - 25, 80, 50);
             busImages.add(newBus);
         }
 
         ArrayList<Circle> stopImages = new ArrayList<>();
         ArrayList<Line> routeLines = new ArrayList<>();
         ArrayList<Label> stopLabels = new ArrayList<>();
-        Iterator<Route> routeIterator = routes.iterator();
 
-        while (routeIterator.hasNext()){
-            Route currRoute = routeIterator.next();
+        for (int i = 0; i < routes.size(); i++) {
+            Route currRoute = routes.get(i);
             for (int j = 0; j < currRoute.getStops().size(); j++) {
-                Iterator<Stop> iter = currRoute.getStops().iterator();
-                int i = 0;
-                while (iter.hasNext() && i < j) {
-                    iter.next();
-                    i++;
-                }
-                Stop stop = iter.next();
+                Stop stop = currRoute.getStops().get(j);
                 Circle newStop = new Circle(stop.getScreenLocation().getX(), stop.getScreenLocation().getY(), 20);
                 newStop.setFill(currRoute.getColor());
                 stopImages.add(newStop);
@@ -217,13 +211,13 @@ public class Main extends Application{
                 Line stopLine = null;
                 if (j != currRoute.getStops().size() - 1) {
                     Point stop1 = stop.getScreenLocation();
-                    Point stop2 = iter.next().getScreenLocation();
+                    Point stop2 = currRoute.getStops().get(j + 1).getScreenLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
                     stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
                 } else {
                     Point stop1 = stop.getScreenLocation();
-                    Point stop2 = currRoute.getStops().iterator().next().getScreenLocation();
+                    Point stop2 = currRoute.getStops().get(0).getScreenLocation();
                     stopLine = new Line(stop1.getX(), stop1.getY(), stop2.getX(), stop2.getY());
                     stopLine.setStroke(currRoute.getColor());
                     stopLine.setStrokeWidth(10);
@@ -402,18 +396,16 @@ public class Main extends Application{
         stepForward.setOnMouseExited(e -> stepForward.setGraphic(createImage("stepForwardEmpty.png", (int) stepForward.getLayoutX(), (int) stepForward.getLayoutY(), 60, 60)));
 
         stepForward.setOnAction(e -> {
-            Iterator<Bus> busIterator = buses.iterator();
-            while(busIterator.hasNext()) {
-                Bus b = busIterator.next();
+            for (int i = 0; i < buses.size(); i++) {
+                Bus b = buses.get(i);
                 moveBus(b, 50);
             }
             window.setScene(getMainScreen(window));
         });
 
         stepBackward.setOnAction(e -> {
-            Iterator<Bus> busIterator = buses.iterator();
-            while(busIterator.hasNext()) {
-                Bus b = busIterator.next();
+            for (int i = 0; i < buses.size(); i++) {
+                Bus b = buses.get(i);
                 moveBusBack(b, 50);
             }
             window.setScene(getMainScreen(window));
@@ -472,7 +464,6 @@ public class Main extends Application{
         double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
         double angle = Math.atan(diffy / diffx);
         if (distanceTillStop < Math.abs(distance)) {
-            System.out.println("hi");
             double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
             double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
             double currScreenX = b.getScreenLocation().getX();
@@ -483,10 +474,12 @@ public class Main extends Application{
             b.setLocation(b.getNextStop().getLocation());
             b.setCurrStop(b.getNextStop());
             b.setNextStop(b.getRoute().getNextStop(b.getNextStop()));
+            /*
             System.out.println(b.getCurrStop().getScreenLocation());
             System.out.println(b.getNextStop().getScreenLocation());
             System.out.println(b.getCurrStop());
             System.out.println(b.getNextStop());
+             */
         }
         else {
             double changeY = Math.abs(Math.sin(angle)) * distance;
@@ -561,10 +554,9 @@ public class Main extends Application{
 
     public void scaleAll(int direction) {
         double scalingFactor = 1.1;
-        Iterator<Bus> busIterator = buses.iterator();
         ArrayList<Bus> newBusList = new ArrayList<>();
-        while(busIterator.hasNext()){
-            Bus b = busIterator.next();
+        for (int i = 0; i < buses.size(); i++) {
+            Bus b = buses.get(i);
             double newPointX;
             double newPointY;
             if (direction > 0) {
@@ -582,14 +574,12 @@ public class Main extends Application{
             buses.add(newBusList.get(i));
         }
 
-        Iterator<Route> routeIterator = routes.iterator();
         ArrayList<Route> newRouteList = new ArrayList<>();
-        while(routeIterator.hasNext()){
-            Route route = routeIterator.next();
+        for (int i = 0; i < routes.size(); i++) {
+            Route route = routes.get(i);
             ArrayList<Stop> newStopList = new ArrayList<>();
-            Iterator<Stop> iter = route.getStops().iterator();
-            for (int i = 0; i < route.getStops().size(); i++) {
-                Stop stop = iter.next();
+            for (int j = 0; j < route.getStops().size(); j++) {
+                Stop stop = route.getStops().get(j);
                 double newPointX;
                 double newPointY;
                 if (direction > 0) {
@@ -612,10 +602,9 @@ public class Main extends Application{
     }
 
     public void moveAll(int x, int y) {
-        Iterator<Bus> busIterator = buses.iterator();
         ArrayList<Bus> newBusList = new ArrayList<>();
-        while(busIterator.hasNext()){
-            Bus b = busIterator.next();
+        for (int i = 0; i < buses.size(); i++) {
+            Bus b = buses.get(i);
             int newPointX = (int) b.getScreenLocation().getX() + x;
             int newPointY = (int) b.getScreenLocation().getY() + y;
             b.setScreenLocation(new Point(newPointX, newPointY));
@@ -626,14 +615,12 @@ public class Main extends Application{
             buses.add(newBusList.get(i));
         }
 
-        Iterator<Route> routeIterator = routes.iterator();
         ArrayList<Route> newRouteList = new ArrayList<>();
-        while(routeIterator.hasNext()){
-            Route route = routeIterator.next();
+        for (int i = 0; i < routes.size(); i++) {
+            Route route = routes.get(i);
             ArrayList<Stop> newStopList = new ArrayList<>();
-            Iterator<Stop> iter = route.getStops().iterator();
-            for (int i = 0; i < route.getStops().size(); i++) {
-                Stop stop = iter.next();
+            for (int j = 0; j < route.getStops().size(); j++) {
+                Stop stop = route.getStops().get(j);
                 int newPointX = (int) stop.getScreenLocation().getX() + x;
                 int newPointY = (int) stop.getScreenLocation().getY() + y;
                 stop.setScreenLocation(new Point(newPointX, newPointY));
@@ -658,9 +645,8 @@ public class Main extends Application{
         int i = 0;
 
         if (type.equals("Bus")) {
-            Iterator<Bus> iter = buses.iterator();
-            while (iter.hasNext()) {
-                Bus currBus = iter.next();
+            for (int j = 0; j < buses.size(); j++) {
+                Bus currBus = buses.get(j);
                 Button busButton = createButton(0, 0, 300,100,Color.BLACK, currBus.getName(), 30);
                 busButton.getStyleClass().add("listButton");
                 busButton.setOnAction(e -> {
@@ -678,11 +664,11 @@ public class Main extends Application{
                 gridPane.add(delete, 1, i, 1, 1);
             }
         } else if (type.equals("Route")) {
-            Iterator<Route> iter = routes.iterator();
-            while (iter.hasNext()) {
-                Route currRoute = iter.next();
-                Button routeButton = createButton(0, 0, 300,100,Color.BLACK, currRoute.getName(), 30);
+            for (int j = 0; j < routes.size(); j++) {
+                Route currRoute = routes.get(j);
+                Button routeButton = createButton(0, 0, 300,100,currRoute.getColor(), currRoute.getName(), 30);
                 routeButton.getStyleClass().add("listButton");
+                routeButton.setTextFill(currRoute.getColor());
                 routeButton.setOnAction(e -> {
                     window.setScene(getRouteScene(currRoute, window));
                 });
@@ -698,9 +684,8 @@ public class Main extends Application{
                 gridPane.add(delete, 1, i, 1, 1);
             }
         } else {
-            Iterator<Stop> iter = stops.iterator();
-            while (iter.hasNext()) {
-                Stop currStop = iter.next();
+            for (int j = 0; j < stops.size(); j++) {
+                Stop currStop = stops.get(j);
                 Button stopButton = createButton(0, 0, 300,100,Color.BLACK, currStop.getName(), 30);
                 stopButton.getStyleClass().add("listButton");
                 stopButton.setOnAction(e -> {
@@ -710,6 +695,7 @@ public class Main extends Application{
                 delete.getStyleClass().add("deleteButton");
                 delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
                 delete.setOnAction(e -> {
+                    currStop.getRoute().getStops().remove(currStop);
                     stops.remove(currStop);
                     window.setScene(getListScene(window, "Stop"));
                 });
@@ -776,9 +762,8 @@ public class Main extends Application{
         ChoiceBox<Stop> stopChoiceBox = new ChoiceBox<>();
         stopChoiceBox.getStyleClass().add("choiceBox");
 
-        Iterator<Route> rIter = routes.iterator();
-        while (rIter.hasNext()) {
-            routeChoiceBox.getItems().add(rIter.next());
+        for (int i = 0; i < routes.size(); i++) {
+            routeChoiceBox.getItems().add(routes.get(i));
         }
 
         routeChoiceBox.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -822,7 +807,7 @@ public class Main extends Application{
                 int busID = Integer.parseInt(idTF.getText());
                 Route busCurrRoute = routeChoiceBox.getValue();
                 Stop busCurrStop = stopChoiceBox.getValue();
-                Collection<Stop> stops = busCurrRoute.getStops();
+                ArrayList<Stop> stops = busCurrRoute.getStops();
                 Iterator<Stop> iter = stops.iterator();
                 Stop busNextStop = iter.next();
                 Stop curr = busNextStop;
@@ -995,6 +980,12 @@ public class Main extends Application{
         Label ycoord = createLabel("Point (y):", 0, 0, 30, Color.BLACK, 400);
         TextField ycoordTF = new TextField();
 
+        Label routeLabel = createLabel("On Route:", 0, 0, 30, Color.BLACK, 400);
+        TextField routeLabelTF = new TextField();
+
+        Label stopBefore = createLabel("Set Stop After:", 0, 0, 30, Color.BLACK, 400);
+        TextField stopBeforeTF = new TextField();
+
         Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
         submit.getStyleClass().add("submitButton");
 
@@ -1004,8 +995,27 @@ public class Main extends Application{
                 int stopID = Integer.parseInt(idTF.getText());
                 int stopNumPass = Integer.parseInt(numpsTF.getText());
                 Point stopLoc = new Point(Integer.parseInt(xcoordTF.getText()), Integer.parseInt(ycoordTF.getText()));
-
-                stops.add(new Stop(stopName, stopID, stopNumPass, stopLoc));
+                String routeName = routeLabelTF.getText();
+                Route currRoute = null;
+                int indexOfRoute = 0;
+                for (int i = 0; i < routes.size(); i++) {
+                    Route tempRoute = routes.get(i);
+                    if (Integer.toString(tempRoute.getID()).equals(routeName)) {
+                        currRoute = tempRoute;
+                        indexOfRoute = i;
+                    }
+                }
+                Stop newStop = new Stop(stopName, stopID, stopNumPass, stopLoc, currRoute);
+                stops.add(newStop);
+                Route mainRoute = routes.get(indexOfRoute);
+                String stopNameString = stopBeforeTF.getText();
+                int indexOfStop = 0;
+                for (int i = 0; i < mainRoute.getStops().size(); i++) {
+                    if (Integer.toString(mainRoute.getStops().get(i).getID()).equals(stopNameString)) {
+                        indexOfStop = i;
+                    }
+                }
+                mainRoute.getStops().add(indexOfStop, newStop);
 
                 window.setScene(getListScene(window, "Stop"));
             } catch (Exception exception) {
@@ -1025,10 +1035,14 @@ public class Main extends Application{
         gridPane.add(xcoordTF,1,4,1, 1);
         gridPane.add(ycoord, 0, 5, 1, 1);
         gridPane.add(ycoordTF, 1, 5, 1, 1);
+        gridPane.add(routeLabel,0, 6, 1, 1);
+        gridPane.add(routeLabelTF,1,6,1, 1);
+        gridPane.add(stopBefore, 0, 7, 1, 1);
+        gridPane.add(stopBeforeTF, 1, 7, 1, 1);
 
         HBox hbox = new HBox(10);
         hbox.getChildren().addAll(exit, submit);
-        gridPane.add(hbox,0,6,1,1);
+        gridPane.add(hbox,0,8,1,1);
 
         gridPane.setPadding(new Insets(50, 50, 50, 50));
         gridPane.setVgap(30);
