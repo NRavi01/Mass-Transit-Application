@@ -98,4 +98,11 @@ public class Bus extends SimulationObject {
         this.fuelCapacity = fuelCapacity;
     }
 
+    public void changeNumPassengers(int amount) {
+        numPassengers = numPassengers + amount;
+        if (numPassengers < 0) {
+            numPassengers = 0;
+        }
+    }
+
 }
