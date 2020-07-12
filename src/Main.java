@@ -470,6 +470,20 @@ public class Main extends Application{
             double currScreenY = b.getScreenLocation().getY();
             double newScreenX = currScreenX + changeScreenX;
             double newScreenY = currScreenY + changeScreenY;
+
+            //Algorithm to exchange passengers at stops
+            Stop currStop = b.getNextStop();
+            int randomPercentageBus = (int) (Math.random() * 50);
+            int randomPercentageStop = (int) (Math.random() * 50);
+            int amountOffBus = (int) (b.getNumPassengers() * (randomPercentageBus * .01));
+            System.out.println(amountOffBus + " passengers getting off bus at stop " + currStop.getName());
+            int amountOffStop = (int) (currStop.getNumPassengers() * (randomPercentageStop * .01));
+            System.out.println(amountOffStop + " passengers getting on bus at stop " + currStop.getName());
+            b.changeNumPassengers(-amountOffBus);
+            b.changeNumPassengers(amountOffStop);
+            currStop.changeNumPassengers(-amountOffStop);
+            currStop.changeNumPassengers(amountOffBus);
+
             b.setScreenLocation(b.getNextStop().getScreenLocation());
             b.setLocation(b.getNextStop().getLocation());
             b.setCurrStop(b.getNextStop());
@@ -500,7 +514,6 @@ public class Main extends Application{
             double newScreenX = currScreenX + changeScreenX;
             double newScreenY = currScreenY + changeScreenY;
             b.setScreenLocation(new Point((int) newScreenX, (int) newScreenY));
-            System.out.println(diffx + " " + diffy + " " + changeScreenX + " " + changeScreenY);
         }
     }
     public void moveBusBack(Bus b, int distance) {
@@ -513,7 +526,6 @@ public class Main extends Application{
         double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
         double angle = Math.atan(diffy / diffx);
         if (distanceTillStop < Math.abs(distance)) {
-            System.out.println("hi");
             double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
             double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
             double currScreenX = b.getScreenLocation().getX();
@@ -524,10 +536,6 @@ public class Main extends Application{
             b.setLocation(b.getCurrStop().getLocation());
             b.setNextStop(b.getCurrStop());
             b.setCurrStop(b.getRoute().getPrevStop(b.getCurrStop()));
-            System.out.println(b.getCurrStop().getScreenLocation());
-            System.out.println(b.getNextStop().getScreenLocation());
-            System.out.println(b.getCurrStop());
-            System.out.println(b.getNextStop());
         }
         else {
             double changeY = Math.abs(Math.sin(angle)) * distance;
@@ -688,6 +696,7 @@ public class Main extends Application{
                 Stop currStop = stops.get(j);
                 Button stopButton = createButton(0, 0, 300,100,Color.BLACK, currStop.getName(), 30);
                 stopButton.getStyleClass().add("listButton");
+                stopButton.setTextFill(currStop.getRoute().getColor());
                 stopButton.setOnAction(e -> {
                     window.setScene(getStopScene(currStop, window));
                 });
