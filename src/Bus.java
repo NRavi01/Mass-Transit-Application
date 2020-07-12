@@ -97,4 +97,5 @@ public class Bus extends SimulationObject {
     public void setFuelCapacity(int fuelCapacity) {
         this.fuelCapacity = fuelCapacity;
     }
+
 }
