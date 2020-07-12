@@ -41,4 +41,11 @@ public class Stop extends SimulationObject {
     public void setNumPassengers(int numPassengers) {
         this.numPassengers = numPassengers;
     }
+
+    public void changeNumPassengers(int amount) {
+        numPassengers = numPassengers + amount;
+        if (numPassengers < 0) {
+            numPassengers = 0;
+        }
+    }
 }
