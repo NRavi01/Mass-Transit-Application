@@ -57,10 +57,6 @@ public class Main extends Application{
     private ArrayList<Route> routes;
     private ArrayList<Stop> stops;
 
-    private ArrayList<Bus> initialBuses = new ArrayList<>();
-    private ArrayList<Route> initialRoutes = new ArrayList<>();
-    private ArrayList<Stop> initialStops = new ArrayList<>();
-
     private ArrayList<FuelStation> fuelStations = new ArrayList<>();
 
     private int zoomLevel = 1;
@@ -145,204 +141,214 @@ public class Main extends Application{
 
         beginSim.setOnAction(e -> {
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
-            buses = new ArrayList<>();
-            routes = new ArrayList<>();
-            stops = new ArrayList<>();
+            generateData();
+            window.setScene(getMainScreen(window));
+        });
 
-            // GT Bus Routes
-            ArrayList<Stop> blueStops = new ArrayList<>();
-            Route blueRoute = new Route("Blue Route", 2, blueStops, Color.BLUE);
-            Stop blueNav = new Stop("North Avenue (Blue)", 1, 20, new Point(4000, 4000), blueRoute);
-            Stop blueBrown = new Stop("Brown Dorm", 2, 5, new Point(3800, 3700), blueRoute);
-            Stop blueTechwood3rd = new Stop("Techwood Dr & 3rd St", 3, 5, new Point(3800, 3300), blueRoute);
-            Stop blueFourthStreet = new Stop("4th Street Houses", 4, 5, new Point(3800, 3100), blueRoute);
-            Stop blueTechwood5th = new Stop("Techwood & 5th SE Corner", 5, 2, new Point(3800, 2200), blueRoute);
-            Stop blueRussChandler = new Stop("Russ Chandler Stadium", 6, 0, new Point(3000, 1900), blueRoute);
-            Stop blueKlausWB = new Stop("Klaus Building WB", 7, 10, new Point(2500, 1500), blueRoute);
-            Stop blueNanotech = new Stop("Nanotechnology", 8, 5, new Point(2000, 1200), blueRoute);
-            Stop blueKendeda = new Stop("Kendeda Building", 9, 2, new Point(1700, 1150), blueRoute);
-            Stop bluePaper = new Stop("Paper Tricentennial", 40, 1, new Point(300, 600), blueRoute);
-            Stop blueWillage = new Stop("West Village", 11, 10, new Point(300, 1600), blueRoute);
-            Stop blue8thSt = new Stop("8th St & Hemphill Ave", 12, 2, new Point(900, 1600), blueRoute);
-            Stop blueCouchPark = new Stop("Couch Park", 41, 4, new Point(1200, 2200), blueRoute);
-            Stop blueCRC = new Stop("CRC & Stamps Health", 42, 5, new Point(1250, 3000), blueRoute);
-            Stop blueStuce = new Stop("Ferst Dr & Student Center", 43, 10, new Point(1900, 3300), blueRoute);
-            Stop blueHUB = new Stop("HUB/Tech Parkway PATH", 44, 5, new Point(2500, 3550), blueRoute);
-            Stop blueCherry = new Stop("Ferst Dr & Cherry St", 45, 3, new Point(2700, 3700), blueRoute);
+        return scene;
+    }
 
-            ArrayList<Stop> redStops = new ArrayList<>();
-            Route redRoute = new Route("Red Route", 1, redStops, Color.RED);
-            Stop redFitten = new Stop("Fitten Hall", 10, 5, new Point(350,2100), redRoute);
-            Stop redWillage = new Stop("West Village", 11, 15, new Point(300, 1600), redRoute);
-            Stop red8thSt = new Stop("8th St & Hemphill Ave", 12, 2, new Point(900, 1600), redRoute);
-            Stop redFerstHemphill = new Stop("Ferst Dr & Hemphill Ave", 13, 3, new Point(1400, 1200), redRoute);
-            Stop redCherryEmerson = new Stop("Cherry Emerson", 14, 13,  new Point(2200, 1300), redRoute);
-            Stop redKlaus = new Stop("Klaus Building EB", 15, 10, new Point(2550, 1750), redRoute);
-            Stop redFerstFowler = new Stop("Ferst Dr & Fowler", 16, 1, new Point(3100,2000), redRoute);
-            Stop redTechwood5th = new Stop("Techwood & 5th SW Corner", 17, 7, new Point(3900,2200), redRoute);
-            Stop redTechwood4th = new Stop("Techwood Dr & 4th St", 18, 2, new Point(3900, 3100), redRoute);
-            Stop redTechwoodBobbyDodd = new Stop("Techwood Dr & Bobby Dodd Way", 19, 8, new Point(3900, 3300), redRoute);
-            Stop redWardlaw = new Stop("Wardlaw Building", 20, 5, new Point(3900, 3700), redRoute);
-            Stop redNav = new Stop("North Avenue (Red)", 21, 10, new Point(4000, 4100), redRoute);
-            Stop redTechTower = new Stop("Tech Tower", 22, 4, new Point(2700, 3650), redRoute);
-            Stop redHUB = new Stop("HUB/Weber Building", 23, 5, new Point(2500, 3500), redRoute);
-            Stop redStuce = new Stop("Student Center", 24, 12, new Point(1900, 3250), redRoute);
-            Stop redISYE = new Stop("ISyE & Instruction Center", 25, 3, new Point(1350, 3000), redRoute);
+    public void generateData() {
+        buses = new ArrayList<>();
+        routes = new ArrayList<>();
+        stops = new ArrayList<>();
 
-            ArrayList<Stop> trolleyStops = new ArrayList<>();
-            Route techTrolley = new Route("Tech Trolley", 3, trolleyStops, Color.GOLD);
-            Stop trolleyHUB = new Stop("Transit HUB", 26, 11, new Point(2450, 3300), techTrolley);
-            Stop trolleyStuce = new Stop("Student Center", 24, 6, new Point(1900, 3250), techTrolley);
-            Stop trolleyISYE = new Stop("ISyE & Instruction Center", 25, 5, new Point(1350, 3000), techTrolley);
-            Stop trolleyFerstHemphill = new Stop("Ferst Dr & Hemphill Ave", 13, 5, new Point(1400, 1200), techTrolley);
-            Stop trolleyCherryEmerson = new Stop("Cherry Emerson", 14, 13,  new Point(2200, 1300), redRoute);
-            Stop trolleyKlausEB = new Stop("Klaus Building EB", 15, 7, new Point(2550, 1750), techTrolley);
-            Stop trolleyFerstFowler = new Stop("Ferst Dr & Fowler", 16, 3, new Point(3100,2000), techTrolley);
-            Stop trolleyFifthStBridgeEB = new Stop("5th Street Bridge EB", 27, 7, new Point(4000, 2100), techTrolley);
-            Stop trolleyTechSquareEB = new Stop ("Technology Square EB", 28, 2, new Point(5500, 2100), techTrolley);
-            Stop trolleyScheller = new Stop("College of Business", 29, 3, new Point(6000, 2100), techTrolley);
-            Stop trolleyMedicine = new Stop("Academy of Medicine", 30, 1, new Point(6150, 1500), techTrolley);
-            Stop trolleyMARTA = new Stop("MARTA Midtown Station", 31, 6, new Point(7000, 500), techTrolley);
-            Stop trolleyTechSquareWB = new Stop ("Technology Square WB", 32, 7, new Point(5500, 2000), techTrolley);
-            Stop trolleyFifthStBridgeWB = new Stop("5th Street Bridge WB", 33, 7, new Point(4200, 2000), techTrolley);
-            Stop trolleyRussChandler = new Stop("Russ Chandler Stadium", 6, 2, new Point(3000, 1900), techTrolley);
-            Stop trolleyKlausWB = new Stop("Klaus Building WB", 7, 10, new Point(2500, 1500), techTrolley);
-            Stop trolleyNanotech = new Stop("Nanotechnology", 8, 7, new Point(2000, 1200), techTrolley);
-            Stop trolleyKendeda = new Stop("Kendeda Building", 9, 3, new Point(1700, 1150), techTrolley);
-            Stop trolleyCouchPark = new Stop("Couch Park", 41, 4, new Point(1200, 2200), techTrolley);
-            Stop trolleyCRC = new Stop("CRC & Stamps Health", 42, 5, new Point(1250, 3000), techTrolley);
-            Stop trolleyFerstStuce = new Stop("Ferst Dr & Student Center", 43, 10, new Point(2700, 3700), techTrolley);
+        // GT Bus Routes
+        ArrayList<Stop> blueStops = new ArrayList<>();
+        Route blueRoute = new Route("Blue Route", 2, blueStops, Color.BLUE);
+        Stop blueNav = new Stop("North Avenue (Blue)", 1, 20, new Point(4000, 4000), blueRoute);
+        Stop blueBrown = new Stop("Brown Dorm", 2, 5, new Point(3800, 3700), blueRoute);
+        Stop blueTechwood3rd = new Stop("Techwood Dr & 3rd St", 3, 5, new Point(3800, 3300), blueRoute);
+        Stop blueFourthStreet = new Stop("4th Street Houses", 4, 5, new Point(3800, 3100), blueRoute);
+        Stop blueTechwood5th = new Stop("Techwood & 5th SE Corner", 5, 2, new Point(3800, 2200), blueRoute);
+        Stop blueRussChandler = new Stop("Russ Chandler Stadium", 6, 0, new Point(3000, 1900), blueRoute);
+        Stop blueKlausWB = new Stop("Klaus Building WB", 7, 10, new Point(2500, 1500), blueRoute);
+        Stop blueNanotech = new Stop("Nanotechnology", 8, 5, new Point(2000, 1200), blueRoute);
+        Stop blueKendeda = new Stop("Kendeda Building", 9, 2, new Point(1700, 1150), blueRoute);
+        Stop bluePaper = new Stop("Paper Tricentennial", 40, 1, new Point(300, 600), blueRoute);
+        Stop blueWillage = new Stop("West Village", 11, 10, new Point(300, 1600), blueRoute);
+        Stop blue8thSt = new Stop("8th St & Hemphill Ave", 12, 2, new Point(900, 1600), blueRoute);
+        Stop blueCouchPark = new Stop("Couch Park", 41, 4, new Point(1200, 2200), blueRoute);
+        Stop blueCRC = new Stop("CRC & Stamps Health", 42, 5, new Point(1250, 3000), blueRoute);
+        Stop blueStuce = new Stop("Ferst Dr & Student Center", 43, 10, new Point(1900, 3300), blueRoute);
+        Stop blueHUB = new Stop("HUB/Tech Parkway PATH", 44, 5, new Point(2500, 3550), blueRoute);
+        Stop blueCherry = new Stop("Ferst Dr & Cherry St", 45, 3, new Point(2700, 3700), blueRoute);
 
-            blueStops.add(blueNav);
-            blueStops.add(blueBrown);
-            blueStops.add(blueTechwood3rd);
-            blueStops.add(blueFourthStreet);
-            blueStops.add(blueTechwood5th);
-            blueStops.add(blueRussChandler);
-            blueStops.add(blueKlausWB);
-            blueStops.add(blueNanotech);
-            blueStops.add(blueKendeda);
-            blueStops.add(bluePaper);
-            blueStops.add(blueWillage);
-            blueStops.add(blue8thSt);
-            blueStops.add(blueCouchPark);
-            blueStops.add(blueCRC);
-            blueStops.add(blueStuce);
-            blueStops.add(blueHUB);
-            blueStops.add(blueCherry);
+        ArrayList<Stop> redStops = new ArrayList<>();
+        Route redRoute = new Route("Red Route", 1, redStops, Color.RED);
+        Stop redFitten = new Stop("Fitten Hall", 10, 5, new Point(350,2100), redRoute);
+        Stop redWillage = new Stop("West Village", 11, 15, new Point(300, 1600), redRoute);
+        Stop red8thSt = new Stop("8th St & Hemphill Ave", 12, 2, new Point(900, 1600), redRoute);
+        Stop redFerstHemphill = new Stop("Ferst Dr & Hemphill Ave", 13, 3, new Point(1400, 1200), redRoute);
+        Stop redCherryEmerson = new Stop("Cherry Emerson", 14, 13,  new Point(2200, 1300), redRoute);
+        Stop redKlaus = new Stop("Klaus Building EB", 15, 10, new Point(2550, 1750), redRoute);
+        Stop redFerstFowler = new Stop("Ferst Dr & Fowler", 16, 1, new Point(3100,2000), redRoute);
+        Stop redTechwood5th = new Stop("Techwood & 5th SW Corner", 17, 7, new Point(3900,2200), redRoute);
+        Stop redTechwood4th = new Stop("Techwood Dr & 4th St", 18, 2, new Point(3900, 3100), redRoute);
+        Stop redTechwoodBobbyDodd = new Stop("Techwood Dr & Bobby Dodd Way", 19, 8, new Point(3900, 3300), redRoute);
+        Stop redWardlaw = new Stop("Wardlaw Building", 20, 5, new Point(3900, 3700), redRoute);
+        Stop redNav = new Stop("North Avenue (Red)", 21, 10, new Point(4000, 4100), redRoute);
+        Stop redTechTower = new Stop("Tech Tower", 22, 4, new Point(2700, 3650), redRoute);
+        Stop redHUB = new Stop("HUB/Weber Building", 23, 5, new Point(2500, 3500), redRoute);
+        Stop redStuce = new Stop("Student Center", 24, 12, new Point(1900, 3250), redRoute);
+        Stop redISYE = new Stop("ISyE & Instruction Center", 25, 3, new Point(1350, 3000), redRoute);
 
-            redStops.add(redFitten);
-            redStops.add(redWillage);
-            redStops.add(red8thSt);
-            redStops.add(redFerstHemphill);
-            redStops.add(redCherryEmerson);
-            redStops.add(redKlaus);
-            redStops.add(redFerstFowler);
-            redStops.add(redTechwood5th);
-            redStops.add(redTechwood4th);
-            redStops.add(redTechwoodBobbyDodd);
-            redStops.add(redWardlaw);
-            redStops.add(redNav);
-            redStops.add(redTechTower);
-            redStops.add(redHUB);
-            redStops.add(redStuce);
-            redStops.add(redISYE);
+        ArrayList<Stop> trolleyStops = new ArrayList<>();
+        Route techTrolley = new Route("Tech Trolley", 3, trolleyStops, Color.GOLD);
+        Stop trolleyHUB = new Stop("Transit HUB", 26, 11, new Point(2450, 3300), techTrolley);
+        Stop trolleyStuce = new Stop("Student Center", 24, 6, new Point(1900, 3250), techTrolley);
+        Stop trolleyISYE = new Stop("ISyE & Instruction Center", 25, 5, new Point(1350, 3000), techTrolley);
+        Stop trolleyFerstHemphill = new Stop("Ferst Dr & Hemphill Ave", 13, 5, new Point(1400, 1200), techTrolley);
+        Stop trolleyCherryEmerson = new Stop("Cherry Emerson", 14, 13,  new Point(2200, 1300), redRoute);
+        Stop trolleyKlausEB = new Stop("Klaus Building EB", 15, 7, new Point(2550, 1750), techTrolley);
+        Stop trolleyFerstFowler = new Stop("Ferst Dr & Fowler", 16, 3, new Point(3100,2000), techTrolley);
+        Stop trolleyFifthStBridgeEB = new Stop("5th Street Bridge EB", 27, 7, new Point(4000, 2100), techTrolley);
+        Stop trolleyTechSquareEB = new Stop ("Technology Square EB", 28, 2, new Point(5500, 2100), techTrolley);
+        Stop trolleyScheller = new Stop("College of Business", 29, 3, new Point(6000, 2100), techTrolley);
+        Stop trolleyMedicine = new Stop("Academy of Medicine", 30, 1, new Point(6150, 1500), techTrolley);
+        Stop trolleyMARTA = new Stop("MARTA Midtown Station", 31, 6, new Point(7000, 500), techTrolley);
+        Stop trolleyTechSquareWB = new Stop ("Technology Square WB", 32, 7, new Point(5500, 2000), techTrolley);
+        Stop trolleyFifthStBridgeWB = new Stop("5th Street Bridge WB", 33, 7, new Point(4200, 2000), techTrolley);
+        Stop trolleyRussChandler = new Stop("Russ Chandler Stadium", 6, 2, new Point(3000, 1900), techTrolley);
+        Stop trolleyKlausWB = new Stop("Klaus Building WB", 7, 10, new Point(2500, 1500), techTrolley);
+        Stop trolleyNanotech = new Stop("Nanotechnology", 8, 7, new Point(2000, 1200), techTrolley);
+        Stop trolleyKendeda = new Stop("Kendeda Building", 9, 3, new Point(1700, 1150), techTrolley);
+        Stop trolleyCouchPark = new Stop("Couch Park", 41, 4, new Point(1200, 2200), techTrolley);
+        Stop trolleyCRC = new Stop("CRC & Stamps Health", 42, 5, new Point(1250, 3000), techTrolley);
+        Stop trolleyFerstStuce = new Stop("Ferst Dr & Student Center", 43, 10, new Point(2700, 3700), techTrolley);
 
-            trolleyStops.add(trolleyHUB);
-            trolleyStops.add(trolleyStuce);
-            trolleyStops.add(trolleyISYE);
-            trolleyStops.add(trolleyFerstHemphill);
-            trolleyStops.add(trolleyCherryEmerson);
-            trolleyStops.add(trolleyKlausEB);
-            trolleyStops.add(trolleyFerstFowler);
-            trolleyStops.add(trolleyFifthStBridgeEB);
-            trolleyStops.add(trolleyTechSquareEB);
-            trolleyStops.add(trolleyScheller);
-            trolleyStops.add(trolleyMedicine);
-            trolleyStops.add(trolleyMARTA);
-            trolleyStops.add(trolleyTechSquareWB);
-            trolleyStops.add(trolleyFifthStBridgeWB);
-            trolleyStops.add(trolleyRussChandler);
-            trolleyStops.add(trolleyKlausWB);
-            trolleyStops.add(trolleyNanotech);
-            trolleyStops.add(trolleyKendeda);
-            trolleyStops.add(trolleyCouchPark);
-            trolleyStops.add(trolleyCRC);
-            trolleyStops.add(trolleyFerstStuce);
+        blueStops.add(blueNav);
+        blueStops.add(blueBrown);
+        blueStops.add(blueTechwood3rd);
+        blueStops.add(blueFourthStreet);
+        blueStops.add(blueTechwood5th);
+        blueStops.add(blueRussChandler);
+        blueStops.add(blueKlausWB);
+        blueStops.add(blueNanotech);
+        blueStops.add(blueKendeda);
+        blueStops.add(bluePaper);
+        blueStops.add(blueWillage);
+        blueStops.add(blue8thSt);
+        blueStops.add(blueCouchPark);
+        blueStops.add(blueCRC);
+        blueStops.add(blueStuce);
+        blueStops.add(blueHUB);
+        blueStops.add(blueCherry);
 
-            stops.add(blueNav);
-            stops.add(blueBrown);
-            stops.add(blueTechwood3rd);
-            stops.add(blueFourthStreet);
-            stops.add(blueTechwood5th);
-            stops.add(blueRussChandler);
-            stops.add(blueKlausWB);
-            stops.add(blueNanotech);
-            stops.add(blueKendeda);
-            stops.add(bluePaper);
-            stops.add(blueWillage);
-            stops.add(blue8thSt);
-            stops.add(blueCouchPark);
-            stops.add(blueCRC);
-            stops.add(blueStuce);
-            stops.add(blueHUB);
-            stops.add(blueCherry);
-            stops.add(redFitten);
-            stops.add(redWillage);
-            stops.add(red8thSt);
-            stops.add(redFerstHemphill);
-            stops.add(redCherryEmerson);
-            stops.add(redKlaus);
-            stops.add(redFerstFowler);
-            stops.add(redTechwood5th);
-            stops.add(redTechwood4th);
-            stops.add(redTechwoodBobbyDodd);
-            stops.add(redWardlaw);
-            stops.add(redNav);
-            stops.add(redTechTower);
-            stops.add(redHUB);
-            stops.add(redStuce);
-            stops.add(redISYE);
-            stops.add(trolleyHUB);
-            stops.add(trolleyStuce);
-            stops.add(trolleyISYE);
-            stops.add(trolleyFerstHemphill);
-            stops.add(trolleyCherryEmerson);
-            stops.add(trolleyKlausEB);
-            stops.add(trolleyFerstFowler);
-            stops.add(trolleyFifthStBridgeEB);
-            stops.add(trolleyTechSquareEB);
-            stops.add(trolleyScheller);
-            stops.add(trolleyMedicine);
-            stops.add(trolleyMARTA);
-            stops.add(trolleyTechSquareWB);
-            stops.add(trolleyFifthStBridgeWB);
-            stops.add(trolleyRussChandler);
-            stops.add(trolleyKlausWB);
-            stops.add(trolleyNanotech);
-            stops.add(trolleyKendeda);
-            stops.add(trolleyCouchPark);
-            stops.add(trolleyCRC);
-            stops.add(trolleyFerstStuce);
+        redStops.add(redFitten);
+        redStops.add(redWillage);
+        redStops.add(red8thSt);
+        redStops.add(redFerstHemphill);
+        redStops.add(redCherryEmerson);
+        redStops.add(redKlaus);
+        redStops.add(redFerstFowler);
+        redStops.add(redTechwood5th);
+        redStops.add(redTechwood4th);
+        redStops.add(redTechwoodBobbyDodd);
+        redStops.add(redWardlaw);
+        redStops.add(redNav);
+        redStops.add(redTechTower);
+        redStops.add(redHUB);
+        redStops.add(redStuce);
+        redStops.add(redISYE);
 
-            routes.add(blueRoute);
-            routes.add(redRoute);
-            routes.add(techTrolley);
-            buses.add(new Bus("Blue Bus 1", 1, 10, 20.0, blueRoute, blueRoute.getStops().get(0), blueRoute.getStops().get(1), blueRoute.getStops().get(0).getLocation(), 100, 100));
-            buses.add(new Bus("Red Bus 1", 2, 10, 20.0, redRoute, redRoute.getStops().get(0), redRoute.getStops().get(1), redRoute.getStops().get(0).getLocation(), 100, 100));
-            buses.add(new Bus("Tech Trolley 1", 2, 10, 20.0, techTrolley, techTrolley.getStops().get(0), techTrolley.getStops().get(1), techTrolley.getStops().get(0).getLocation(), 100, 100));
+        trolleyStops.add(trolleyHUB);
+        trolleyStops.add(trolleyStuce);
+        trolleyStops.add(trolleyISYE);
+        trolleyStops.add(trolleyFerstHemphill);
+        trolleyStops.add(trolleyCherryEmerson);
+        trolleyStops.add(trolleyKlausEB);
+        trolleyStops.add(trolleyFerstFowler);
+        trolleyStops.add(trolleyFifthStBridgeEB);
+        trolleyStops.add(trolleyTechSquareEB);
+        trolleyStops.add(trolleyScheller);
+        trolleyStops.add(trolleyMedicine);
+        trolleyStops.add(trolleyMARTA);
+        trolleyStops.add(trolleyTechSquareWB);
+        trolleyStops.add(trolleyFifthStBridgeWB);
+        trolleyStops.add(trolleyRussChandler);
+        trolleyStops.add(trolleyKlausWB);
+        trolleyStops.add(trolleyNanotech);
+        trolleyStops.add(trolleyKendeda);
+        trolleyStops.add(trolleyCouchPark);
+        trolleyStops.add(trolleyCRC);
+        trolleyStops.add(trolleyFerstStuce);
 
-            //Fuel Station
+        stops.add(blueNav);
+        stops.add(blueBrown);
+        stops.add(blueTechwood3rd);
+        stops.add(blueFourthStreet);
+        stops.add(blueTechwood5th);
+        stops.add(blueRussChandler);
+        stops.add(blueKlausWB);
+        stops.add(blueNanotech);
+        stops.add(blueKendeda);
+        stops.add(bluePaper);
+        stops.add(blueWillage);
+        stops.add(blue8thSt);
+        stops.add(blueCouchPark);
+        stops.add(blueCRC);
+        stops.add(blueStuce);
+        stops.add(blueHUB);
+        stops.add(blueCherry);
+        stops.add(redFitten);
+        stops.add(redWillage);
+        stops.add(red8thSt);
+        stops.add(redFerstHemphill);
+        stops.add(redCherryEmerson);
+        stops.add(redKlaus);
+        stops.add(redFerstFowler);
+        stops.add(redTechwood5th);
+        stops.add(redTechwood4th);
+        stops.add(redTechwoodBobbyDodd);
+        stops.add(redWardlaw);
+        stops.add(redNav);
+        stops.add(redTechTower);
+        stops.add(redHUB);
+        stops.add(redStuce);
+        stops.add(redISYE);
+        stops.add(trolleyHUB);
+        stops.add(trolleyStuce);
+        stops.add(trolleyISYE);
+        stops.add(trolleyFerstHemphill);
+        stops.add(trolleyCherryEmerson);
+        stops.add(trolleyKlausEB);
+        stops.add(trolleyFerstFowler);
+        stops.add(trolleyFifthStBridgeEB);
+        stops.add(trolleyTechSquareEB);
+        stops.add(trolleyScheller);
+        stops.add(trolleyMedicine);
+        stops.add(trolleyMARTA);
+        stops.add(trolleyTechSquareWB);
+        stops.add(trolleyFifthStBridgeWB);
+        stops.add(trolleyRussChandler);
+        stops.add(trolleyKlausWB);
+        stops.add(trolleyNanotech);
+        stops.add(trolleyKendeda);
+        stops.add(trolleyCouchPark);
+        stops.add(trolleyCRC);
+        stops.add(trolleyFerstStuce);
+
+        routes.add(blueRoute);
+        routes.add(redRoute);
+        routes.add(techTrolley);
+        buses.add(new Bus("Blue Bus 1", 1, 10, 20.0, blueRoute, blueRoute.getStops().get(0), blueRoute.getStops().get(1), blueRoute.getStops().get(0).getLocation(), 100, 100));
+        buses.add(new Bus("Red Bus 1", 2, 10, 20.0, redRoute, redRoute.getStops().get(0), redRoute.getStops().get(1), redRoute.getStops().get(0).getLocation(), 100, 100));
+        buses.add(new Bus("Tech Trolley 1", 2, 10, 20.0, techTrolley, techTrolley.getStops().get(0), techTrolley.getStops().get(1), techTrolley.getStops().get(0).getLocation(), 100, 100));
+
+        //Fuel Station
+            /*
             for (int i = 0; i < 1; i++) {
                 Point newFuel = new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000)));
                 FuelStation newFuelStation = new FuelStation(newFuel);
                 fuelStations.add(newFuelStation);
             }
+             */
 
-            window.setScene(getMainScreen(window));
-        });
-
-        return scene;
+        for (int i = 0; i < 15; i++) {
+            scaleAll(-1);
+            zoomLevel--;
+        }
     }
 
     public Scene getMainScreen(Stage window) {
@@ -591,9 +597,8 @@ public class Main extends Application{
         });
 
         reset.setOnAction(e -> {
-            buses = initialBuses;
-            routes = initialRoutes;
-            stops = initialStops;
+            zoomLevel = 1;
+            generateData();
             window.setScene(getMainScreen(window));
         });
 
@@ -658,6 +663,7 @@ public class Main extends Application{
         double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
         double angle = Math.atan(diffy / diffx);
         int distancePerStep = (int) (distance * b.getAvgSpeed() / 10);
+        System.out.println(distancePerStep);
         if (distanceTillStop < Math.abs(distancePerStep)) {
             double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
             double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
