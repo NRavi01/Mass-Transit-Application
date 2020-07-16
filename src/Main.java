@@ -149,7 +149,7 @@ public class Main extends Application{
             String day = dateChoiceBox.getValue();
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
             try {
-                ZipFile zip = new ZipFile("C:/Users/Nisha/IdeaProjects/MTS-UI/src/gtfs022118.zip");
+                ZipFile zip = new ZipFile(System.getProperty("user.dir") + "/src/gtfs022118.zip");
                 db = DatabaseFactory.createDatabaseFromGtfs(zip, day);
                 generateData();
             } catch (IOException ioException) {
