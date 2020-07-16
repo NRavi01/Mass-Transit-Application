@@ -44,13 +44,46 @@ public interface Database {
     void addStop(Stop stop) throws SQLException;
 
     /**
+     * Updates the route, location, passengers, passenger capacity, fuel, fuel capacity, and/or speed of a bus.
+     *
+     * @param bus Bus object that is updated to database
+     * @throws SQLException
+     */
+    void updateBus(Bus bus) throws SQLException;
+
+
+    /**
+     * Updates the name or number of a route. To add to a route's list of stops, use the extendRoute function instead.
+     *
+     * @param route Route object that is updated to database
+     * @throws SQLException
+     */
+    void updateRoute(Route route) throws SQLException;
+
+    /** Adds a stop to only the end of a route's list of stops
+     *
+     * @param route Route object that is getting a stop added to the end of its list of stops
+     * @param stop Stop object that is getting added to the end of the route input
+     * @throws SQLException
+     */
+    void extendRoute(Route route, Stop stop) throws SQLException;
+
+    /**
+     * Updates name, # of riders, latitude, and/or longitude of a stop
+     *
+     * @param stop Stop object that is updated to database
+     * @throws SQLException
+     */
+    void updateStop(Stop stop) throws SQLException;
+
+    /**
      * Gets a Bus from the database
      *
      * @param id of the bus being retrieved from the database
      * @return Bus object with corresponding id
      * @throws SQLException
      */
-    Bus getBus(int id) throws SQLException;
+    Bus getBus(String id) throws SQLException;
 
     /**
      * Gets a Route from the database
@@ -59,7 +92,7 @@ public interface Database {
      * @return Route object with corresponding id
      * @throws SQLException
      */
-    Route getRoute(int id) throws SQLException;
+    Route getRoute(String id) throws SQLException;
 
     /**
      * Gets a Stop from the database
@@ -68,7 +101,7 @@ public interface Database {
      * @return Stop object with corresponding id
      * @throws SQLException
      */
-    Stop getStop(int id) throws SQLException;
+    Stop getStop(String id) throws SQLException;
 
     /**
      * Gets all buses from the database
@@ -85,7 +118,7 @@ public interface Database {
      * @return Collection of type Bus containing all buses in database with the corresponding route ID
      * @throws SQLException
      */
-    Collection<Bus> getAllBuses(int routeId) throws SQLException;
+    Collection<Bus> getAllBuses(String routeId) throws SQLException;
 
     /**
      * Gets all routes from the database
@@ -111,7 +144,7 @@ public interface Database {
      * @return List of type Stop including the ordered stops from the corresponding route
      * @throws SQLException
      */
-    List<Stop> getAllStops(int routeId) throws SQLException;
+    List<Stop> getAllStops(String routeId) throws SQLException;
 
     /**
      * Removes a bus from the database.
@@ -146,7 +179,7 @@ public interface Database {
      * @param stopId  of stop to remove
      * @throws SQLException
      */
-    void removeFromRoute(int routeId, int stopId) throws SQLException;
+    void removeFromRoute(String routeId, String stopId) throws SQLException;
 
     /**
      * Removes a stop from the database.
@@ -162,5 +195,5 @@ public interface Database {
      * @param stopId of stop to remove from the database
      * @throws SQLException
      */
-    void removeStop(int stopId) throws SQLException;
+    void removeStop(String stopId) throws SQLException;
 }
