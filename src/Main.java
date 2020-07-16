@@ -503,8 +503,10 @@ public class Main extends Application{
             window.setScene(getDataAnalysisScreen(window));
         });
 
+        ImageView modelAnalysis = createImage("analysis.png", 220, 10, 150, 60);
+
         Group analysisGroup = new Group();
-        analysisGroup.getChildren().addAll(analysisHolder, analysisButton);
+        analysisGroup.getChildren().addAll(analysisHolder, analysisButton, modelAnalysis);
 
         Line busHolder = new Line(0, 0, 0, 0);
         placeHolder.setStrokeWidth(0);
@@ -622,7 +624,7 @@ public class Main extends Application{
         lists.setPrefSize(globalWidth * 1/4, 500);
         lists.setPadding(new Insets(0, 0, 0, 0));
 
-        ImageView martaLogo = createImage("martaLogo.gif", 0, 0, globalWidth * 1/4 - 50, 200);
+        ImageView martaLogo = createImage("martaLogo.gif", 0, 0, globalWidth * 1/4, 170);
 
         Pane logoGroup = new Pane();
         logoGroup.getChildren().add(martaLogo);
@@ -944,7 +946,7 @@ public class Main extends Application{
         if (type.equals("Bus")) {
             for (int j = 0; j < buses.size(); j++) {
                 Bus currBus = buses.get(j);
-                Button busButton = createButton(0, 0, 300,100,Color.BLACK, currBus.getName(), 30);
+                Button busButton = createButton(0, 0, 600, 100, Color.BLACK, currBus.getName(), 30);
                 busButton.getStyleClass().add("listButton");
                 busButton.setOnAction(e -> {
                     window.setScene(getBusScene(currBus, window));
@@ -963,7 +965,7 @@ public class Main extends Application{
         } else if (type.equals("Route")) {
             for (int j = 0; j < routes.size(); j++) {
                 Route currRoute = routes.get(j);
-                Button routeButton = createButton(0, 0, 300,100,currRoute.getColor(), currRoute.getName(), 30);
+                Button routeButton = createButton(0, 0, 600,100,currRoute.getColor(), currRoute.getName(), 30);
                 routeButton.getStyleClass().add("listButton");
                 routeButton.setTextFill(currRoute.getColor());
                 routeButton.setOnAction(e -> {
@@ -983,7 +985,7 @@ public class Main extends Application{
         } else {
             for (int j = 0; j < stops.size(); j++) {
                 Stop currStop = stops.get(j);
-                Button stopButton = createButton(0, 0, 300,100,Color.BLACK, currStop.getName(), 30);
+                Button stopButton = createButton(0, 0, 600,100,Color.BLACK, currStop.getName(), 30);
                 stopButton.getStyleClass().add("listButton");
                 stopButton.setTextFill(currStop.getRoute().getColor());
                 stopButton.setOnAction(e -> {
@@ -1610,14 +1612,60 @@ public class Main extends Application{
 
     public Scene getDataAnalysisScreen(Stage window) {
         GridPane gridPane = new GridPane();
+
+        Label title = createLabel("Choose How to Analyze", 0, 0, 50, Color.BLACK, 2000);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
+
+        Button effScore = createButton(0, 0, 600, 100, Color.BLACK, "Generate Effectiveness Score", 30);
+        effScore.getStyleClass().add("listButton");
+        effScore.setOnAction( e -> {
+            window.setScene(getEffectivenessScoreScreen(window));
+        });
+
+        Button predModel = createButton(0, 0, 600, 100, Color.BLACK, "Show Predicted Number of Passengers", 30);
+        predModel.getStyleClass().add("listButton");
+        predModel.setOnAction( e -> {
+//            window.setScene(getPredictiveModelScreen(window));
+        }); 
+
+        Button heatMap = createButton(0, 0, 600, 100, Color.BLACK, "Display Heatmap", 30);
+        heatMap.getStyleClass().add("listButton");
+        heatMap.setOnAction( e -> {
+//            window.setScene(getHeatmapScreen(window));
+        });       
+
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(window));
+        });
+
+        gridPane.add(title, 0, 0, 1, 1);
+        gridPane.add(effScore, 0, 1, 1, 1);
+        gridPane.add(predModel, 0, 2, 1, 1);
+        gridPane.add(heatMap, 0, 3, 1, 1);
+        gridPane.add(exit, 0, 4, 1, 1);
+
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setVgap(30);
+        gridPane.setHgap(10);
+        ScrollPane scroll = new ScrollPane(gridPane);
+        Scene scene = new Scene(scroll, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
+        return scene;
+    }
+
+
+    public Scene getEffectivenessScoreScreen(Stage window) {
+        GridPane gridPane = new GridPane();
         
-        Label title = createLabel("Select Stops and Buses to Generate Effectiveness Score", 0, 0, 50, Color.BLACK, 2000);
+        Label title = createLabel("Generate Effectiveness Score", 0, 0, 50, Color.BLACK, 700);
         title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
         Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
         exit.getStyleClass().add("exitButton");
         exit.setOnAction(e -> {
-            window.setScene(getListScene(window, "Route"));
+            window.setScene(getDataAnalysisScreen(window));
         });
 
         ListView stopChoices = new ListView();
@@ -1714,6 +1762,10 @@ public class Main extends Application{
         System.out.println(score);
         return score;
     }
+
+//    public Scene getPredictiveModelScreen(Stage window) {
+//
+//    }
 
     public static void main(String[] args) {
         launch(args);
