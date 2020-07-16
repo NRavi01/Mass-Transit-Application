@@ -9,5 +9,5 @@ abstract class Parser {
         this.zipFile = zipFile;
     }
 
-    abstract void parse();
+    abstract void parse(DayOfTheWeek dayOfTheWeek);
 }
