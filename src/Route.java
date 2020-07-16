@@ -9,6 +9,10 @@ public class Route extends SimulationObject {
     private ArrayList<Stop> stops;
     private Color c;
 
+    public Route(String name, int id) {
+        this(name, id, new ArrayList<Stop>(), Color.BLACK);
+    }
+
     public Route(String name, int id, ArrayList<Stop> stops, Color c) {
         super(name, id);
         this.stops = stops;
@@ -43,5 +47,22 @@ public class Route extends SimulationObject {
         else {
             return stops.get(index - 1);
         }
+    }
+
+    public void setColor(Color c) {
+        this.c = c;
+    }
+
+    public void extend(Stop stop) {
+        this.stops.add(stop);
+    }
+
+    @Override
+    public String toString() {
+        return "('" +
+                this.getID() + "', '" +
+                this.getName() + "', '" +
+                this.getName() + '\'' +
+                ")";
     }
 }
