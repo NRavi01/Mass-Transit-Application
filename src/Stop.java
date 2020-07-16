@@ -48,4 +48,16 @@ public class Stop extends SimulationObject {
             numPassengers = 0;
         }
     }
+
+    @Override
+    public String toString() {
+        return "('" +
+                this.getID() + "', " +
+                '\'' + this.getName() + "', " +
+                this.getNumPassengers() + ", " +
+                this.getNumPassengers() + ", " +
+                this.getLocation().getX() + ", " +
+                this.getLocation().getY() +
+                ")";
+    }
 }
