@@ -44,6 +44,8 @@ import javafx.scene.shape.Rectangle;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1644,7 +1646,12 @@ public class Main extends Application{
         Button heatMap = createButton(0, 0, 600, 100, Color.BLACK, "Display Heatmap", 30);
         heatMap.getStyleClass().add("listButton");
         heatMap.setOnAction( e -> {
-//            window.setScene(getHeatmapScreen(window));
+            try {
+                toCsv();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            window.setScene(getHeatmapScreen(window));
         });       
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
@@ -1778,6 +1785,64 @@ public class Main extends Application{
 //    public Scene getPredictiveModelScreen(Stage window) {
 //
 //    }
+
+    public Scene getHeatmapScreen(Stage window) {
+        GridPane gridPane = new GridPane();
+
+        Label title = createLabel("Heat Map", 0, 0, 50, Color.BLACK, 2000);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
+
+        Image heatmapImage = new Image("heatmap.png");
+        ImageView image = new ImageView(heatmapImage);
+        image.setFitHeight(700);
+        image.setFitWidth(700);
+        image.setLayoutX(0);
+        image.setLayoutY(0);
+
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnAction(e -> {
+            window.setScene(getMainScreen(window));
+        });
+
+        gridPane.add(title, 0, 0, 1, 1);
+        gridPane.add(image, 0, 1, 1, 1);
+        gridPane.add(exit, 0, 2, 1, 1);
+
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setVgap(30);
+        gridPane.setHgap(10);
+        ScrollPane scroll = new ScrollPane(gridPane);
+        Scene scene = new Scene(scroll, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
+        return scene;
+    }
+
+    public void toCsv() throws IOException {
+        //csv of passengers
+        FileWriter writer = new FileWriter("passengers.csv");
+        for (int i = 0; i < stops.size(); i++) {
+            writer.append(stops.get(i).getNumPassengers() + ",\n");
+        }
+        writer.flush();
+        writer.close();
+
+        FileWriter writer2 = new FileWriter("stops.csv");
+        for (int i = 0; i < stops.size(); i++) {
+            writer2.append(stops.get(i).getName() + ',');
+            writer2.append(String.valueOf(stops.get(i).getScreenLocation().getX()) + ',');
+            writer2.append(String.valueOf(stops.get(i).getScreenLocation().getY()) + ',' + '\n');
+        }
+        writer2.flush();
+        writer2.close();
+        Process p = Runtime.getRuntime().exec("python heatmap.py");
+        try {
+            p.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void main(String[] args) {
         launch(args);
