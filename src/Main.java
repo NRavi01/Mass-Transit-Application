@@ -146,11 +146,11 @@ public class Main extends Application{
         window.setScene(scene);
 
         beginSim.setOnAction(e -> {
-
+            String day = dateChoiceBox.getValue();
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
             try {
                 ZipFile zip = new ZipFile("C:/Users/Nisha/IdeaProjects/MTS-UI/src/gtfs022118.zip");
-                db = DatabaseFactory.createDatabaseFromGtfs(zip, "Sunday");
+                db = DatabaseFactory.createDatabaseFromGtfs(zip, day);
                 generateData();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
@@ -177,10 +177,18 @@ public class Main extends Application{
                 route.setColor(Color.BLUE);
             } else if (i == 2) {
                 route.setColor(Color.GREEN);
-            } else {
+            } else if (i == 3) {
                 route.setColor(Color.RED);
+            } else if (i == 4) {
+                route.setColor(Color.PINK);
+            } else if (i == 5) {
+                route.setColor(Color.SILVER);
+            } else if (i == 6) {
+                route.setColor(Color.YELLOW);
+            } else {
+                route.setColor(Color.ORANGE);
             }
-            if (i == 3) {
+            if (i == 7) {
                 i = 0;
             } else {
                 i++;
@@ -1312,7 +1320,7 @@ public class Main extends Application{
         Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
         exit.getStyleClass().add("exitButton");
         exit.setOnAction(e -> {
-            window.setScene(getListScene(window, "Route"));
+            window.setScene(getListScene(window, "Stop"));
         });
 
         Label name = createLabel("Name:", 0, 0, 30, Color.BLACK, 400);
