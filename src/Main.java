@@ -47,10 +47,11 @@ import java.awt.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Optional;
+import java.util.zip.ZipFile;
 
 public class Main extends Application{
     private int globalWidth = 1920;
@@ -59,6 +60,8 @@ public class Main extends Application{
     private ArrayList<Bus> buses;
     private ArrayList<Route> routes;
     private ArrayList<Stop> stops;
+
+    private Database db;
 
     private ArrayList<FuelStation> fuelStations = new ArrayList<>();
 
@@ -143,19 +146,58 @@ public class Main extends Application{
         window.setScene(scene);
 
         beginSim.setOnAction(e -> {
+
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
-            generateData();
+            try {
+                ZipFile zip = new ZipFile("C:/Users/Nisha/IdeaProjects/MTS-UI/src/gtfs022118.zip");
+                db = DatabaseFactory.createDatabaseFromGtfs(zip, "Sunday");
+                generateData();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             window.setScene(getMainScreen(window));
         });
 
         return scene;
     }
 
-    public void generateData() {
+    public void generateData() throws IOException, SQLException {
         buses = new ArrayList<>();
         routes = new ArrayList<>();
         stops = new ArrayList<>();
 
+        int i = 0;
+        for (Route route : db.getAllRoutes()) {
+            if (i == 0) {
+                route.setColor(Color.BLACK);
+            }
+            else if (i == 1) {
+                route.setColor(Color.BLUE);
+            } else if (i == 2) {
+                route.setColor(Color.GREEN);
+            } else {
+                route.setColor(Color.RED);
+            }
+            if (i == 3) {
+                i = 0;
+            } else {
+                i++;
+            }
+            routes.add(route);
+            Stop stop1 = route.getStops().get(0);
+            Stop stop2 = route.getStops().get(1);
+            double x = (stop1.getLocation().getX() + stop2.getLocation().getX()) / 2;
+            double y = (stop1.getLocation().getY() + stop2.getLocation().getY()) / 2;
+            Point p = new Point((int) x, (int) y);
+            buses.add(new Bus("Bus " +  route.getID(), route.getID(),(int) (Math.random() * 20), 10, route, stop1, stop2, p, 100, 100 ));
+        }
+        for (Stop stop : db.getAllStops()) {
+            stops.add(stop);
+        }
+
+        /*
         // GT Bus Routes
         ArrayList<Stop> blueStops = new ArrayList<>();
         Route blueRoute = new Route("Blue Route", 2, blueStops, Color.BLUE);
@@ -339,19 +381,8 @@ public class Main extends Application{
         buses.add(new Bus("Red Bus 1", 2, 10, 20.0, redRoute, redRoute.getStops().get(0), redRoute.getStops().get(1), redRoute.getStops().get(0).getLocation(), 100, 100));
         buses.add(new Bus("Tech Trolley 1", 2, 10, 20.0, techTrolley, techTrolley.getStops().get(0), techTrolley.getStops().get(1), techTrolley.getStops().get(0).getLocation(), 100, 100));
 
-        //Fuel Station
-            /*
-            for (int i = 0; i < 1; i++) {
-                Point newFuel = new Point((int) (Math.random() * (5000)), (int)(Math.random() * (5000)));
-                FuelStation newFuelStation = new FuelStation(newFuel);
-                fuelStations.add(newFuelStation);
-            }
-             */
+        */
 
-        for (int i = 0; i < 15; i++) {
-            scaleAll(-1);
-            zoomLevel--;
-        }
     }
 
     public Scene getMainScreen(Stage window) {
@@ -360,6 +391,7 @@ public class Main extends Application{
         ArrayList<ImageView> busImages = new ArrayList<>();
         for (int i = 0; i < buses.size(); i++) {
             Bus b = buses.get(i);
+            //System.out.println(b.getScreenLocation().getX() + " woa " +  b.getScreenLocation().getY());
             ImageView newBus = createImage("bus_icon.PNG", (int) b.getScreenLocation().getX() - 40, (int) b.getScreenLocation().getY() - 25, 80, 50);
             busImages.add(newBus);
         }
@@ -372,11 +404,12 @@ public class Main extends Application{
             Route currRoute = routes.get(i);
             for (int j = 0; j < currRoute.getStops().size(); j++) {
                 Stop stop = currRoute.getStops().get(j);
-                Circle newStop = new Circle(stop.getScreenLocation().getX(), stop.getScreenLocation().getY(), 20);
+                //System.out.println(stop.getScreenLocation().getX() + " " +  stop.getScreenLocation().getY());
+                Circle newStop = new Circle(stop.getScreenLocation().getX(), stop.getScreenLocation().getY(), 20 + zoomLevel);
                 newStop.setFill(currRoute.getColor());
                 stopImages.add(newStop);
 
-                Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getScreenLocation().getX() - 5, (int) stop.getScreenLocation().getY() - 10, 15, Color.BLACK, 20);
+                Label stopLabel = createLabel(Integer.toString(stop.getID()), (int) stop.getScreenLocation().getX() - 5, (int) stop.getScreenLocation().getY() - 10, 15, Color.BLACK, 50);
                 stopLabels.add(stopLabel);
 
                 Line stopLine = null;
@@ -617,7 +650,13 @@ public class Main extends Application{
 
         reset.setOnAction(e -> {
             zoomLevel = 1;
-            generateData();
+            try {
+                generateData();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             window.setScene(getMainScreen(window));
         });
 
@@ -682,7 +721,6 @@ public class Main extends Application{
         double distanceTillStop = Math.sqrt(diffx * diffx + diffy * diffy);
         double angle = Math.atan(diffy / diffx);
         int distancePerStep = (int) (distance * b.getAvgSpeed() / 10);
-        System.out.println(distancePerStep);
         if (distanceTillStop < Math.abs(distancePerStep)) {
             double changeScreenY = diffy * Math.pow(1.1, zoomLevel);
             double changeScreenX = diffx * Math.pow(1.1, zoomLevel);
@@ -979,6 +1017,11 @@ public class Main extends Application{
                 delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
                 delete.setOnAction(e -> {
                     routes.remove(currRoute);
+                    for (int k = 0; k < buses.size(); k++) {
+                        if (buses.get(k).getRoute() == currRoute) {
+                            buses.remove(k  );
+                        }
+                    }
                     window.setScene(getListScene(window, "Route"));
                 });
                 i++;
@@ -990,7 +1033,9 @@ public class Main extends Application{
                 Stop currStop = stops.get(j);
                 Button stopButton = createButton(0, 0, 600,100,Color.BLACK, currStop.getName(), 30);
                 stopButton.getStyleClass().add("listButton");
-                stopButton.setTextFill(currStop.getRoute().getColor());
+                if (currStop.getRoute() != null) {
+                    stopButton.setTextFill(currStop.getRoute().getColor());
+                }
                 stopButton.setOnAction(e -> {
                     window.setScene(getStopScene(currStop, window));
                 });
@@ -1226,25 +1271,9 @@ public class Main extends Application{
                     i++;
                 }
 
-                ArrayList<Stop> theREALstops = new ArrayList<>();
-                int size = routeStops.size();
-                for (int a = 0; a < size; a++) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Choose!!");
-                    alert.setHeaderText("Choose stop #" + (a+1));
-                    Collection<ButtonType> buttonsBruh = new ArrayList<>();
-                    for (int b = 0; b < routeStops.size(); b++) {
-                        ButtonType buttonType = new ButtonType(b + " " + routeStops.get(b).getName());
-                        buttonsBruh.add(buttonType);
-                    }
-                    alert.getButtonTypes().setAll(buttonsBruh);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    theREALstops.add(routeStops.remove(Integer.parseInt(result.get().getText().substring(0, result.get().getText().indexOf(' ')))));
-                }
-
                 Color color = pickColor.getValue();
 
-                routes.add(new Route(routeName, routeID, theREALstops, color));
+                routes.add(new Route(routeName, routeID, routeStops, color));
                 window.setScene(getListScene(window, "Route"));
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(new JFrame(), "Invalid Value(s)" , "Bad Arguments",
@@ -1641,18 +1670,17 @@ public class Main extends Application{
         predModel.getStyleClass().add("listButton");
         predModel.setOnAction( e -> {
 //            window.setScene(getPredictiveModelScreen(window));
-        }); 
+        });
 
         Button heatMap = createButton(0, 0, 600, 100, Color.BLACK, "Display Heatmap", 30);
         heatMap.getStyleClass().add("listButton");
         heatMap.setOnAction( e -> {
             try {
-                toCsv();
+                toCsv(window);
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
-            window.setScene(getHeatmapScreen(window));
-        });       
+                });
 
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
         exit.getStyleClass().add("exitButton");
@@ -1675,10 +1703,69 @@ public class Main extends Application{
         return scene;
     }
 
+    public Scene getHeatmapScreen(Stage window) {
+        GridPane gridPane = new GridPane();
+
+        Label title = createLabel("Heat Map", 0, 0, 50, Color.BLACK, 2000);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
+
+        Image heatmapImage = new Image("heatmap.png");
+        ImageView image = new ImageView(heatmapImage);
+        image.setFitHeight(700);
+        image.setFitWidth(700);
+        image.setLayoutX(0);
+        image.setLayoutY(0);
+
+        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnAction(e -> {
+            window.setScene(getDataAnalysisScreen(window));
+        });
+
+        gridPane.add(title, 0, 0, 1, 1);
+        gridPane.add(image, 0, 1, 1, 1);
+        gridPane.add(exit, 0, 2, 1, 1);
+
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setVgap(30);
+        gridPane.setHgap(10);
+        ScrollPane scroll = new ScrollPane(gridPane);
+        Scene scene = new Scene(scroll, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
+        return scene;
+    }
+
+    public void toCsv(Stage window) throws IOException {
+        //csv of passengers
+        FileWriter writer = new FileWriter("passengers.csv");
+        for (int i = 0; i < stops.size(); i++) {
+            writer.append(stops.get(i).getNumPassengers() + ",\n");
+        }
+        writer.flush();
+        writer.close();
+
+        FileWriter writer2 = new FileWriter("stops.csv");
+        for (int i = 0; i < stops.size(); i++) {
+            writer2.append(stops.get(i).getName() + ',');
+            writer2.append(String.valueOf(stops.get(i).getScreenLocation().getX()) + ',');
+            writer2.append(String.valueOf(stops.get(i).getScreenLocation().getY()) + ',' + '\n');
+        }
+        writer2.flush();
+        writer2.close();
+        Process p = Runtime.getRuntime().exec("python heatmap.py");
+        try {
+            p.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        window.setScene(getHeatmapScreen(window));
+
+    }
+
 
     public Scene getEffectivenessScoreScreen(Stage window) {
         GridPane gridPane = new GridPane();
-        
+
         Label title = createLabel("Generate Effectiveness Score", 0, 0, 50, Color.BLACK, 700);
         title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
 
@@ -1705,7 +1792,7 @@ public class Main extends Application{
         Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
         submit.getStyleClass().add("submitButton");
 
-        
+
         submit.setOnAction(e -> {
             try {
                 ArrayList<Stop> analysisStops = new ArrayList<>();
@@ -1785,64 +1872,6 @@ public class Main extends Application{
 //    public Scene getPredictiveModelScreen(Stage window) {
 //
 //    }
-
-    public Scene getHeatmapScreen(Stage window) {
-        GridPane gridPane = new GridPane();
-
-        Label title = createLabel("Heat Map", 0, 0, 50, Color.BLACK, 2000);
-        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
-
-        Image heatmapImage = new Image("heatmap.png");
-        ImageView image = new ImageView(heatmapImage);
-        image.setFitHeight(700);
-        image.setFitWidth(700);
-        image.setLayoutX(0);
-        image.setLayoutY(0);
-
-        Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
-        exit.getStyleClass().add("exitButton");
-        exit.setOnAction(e -> {
-            window.setScene(getDataAnalysisScreen(window));
-        });
-
-        gridPane.add(title, 0, 0, 1, 1);
-        gridPane.add(image, 0, 1, 1, 1);
-        gridPane.add(exit, 0, 2, 1, 1);
-
-        gridPane.setPadding(new Insets(50, 50, 50, 50));
-        gridPane.setVgap(30);
-        gridPane.setHgap(10);
-        ScrollPane scroll = new ScrollPane(gridPane);
-        Scene scene = new Scene(scroll, globalWidth, globalHeight);
-        scene.getStylesheets().add("styles/main.css");
-        return scene;
-    }
-
-    public void toCsv() throws IOException {
-        //csv of passengers
-        FileWriter writer = new FileWriter("passengers.csv");
-        for (int i = 0; i < stops.size(); i++) {
-            writer.append(stops.get(i).getNumPassengers() + ",\n");
-        }
-        writer.flush();
-        writer.close();
-
-        FileWriter writer2 = new FileWriter("stops.csv");
-        for (int i = 0; i < stops.size(); i++) {
-            writer2.append(stops.get(i).getName() + ',');
-            writer2.append(String.valueOf(stops.get(i).getScreenLocation().getX()) + ',');
-            writer2.append(String.valueOf(stops.get(i).getScreenLocation().getY()) + ',' + '\n');
-        }
-        writer2.flush();
-        writer2.close();
-        Process p = Runtime.getRuntime().exec("python heatmap.py");
-        try {
-            p.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public static void main(String[] args) {
         launch(args);
