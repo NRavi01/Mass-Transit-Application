@@ -51,6 +51,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.zip.ZipFile;
 
 public class Main extends Application{
@@ -1279,9 +1280,26 @@ public class Main extends Application{
                     i++;
                 }
 
+                ArrayList<Stop> theREALstops = new ArrayList<>();
+                int size = routeStops.size();
+                for (int a = 0; a < size; a++) {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Choose!!");
+                    alert.setHeaderText("Choose stop #" + (a+1));
+                    Collection<ButtonType> buttonsBruh = new ArrayList<>();
+                    for (int b = 0; b < routeStops.size(); b++) {
+                        ButtonType buttonType = new ButtonType(b + " " + routeStops.get(b).getName());
+                        buttonsBruh.add(buttonType);
+                    }
+                    alert.getButtonTypes().setAll(buttonsBruh);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    theREALstops.add(routeStops.remove(Integer.parseInt(result.get().getText().substring(0, result.get().getText().indexOf(' ')))));
+                }
+
                 Color color = pickColor.getValue();
 
                 routes.add(new Route(routeName, routeID, routeStops, color));
+                routes.add(new Route(routeName, routeID, theREALstops, color));
                 window.setScene(getListScene(window, "Route"));
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(new JFrame(), "Invalid Value(s)" , "Bad Arguments",
