@@ -490,12 +490,26 @@ public class Main extends Application{
         listLine2.setStrokeWidth(8);
         Line listLine3 = new Line(0, 0, 500, 0);
         listLine3.setStrokeWidth(8);
-        //Line listLine4 = new Line(0,    0, 500, -220);
+        Line listLine4 = new Line(0, 0, 500, 0);
+        listLine4.setStrokeWidth(8);
+
+        Line analysisHolder = new Line(0, 0, 0, 0);
+        placeHolder.setStrokeWidth(0);
+
+        Button analysisButton = createButton(50, 0, 150, 50, Color.BLACK, "Analysis", 30);
+        analysisButton.setAlignment(Pos.CENTER);
+        analysisButton.getStyleClass().add("simObjListButton");
+        analysisButton.setOnAction(e -> {
+            window.setScene(getDataAnalysisScreen(window));
+        });
+
+        Group analysisGroup = new Group();
+        analysisGroup.getChildren().addAll(analysisHolder, analysisButton);
 
         Line busHolder = new Line(0, 0, 0, 0);
         placeHolder.setStrokeWidth(0);
 
-        Button busList = createButton(50, 0, 150, 50, Color.BLACK, "Bus List", 30  );
+        Button busList = createButton(50, 0, 150, 50, Color.BLACK, "Bus List", 30 );
         busList.setAlignment(Pos.CENTER);
         busList.getStyleClass().add("simObjListButton");
         busList.setOnAction(e -> {
@@ -603,7 +617,7 @@ public class Main extends Application{
         });
 
         VBox lists = new VBox(15);
-        lists.getChildren().addAll(placeHolder, modelBusGroup, listLine1,
+        lists.getChildren().addAll(placeHolder, analysisGroup, listLine4, modelBusGroup, listLine1,
                 modelRouteGroup, listLine2, modelStopGroup, listLine3);
         lists.setPrefSize(globalWidth * 1/4, 500);
         lists.setPadding(new Insets(0, 0, 0, 0));
@@ -756,6 +770,7 @@ public class Main extends Application{
         }
         b.setCurrFuel(b.getCurrFuel() - distancePerStep / 20);
     }
+
     public void moveBusBack(Bus b, int distance) {
         double currentX = b.getScreenLocation().getX();
         double currentY = b.getScreenLocation().getY();
@@ -1591,6 +1606,113 @@ public class Main extends Application{
         Scene scene = new Scene(gridPane, globalWidth, globalHeight);
         scene.getStylesheets().add("styles/main.css");
         return scene;
+    }
+
+    public Scene getDataAnalysisScreen(Stage window) {
+        GridPane gridPane = new GridPane();
+        
+        Label title = createLabel("Select Stops and Buses to Generate Effectiveness Score", 0, 0, 50, Color.BLACK, 2000);
+        title.setFont(Font.font("Roboto", FontWeight.BOLD, 50));
+
+        Button exit = createButton(0, 0, 150, 50, Color.WHITE, "Cancel", 25);
+        exit.getStyleClass().add("exitButton");
+        exit.setOnAction(e -> {
+            window.setScene(getListScene(window, "Route"));
+        });
+
+        ListView stopChoices = new ListView();
+        stopChoices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        Iterator<Stop> stopIter = stops.iterator();
+        while (stopIter.hasNext()) {
+            stopChoices.getItems().add(stopIter.next().getName());
+        }
+
+        ListView busChoices = new ListView();
+        busChoices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        Iterator<Bus> busIter = buses.iterator();
+        while (busIter.hasNext()) {
+            busChoices.getItems().add(busIter.next().getName());
+        }
+
+        Button submit = createButton(0,0, 150, 50, Color.BLACK, "Submit", 25);
+        submit.getStyleClass().add("submitButton");
+
+        
+        submit.setOnAction(e -> {
+            try {
+                ArrayList<Stop> analysisStops = new ArrayList<>();
+                ObservableList<Integer> selectedIndices1 = stopChoices.getSelectionModel().getSelectedIndices();
+
+                ArrayList<Bus> analysisBus = new ArrayList<>();
+                ObservableList<Integer> selectedIndices2 = busChoices.getSelectionModel().getSelectedIndices();
+
+                int i = 0;
+                Iterator<Stop> stopIterator = stops.iterator();
+                while (stopIterator.hasNext()) {
+                    Stop currStop = stopIterator.next();
+                    if (selectedIndices1.contains(i)) {
+                        analysisStops.add(currStop);
+                    }
+                    i++;
+                }
+
+                int j = 0;
+                Iterator<Bus> busIterator = buses.iterator();
+                while (busIterator.hasNext()) {
+                    Bus currBus = busIterator.next();
+                    if (selectedIndices2.contains(j)) {
+                        analysisBus.add(currBus);
+                    }
+                    j++;
+                }
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Data Analysis");
+                alert.setHeaderText("Effectiveness Score");
+                alert.setContentText("Score: " + effectScore(analysisBus, analysisStops));
+                alert.showAndWait();
+
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(new JFrame(), "Invalid Value(s)" , "Bad Arguments",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        gridPane.add(title, 0, 0, 2, 1);
+        gridPane.add(stopChoices, 0, 1, 1, 1);
+        gridPane.add(busChoices, 1, 1, 1, 1);
+
+        HBox hbox = new HBox(10);
+        hbox.getChildren().addAll(exit, submit);
+        gridPane.add(hbox, 0, 2, 1, 1);
+
+        gridPane.setPadding(new Insets(50, 50, 50, 50));
+        gridPane.setVgap(30);
+
+        Scene scene = new Scene(gridPane, globalWidth, globalHeight);
+        scene.getStylesheets().add("styles/main.css");
+        return scene;
+    }
+
+    public double effectScore(ArrayList<Bus> analysisBuses, ArrayList<Stop> analysisStops) {
+        double waitTime = 0;
+        double busCost = 0;
+
+        for (int i = 0; i < analysisBuses.size(); i++) {
+            //set the following effectiveness scores for each given bus
+            busCost += ((double) analysisBuses.get(i).getAvgSpeed())/70 + (1-((double)analysisBuses.get(i).getCurrFuel())/analysisBuses.get(i).getFuelCapacity());
+        }
+        for (int i = 0; i < analysisStops.size(); i++) {
+            waitTime += ((double) analysisStops.get(i).getNumPassengers())/20;
+        }
+        busCost /= analysisBuses.size();
+        waitTime /= analysisStops.size();
+
+        double score = waitTime * (.5*busCost);
+        score *= 10;
+        score = 10 - score;
+        System.out.println(score);
+        return score;
     }
 
     public static void main(String[] args) {
