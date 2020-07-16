@@ -150,7 +150,7 @@ public class Main extends Application{
             String day = dateChoiceBox.getValue();
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
             try {
-                ZipFile zip = new ZipFile(System.getProperty("user.dir") + "/src/gtfs022118.zip");
+                ZipFile zip = new ZipFile("C:/Users/Nisha/IdeaProjects/MTS-UI/src/gtfs022118.zip");
                 db = DatabaseFactory.createDatabaseFromGtfs(zip, day);
                 generateData();
             } catch (IOException ioException) {
@@ -400,6 +400,7 @@ public class Main extends Application{
         ArrayList<ImageView> busImages = new ArrayList<>();
         for (int i = 0; i < buses.size(); i++) {
             Bus b = buses.get(i);
+            System.out.println(b.getScreenLocation());
             //System.out.println(b.getScreenLocation().getX() + " woa " +  b.getScreenLocation().getY());
             ImageView newBus = createImage("bus_icon.PNG", (int) b.getScreenLocation().getX() - 40, (int) b.getScreenLocation().getY() - 25, 80, 50);
             busImages.add(newBus);
@@ -1191,7 +1192,7 @@ public class Main extends Application{
                 double busSpeed = Double.parseDouble(speedTF.getText());
 
 
-                buses.add(new Bus(busName, busID, busNumPassengers, busSpeed, busCurrRoute, busCurrStop, busNextStop, busCurrStop.getLocation(),
+                buses.add(new Bus(busName, busID, busNumPassengers, busSpeed, busCurrRoute, busCurrStop, busNextStop, busCurrRoute.getStops().get(0).getLocation(),
                         busInitFuel, busFuelCap));
                 window.setScene(getListScene(window, "Bus"));
             } catch (Exception exception) {
