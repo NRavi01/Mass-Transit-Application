@@ -1310,7 +1310,6 @@ public class Main extends Application{
 
         submit.setOnAction(e -> {
             try {
-                System.out.println("hi");
                 String stopName = nameTF.getText();
                 int stopID = Integer.parseInt(idTF.getText());
                 int stopNumPass = Integer.parseInt(numpsTF.getText());
@@ -1320,9 +1319,6 @@ public class Main extends Application{
                 int indexOfRoute = 0;
                 for (int i = 0; i < routes.size(); i++) {
                     Route tempRoute = routes.get(i);
-                    System.out.println("hi");
-                    System.out.println(tempRoute.getID());
-                    System.out.println(tempRoute.getName());
                     if (Integer.toString(tempRoute.getID()).equals(routeName)) {
                         currRoute = tempRoute;
                         indexOfRoute = i;
@@ -1776,7 +1772,6 @@ public class Main extends Application{
         double score = waitTime * (.5*busCost);
         score *= 10;
         score = 10 - score;
-        System.out.println(score);
         return score;
     }
 
