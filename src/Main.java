@@ -1802,7 +1802,7 @@ public class Main extends Application{
         Button exit = createButton(0, 0, 100, 50, Color.WHITE, "Exit", 25);
         exit.getStyleClass().add("exitButton");
         exit.setOnAction(e -> {
-            window.setScene(getMainScreen(window));
+            window.setScene(getDataAnalysisScreen(window));
         });
 
         gridPane.add(title, 0, 0, 1, 1);
