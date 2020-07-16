@@ -150,7 +150,7 @@ public class Main extends Application{
             String day = dateChoiceBox.getValue();
             //ALL CORE SIM LOGIC AND DATABASE RETRIEVAL TEAM WORK HERE - leads to array of all simobjects
             try {
-                ZipFile zip = new ZipFile(System.getProperty("user.dir") + "/src/gtfs022118.zip");
+                ZipFile zip = new ZipFile("C:/Users/Nisha/IdeaProjects/MTS-UI/src/gtfs022118.zip");
                 db = DatabaseFactory.createDatabaseFromGtfs(zip, day);
                 generateData();
             } catch (IOException ioException) {
@@ -1038,28 +1038,30 @@ public class Main extends Application{
                 gridPane.add(delete, 1, i, 1, 1);
             }
         } else {
-            for (int j = 0; j < stops.size(); j++) {
-                Stop currStop = stops.get(j);
-                Button stopButton = createButton(0, 0, 600,100,Color.BLACK, currStop.getName(), 30);
-                stopButton.getStyleClass().add("listButton");
-                if (currStop.getRoute() != null) {
-                    stopButton.setTextFill(currStop.getRoute().getColor());
+            for (int k = 0; k < routes.size(); k++) {
+                for (int j = 0; j < routes.get(k).getStops().size(); j++) {
+                    Stop currStop = routes.get(k).getStops().get(j);
+                    Button stopButton = createButton(0, 0, 600, 100, Color.BLACK, currStop.getName(), 30);
+                    stopButton.getStyleClass().add("listButton");
+                    if (currStop.getRoute() != null) {
+                        stopButton.setTextFill(currStop.getRoute().getColor());
+                    }
+                    stopButton.setOnAction(e -> {
+                        window.setScene(getStopScene(currStop, window));
+                    });
+                    Button delete = createButton(0, 0, 50, 50, Color.BLACK, "X", 30);
+                    delete.getStyleClass().add("deleteButton");
+                    delete.getStyleClass().add("deleteButton");
+                    delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
+                    delete.setOnAction(e -> {
+                        currStop.getRoute().getStops().remove(currStop);
+                        stops.remove(currStop);
+                        window.setScene(getListScene(window, "Stop"));
+                    });
+                    i++;
+                    gridPane.add(stopButton, 0, i, 1, 1);
+                    gridPane.add(delete, 1, i, 1, 1);
                 }
-                stopButton.setOnAction(e -> {
-                    window.setScene(getStopScene(currStop, window));
-                });
-                Button delete = createButton(0, 0,50, 50, Color.BLACK, "X", 30);
-                delete.getStyleClass().add("deleteButton");
-                delete.getStyleClass().add("deleteButton");
-                delete.setFont(Font.font("Roboto", FontWeight.BOLD, 30));
-                delete.setOnAction(e -> {
-                    currStop.getRoute().getStops().remove(currStop);
-                    stops.remove(currStop);
-                    window.setScene(getListScene(window, "Stop"));
-                });
-                i++;
-                gridPane.add(stopButton, 0, i, 1, 1);
-                gridPane.add(delete, 1, i, 1, 1);
             }
         }
 
